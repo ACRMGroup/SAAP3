@@ -51,14 +51,25 @@
 #
 #*************************************************************************
 use strict;
+
+if(! -e 'config.pm')
+{
+    print <<__EOF;
+
+Installation aborting. You need to create a config.pm config file.
+
+__EOF
+    exit 1;
+}
+
 use Cwd qw(abs_path);
 
 # Add the path of the executable to the library path
 use FindBin;
 use lib $FindBin::Bin;
 use lib abs_path("$FindBin::Bin/src/lib");
-use config;
 use util;
+use config;
 
 UsageDie() if(defined($::h));
 
@@ -100,7 +111,7 @@ sub DestinationOK
 {
     my($progName, $destination) = @_;
     $|=1;
-    print "$pfogName will be installed in $destination\n";
+    print "$progName will be installed in $destination\n";
     print "Do you wish to proceed? (Y/N) [Y] ";
     my $response = <>;
     chomp $response;
