@@ -85,10 +85,11 @@ __EOF
 }
 
 # Create the installation directories and build the C programs
-util::RunCommand("mkdir -p $config::bindir");
+util::RunCommand("mkdir -p $config::binDir");
 BuildPackages();
 
-InstallPrograms($config::bindir);
+util::RunCommand("mkdir -p $config::saapBinDir");
+InstallPrograms($config::saapBinDir);
 
 
 
@@ -156,25 +157,24 @@ sub DestinationOK
 # avp
 sub BuildPackages
 {
-    my $dir = util::GetDir($config::chodat);
     util::BuildPackage("./packages/mutmodel_V1.22.tgz",   # Package file
                        "src",                             # Subdir containing src
                        \["mutmodel","clashcalc"],         # Generated executable
-                       $config::bindir,                   # Destination binary directory
+                       $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
                        $config::mmDataDir);               # Destination data directory
     
     util::BuildPackage("./packages/pdbhstrip_V1.4.tgz",   # Package file
                        "",                                # Subdir containing src
                        \["pdbhstrip"],                    # Generated executable
-                       $config::bindir,                   # Destination binary directory
+                       $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory
 
     util::BuildPackage("./packages/pdbgetchain_V2.1.tgz", # Package file
                        "",                                # Subdir containing src
                        \["pdbgetchain"],                  # Generated executable
-                       $config::bindir,                   # Destination binary directory
+                       $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory
 

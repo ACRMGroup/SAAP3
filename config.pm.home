@@ -16,14 +16,18 @@ $LocalSwissProt=0;      # Use web services for SwissProt
 ##########################################################################
 #             Shouldn't need to alter anything below here                #
 ##########################################################################
+$saapBinDir="$saapHome/bin";
 # Main binary and data directories
-$binDir="$saapHome/bin";
-$dataDir="$saapHome/data";
+$binDir="$saapHome/share/bin";
+$dataDir="$saapHome/share/data";
 $checkHBondDir="$saapHome/cprogs/checkhbond";
 
 # Dependent on saapHome
 $pluginDir="$saapHome/plugins";
 $localBinDir="$saapHome/bin";
+
+# Dependent on $dataDir
+$mmDataDir="$dataDir";
 
 # Dependent on $pluginDir
 $pluginDataDir="$pluginDir/data";
