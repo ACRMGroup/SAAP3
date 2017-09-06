@@ -1,0 +1,221 @@
+#!/acrm/usr/local/bin/perl -s
+#*************************************************************************
+#
+#   Program:    uniprot_pipeline
+#   File:       uniprot_pipeline.pl
+#   
+#   Version:    V1.0
+#   Date:       11.11.11
+#   Function:   Runs the SAAP analysis pipeline for a UniProt code
+#   
+#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011
+#   Author:     Dr. Andrew C. R. Martin
+#   Address:    Biomolecular Structure & Modelling Unit,
+#               Department of Biochemistry & Molecular Biology,
+#               University College,
+#               Gower Street,
+#               London.
+#               WC1E 6BT.
+#   Phone:      +44 (0)207 679 7034
+#   EMail:      andrew@bioinf.org.uk
+#               andrew.martin@ucl.ac.uk
+#   Web:        http://www.bioinf.org.uk/
+#               
+#               
+#*************************************************************************
+#
+#   This program is not in the public domain, but it may be copied
+#   according to the conditions laid out in the accompanying file
+#   COPYING.DOC
+#
+#   The code may be modified as required, but any modifications must be
+#   documented so that the person responsible can be identified. If 
+#   someone else breaks this code, I don't want to be blamed for code 
+#   that does not work! 
+#
+#   The code may not be sold commercially or included as part of a 
+#   commercial product except as described in the file COPYING.DOC.
+#
+#*************************************************************************
+#
+#   Description:
+#   ============
+#
+#*************************************************************************
+#
+#   Usage:
+#   ======
+#
+#*************************************************************************
+#
+#   Revision History:
+#   =================
+#
+#*************************************************************************
+use config;
+use lib $config::modulesDir;
+use SAAP;
+use PDBSWS;
+use strict;
+
+#*************************************************************************
+my $programName = "SAAPS";
+my $uniprot = "";
+my($ac, $resnum, $native, $mutant) = ParseCmdLine($programName);
+
+$::v    = defined($::v)?"-v":"";
+$::info = defined($::info)?"-info":"";
+
+# Print start of JSON
+PrintJsonHeader($programName, $ac, $resnum, $native, $mutant);
+
+# Obtain a list of PDB codes that map to this UniProt AC
+my @pdbresidues = GetPDBResidues($ac, $resnum);
+
+my $count = 0;
+foreach my $pdbres (@pdbresidues)
+{
+    if($count)
+    {
+        print ",\n";
+    }
+    my($pdb, $resid) = split(/:/,$pdbres);
+    my $exe = "$config::saapHome/pipeline.pl $::v $::info -c $resid $mutant $pdb";
+    if($::v ne "")
+    {
+        print STDERR "Running pipeline command:\n";
+        my $progname = $exe;
+        $progname =~ s/.*\///;
+        print STDERR "   $progname\n";
+    }
+    my $json = `$exe`;
+    print $json;
+    $count++;
+    if(defined($::limit) && ($count >= $::limit))
+    {
+        last;
+    }
+}
+
+# End of JSON
+PrintJsonFooter();
+
+##########################################################################
+sub UsageDie
+{
+    print STDERR <<__EOF;
+
+SAAP UniProt Pipeline (c) 2011, UCL, Dr. Andrew C.R. Martin
+Usage: 
+uniprot_pipeline [-v [-info]] [-limit=n] uniprotAC native resnum newres
+                 -v     Verbose
+                 -info  Used with -v to get pipeline plugins 
+                        to report their info strings
+                 -limit Set the maximum number of PDB chains
+                        to analyze
+
+Runs the SAAP analysis pipeline on each PDB chain that matches a
+specified uniprot accession.
+
+uniprotAC us a UniProt accession (e.g. P69905)
+
+The native and mutant residues (native, newres) may be specified in 
+upper, lower or mixed case and using 1-letter or 3-letter code.
+
+__EOF
+   exit 0;
+}
+
+
+##########################################################################
+sub ParseCmdLine
+{
+    my ($programName) = @_;
+
+    if(@ARGV != 4)
+    {
+        &::UsageDie();
+    }
+
+    my $ac      = shift(@ARGV);
+    my $native  = shift(@ARGV);
+    my $resnum  = shift(@ARGV);
+    my $mutant  = shift(@ARGV);
+
+    $ac = "\U$ac";
+
+    $native = "\U$native";
+    if(defined($SAAP::onethr{$native}))
+    {
+        $native = $SAAP::onethr{$native};
+    }
+
+    $mutant = "\U$mutant";
+    if(defined($SAAP::onethr{$mutant}))
+    {
+        $mutant = $SAAP::onethr{$mutant};
+    }
+
+    SAAP::Initialize();
+
+    return($ac, $resnum, $native, $mutant);
+
+}
+
+##########################################################################
+sub GetPDBResidues
+{
+    my ($uniprot, $resnum) = @_;
+    my @data = ();
+
+    # Look up the PDB code(s) for this PDB file.
+    my @results = PDBSWS::ACQueryAll($uniprot, $resnum);
+    if($results[0] eq "ERROR")
+    {
+        print "{\"SAAP-ERROR\": \"$results[1]\"}\n";
+    }
+    else
+    {
+        foreach my $result (@results)
+        {
+            if($$result{'CHAIN'} =~ /[0-9]/)
+            {
+                # Numeric chain label so separate chain label from residue with a "."
+                push @data, "$$result{'PDB'}:$$result{'CHAIN'}.$$result{'RESID'}";
+            }
+            else
+            {
+                # Normal alphabetical chain label
+                push @data, "$$result{'PDB'}:$$result{'CHAIN'}$$result{'RESID'}";
+            }
+        }
+    }
+
+    return(@data);
+}
+
+##########################################################################
+sub PrintJsonHeader
+{
+    my($programName, $ac, $resnum, $native, $mutant) = @_;
+
+    print <<__EOF;
+\{"$programName":
+   \{ "uniprotac": "$ac",
+     "resnum": $resnum,
+     "native": "$native",
+     "mutant": "$mutant",
+     "pdbs"  : \[
+__EOF
+}
+
+##########################################################################
+sub PrintJsonFooter
+{
+    print <<__EOF;
+      \]
+   \}
+\}
+__EOF
+}
+
