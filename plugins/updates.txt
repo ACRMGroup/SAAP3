@@ -7,7 +7,6 @@ Not Done
 - hbonds.pl        - Needs XMAS
 - impact.pl
 - interface.pl     - Needs XMAS
-- proline.pl
 - sprotft.pl
 - ssgeom.pl        - Needs XMAS
 - surfacephobic.pl - Needs XMAS
@@ -19,3 +18,4 @@ Done
 - cispro.pl
 - clashes.pl
 - glycine.pl
+- proline.pl
