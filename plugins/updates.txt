@@ -4,7 +4,6 @@ Not Done
 - binding.pl       - Needs XMAS
 - buriedcharge.pl  - Needs XMAS
 - corephilic.pl    - Needs XMAS
-- glycine.pl
 - hbonds.pl        - Needs XMAS
 - impact.pl
 - interface.pl     - Needs XMAS
@@ -19,3 +18,4 @@ Done
 
 - cispro.pl
 - clashes.pl
+- glycine.pl
