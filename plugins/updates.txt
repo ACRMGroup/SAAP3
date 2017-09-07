@@ -9,7 +9,6 @@ Not Done
 - interface.pl     - Needs XMAS
 - ssgeom.pl        - Needs XMAS
 - surfacephobic.pl - Needs XMAS
-- voids.pl
 
 Done
 ----
@@ -19,3 +18,4 @@ Done
 - glycine.pl
 - proline.pl
 - sprotft.pl
+- voids.pl

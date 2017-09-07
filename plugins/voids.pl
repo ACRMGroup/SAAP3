@@ -66,9 +66,9 @@ use SAAP;
 $::infoString = "Analyzing voids (this will take some time!)";
 
 # Programs we use
-my $getchain = $config::binDir . "/getchain";
-my $hstrip   = $config::binDir . "/hstrip";
-my $addhet   = $config::binDir . "/addhetv2";
+my $getchain = $config::binDir . "/pdbgetchain";
+my $hstrip   = $config::binDir . "/pdbhstrip";
+my $addhet   = $config::binDir . "/pdbaddhet";
 my $avp      = $config::binDir . "/avp";
 my $mutmodel = $config::binDir . "/mutmodel";
 
