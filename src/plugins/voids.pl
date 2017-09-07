@@ -1,4 +1,4 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    
@@ -55,6 +55,9 @@
 #                  if AVP returns fewer voids
 #*************************************************************************
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
 use config;
 use SAAP;
 

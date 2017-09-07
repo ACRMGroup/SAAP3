@@ -123,7 +123,7 @@ my %onethr =
 #*************************************************************************
 sub Initialize
 {
-    $ENV{'PERL5LIB'} .= ":$config::saapHome:$config::pluginDir/modules";
+    $ENV{'PERL5LIB'} .= ":$config::saapHome:$config::libDir";
     $ENV{'DATADIR'} = $config::dataDir;
     if(! -d $config::cacheDir)
     {

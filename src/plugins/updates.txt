@@ -1,0 +1,21 @@
+Not Done
+--------
+
+- binding.pl       - Needs XMAS
+- buriedcharge.pl  - Needs XMAS
+- cispro.pl
+- clashes.pl
+- corephilic.pl    - Needs XMAS
+- glycine.pl
+- hbonds.pl        - Needs XMAS
+- impact.pl
+- interface.pl     - Needs XMAS
+- proline.pl
+- sprotft.pl
+- ssgeom.pl        - Needs XMAS
+- surfacephobic.pl - Needs XMAS
+- voids.pl
+
+Done
+----
+

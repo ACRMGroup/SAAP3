@@ -89,16 +89,71 @@ util::RunCommand("mkdir -p $config::binDir");
 BuildPackages();
 
 util::RunCommand("mkdir -p $config::saapBinDir");
-InstallPrograms($config::saapBinDir);
+InstallPrograms($config::saapSrcDir, $config::saapBinDir);
 
 
 
 #*************************************************************************
 sub InstallPrograms
 {
-    my($binDir) = @_;
-    util::RunCommand("cp -Rp src/* $binDir");
-    util::RunCommand("cp -Rp config.pm $binDir");
+    my($srcDir, $binDir) = @_;
+    CopyDir("./src", $srcDir);
+    CopyFile("./config.pm", $srcDir);
+    LinkFiles($srcDir, $binDir);
+}
+
+sub CopyFile
+{
+    my($in, $out) = @_;
+    MakeDir($out) if(! -d $out);
+    $in = abs_path($in);
+    $out = abs_path($out);
+
+    if($in ne $out)
+    {
+        util::RunCommand("cp $in $out");
+    }
+}
+
+
+sub MakeDir
+{
+    my($destination) = @_;
+
+    # Test we can write to the directory
+    # Try to create it if is doesn't exist
+    if(! -d $destination)
+    {
+        system("mkdir -p $destination 2>/dev/null");
+    }
+    # Fail if it doesn't exist
+    if(! -d $destination)
+    {
+        print STDERR "\n   *** Error: Cannot create directory $destination ***\n";
+        return(0);
+    }
+    # Fail if we can't write to it
+    my $tFile = "$destination/testWrite.$$";
+    system("touch $tFile 2>/dev/null");
+    if(! -e $tFile)
+    {
+        print STDERR "\n   *** Error: Cannot write to directory $destination ***\n";
+        return(0);
+    }
+    unlink $tFile;
+}
+
+sub CopyDir
+{
+    my($in, $out) = @_;
+    MakeDir($out);
+    $in = abs_path($in);
+    $out = abs_path($out);
+
+    if($in ne $out)
+    {
+        util::RunCommand("cp -Rp $in/* $out");
+    }
 }
 
 #*************************************************************************
@@ -119,27 +174,7 @@ sub DestinationOK
     $response = "\U$response";
     return(0) if(substr($response,0,1) eq "N");
 
-    # Test we can write to the directory
-    # Try to create it if is doesn't exist
-    if(! -d $destination)
-    {
-        system("mkdir -p $destination 2>/dev/null");
-    }
-    # Fail if it doesn't exist
-    if(! -d $destination)
-    {
-        print STDERR "\n   *** Error: Cannot create installation directory ***\n";
-        return(0);
-    }
-    # Fail if we can't write to it
-    my $tFile = "$destination/testWrite.$$";
-    system("touch $tFile 2>/dev/null");
-    if(! -e $tFile)
-    {
-        print STDERR "\n   *** Error: Cannot write to installation directory ***\n";
-        return(0);
-    }
-    unlink $tFile;
+    MakeDir($destination);
 
     return(1);
 }

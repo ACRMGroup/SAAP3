@@ -1,4 +1,4 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    
@@ -53,6 +53,9 @@
 #
 #*************************************************************************
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
 use config;
 use FOSTA;
 use MUSCLE;

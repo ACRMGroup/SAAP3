@@ -1,8 +1,11 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 # 22.05.12 Changed to use molecule accessibility as a charge at an
 # interface will be dealt with elsewhere
 
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
 use config;
 use XMAS;
 use SAAP;
