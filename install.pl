@@ -264,8 +264,22 @@ sub BuildPackages
                        "");                               # Destination data directory
 
     util::BuildPackage("./packages/getresidue_V1.0.tgz",  # Package file
-                       "src",                             # Subdir containing src
+                       "",                                # Subdir containing src
                        \["getresidue"],                   # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/pdbtorsions_V2.1.tgz", # Package file
+                       "",                                # Subdir containing src
+                       \["pdbtorsions"],                  # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/pdbcheckforres_V1.5.tgz", # Package file
+                       "",                                # Subdir containing src
+                       \["pdbcheckforres"],               # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory

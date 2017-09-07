@@ -54,6 +54,7 @@ use strict;
 use FindBin;
 use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
 use SAAP;
 
@@ -61,9 +62,9 @@ use SAAP;
 $::infoString = "Checking whether the new sidechain clashes with its surroundings";
 
 # Programs we use
-my $getchain = $config::binDir . "/getchain";
-my $hstrip   = $config::binDir . "/hstrip";
-my $addhet   = $config::binDir . "/addhetv2";
+my $getchain = $config::binDir . "/pdbgetchain";
+my $hstrip   = $config::binDir . "/pdbhstrip";
+my $addhet   = $config::binDir . "/pdbaddhet";
 my $mutmodel = $config::binDir . "/mutmodel";
 
 # Cutoffs

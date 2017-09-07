@@ -3,8 +3,6 @@ Not Done
 
 - binding.pl       - Needs XMAS
 - buriedcharge.pl  - Needs XMAS
-- cispro.pl
-- clashes.pl
 - corephilic.pl    - Needs XMAS
 - glycine.pl
 - hbonds.pl        - Needs XMAS
@@ -19,3 +17,5 @@ Not Done
 Done
 ----
 
+- cispro.pl
+- clashes.pl

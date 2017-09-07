@@ -184,7 +184,7 @@ sub ParseCmdLine
 sub GetNative
 {
     my($pdbfile, $residue) = @_;
-    my $resnam = `$config::localBinDir/getresidue $residue $pdbfile`;
+    my $resnam = `$config::binDir/getresidue $residue $pdbfile`;
     chomp $resnam;
     $resnam =~ s/\s//g;
     return($resnam);
@@ -273,8 +273,7 @@ sub MakeJson
 sub CheckRes
 {
     my($file, $resid) = @_;
-#    my $result = `$config::binDir/checkforres -l $resid $file`;
-    my $result = `$config::binDir/checkforres $resid $file`;
+    my $result = `$config::binDir/pdbcheckforres $resid $file`;
     if($result =~ /Y/i)
     {
         return(1);
@@ -369,7 +368,7 @@ sub GetTorsion
     my $resid = $resnum . $insert;
     my $omega = 9999.0;
 
-    my $torsionResults = `$config::binDir/torsions $pdbfile`;
+    my $torsionResults = `$config::binDir/pdbtorsions -o $pdbfile`;
     my @records = split(/\n/, $torsionResults);
     foreach my $record (@records)
     {
