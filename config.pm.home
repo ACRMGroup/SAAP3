@@ -27,8 +27,8 @@ $dataDir="$saapHome/share/data";
 $checkHBondDir="$saapHome/cprogs/checkhbond";
 
 # Dependent on saapHome
-$pluginDir="$saapHome/bin/plugins";
-$libDir="$saapHome/bin/lib";
+$pluginDir="$saapHome/plugins";
+$libDir="$saapHome/lib";
 $localBinDir="$saapHome/bin";
 
 # Dependent on $dataDir

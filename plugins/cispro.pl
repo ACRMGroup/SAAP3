@@ -61,3 +61,18 @@ sub IsCis
     return (0);
 }
 
+#*************************************************************************
+sub UsageDie
+{
+    print STDERR <<__EOF;
+
+cispro.pl V1.0 (c) 2011-2012, UCL, Dr. Andrew C.R. Martin
+Usage: cispro.pl [chain]resnum[insert] newaa pdbfile
+       (newaa maybe 3-letter or 1-letter code)
+
+Does cis-Proline calculations for the SAAP server.
+       
+__EOF
+   exit 0;
+}
+

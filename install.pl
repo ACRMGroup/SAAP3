@@ -85,10 +85,10 @@ __EOF
 }
 
 # Create the installation directories and build the C programs
-util::RunCommand("mkdir -p $config::binDir");
+MakeDir($config::binDir);
 BuildPackages();
 
-util::RunCommand("mkdir -p $config::saapBinDir");
+MakeDir($config::saapBinDir);
 InstallPrograms($config::saapSrcDir, $config::saapBinDir);
 
 
@@ -102,16 +102,43 @@ sub InstallPrograms
     LinkFiles($srcDir, $binDir);
 }
 
+sub LinkFiles
+{
+    my($inDir, $outDir) = @_;
+
+    my @files = split("\n", `ls $inDir`);
+
+    foreach my $file (@files)
+    {
+        my $fullFile = "$inDir/$file";
+
+        if( $fullFile =~ /\.pl$/ )
+        {
+            my $newFile = $file;
+            $newFile =~ s/\..*?$//;
+            `(cd $outDir; ln -sf $fullFile ./$newFile)`;
+        }
+        else
+        {
+            `(cd $outDir; ln -sf $fullFile .)`;
+        }
+    }
+}
+
 sub CopyFile
 {
     my($in, $out) = @_;
     MakeDir($out) if(! -d $out);
-    $in = abs_path($in);
-    $out = abs_path($out);
+    my $inFull = abs_path($in);
+    my $outFull = abs_path($out);
 
-    if($in ne $out)
+    if($inFull ne $outFull)
     {
         util::RunCommand("cp $in $out");
+    }
+    else
+    {
+        print STDERR "\n   *** Info: Destination and source dirctories are the same so not copying ***\n";
     }
 }
 
@@ -153,6 +180,10 @@ sub CopyDir
     if($in ne $out)
     {
         util::RunCommand("cp -Rp $in/* $out");
+    }
+    else
+    {
+        print STDERR "\n   *** Info: Destination and source dirctories are the same so not copying ***\n";
     }
 }
 
@@ -232,6 +263,12 @@ sub BuildPackages
                        "",                                # Data directory
                        "");                               # Destination data directory
 
+    util::BuildPackage("./packages/getresidue_V1.0.tgz",  # Package file
+                       "src",                             # Subdir containing src
+                       \["getresidue"],                   # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
 }
 
 

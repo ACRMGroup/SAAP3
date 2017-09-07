@@ -201,7 +201,7 @@ sub GetChain
     }
     else
     {
-        `$config::binDir/getchain $chain $pdbfile $chainfile`;
+        `$config::binDir/pdbgetchain $chain $pdbfile $chainfile`;
     }
     return($chainfile);
 }
