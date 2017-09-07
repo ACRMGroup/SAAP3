@@ -89,17 +89,19 @@ MakeDir($config::binDir);
 BuildPackages();
 
 MakeDir($config::saapBinDir);
-InstallPrograms($config::saapSrcDir, $config::saapBinDir);
+InstallPrograms($config::saapHome, $config::saapBinDir);
 
 
 
 #*************************************************************************
 sub InstallPrograms
 {
-    my($srcDir, $binDir) = @_;
-    CopyDir("./src", $srcDir);
-    CopyFile("./config.pm", $srcDir);
-    LinkFiles($srcDir, $binDir);
+    my($saapHome, $binDir) = @_;
+    CopyDir("./src", "$saapHome/src");
+    CopyDir("./lib", "$saapHome/lib");
+    CopyDir("./plugins", "$saapHome/plugins");
+    CopyFile("config.pm", $saapHome);
+    LinkFiles("$saapHome/src", $binDir);
 }
 
 sub LinkFiles
