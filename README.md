@@ -1,8 +1,16 @@
-SAAPdap 
-=======
+SAAPdap/SAAPpred
+================
 
 Installation
 ------------
+1. Ensure you have the following packages installed system wide:
+- R
+
+2. Ensure you have a mirror of the PDB installed; you can use
+`ftpmirror` from http://github.com/AndrewCRMartin/bioscripts for this
+purpose
+
+
 
 Modify config.pm as required
 

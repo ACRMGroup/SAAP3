@@ -152,9 +152,7 @@ sub DestinationOK
 #
 #  06.09.17  Original  By: ACRM
 ### NEED TO ADD:
-# getresol
 # addhetv2
-# avp
 sub BuildPackages
 {
     util::BuildPackage("./packages/mutmodel_V1.22.tgz",   # Package file
@@ -174,6 +172,27 @@ sub BuildPackages
     util::BuildPackage("./packages/pdbgetchain_V2.1.tgz", # Package file
                        "",                                # Subdir containing src
                        \["pdbgetchain"],                  # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/getresol_V0.1.tgz",    # Package file
+                       "",                                # Subdir containing src
+                       \["getresol"],                     # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/pdbaddhet_V2.4.tgz",   # Package file
+                       "",                                # Subdir containing src
+                       \["pdbaddhet"],                    # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/avp_V1.4.tgz",         # Package file
+                       "src",                             # Subdir containing src
+                       \["avp"],                          # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory

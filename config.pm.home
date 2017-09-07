@@ -1,16 +1,18 @@
 package config;
 
 $saapHome="$ENV{'HOME'}/saapinstall";
+$email="andrew\@andrew-martin.org"; # For EBI Webservices
+$RExe="/usr/bin/R";
+$tmpDir="/tmp";
+$pdbPrep="/acrm/data/pdb/pdb";
+$pdbExt=".ent";
+
+
 $xmasDir="/acrm/data/xmas/pdb";
 $swissprot="/acrm/data/swissprot/full/uniprot_sprot.dat";
 $indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
 $getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
-$email="andrew\@andrew-martin.org"; # For EBI Webservices
-$tmpDir="/tmp";
-$RExe="/usr/bin/R";
-$pdbPrep="/acrm/data/pdb/pdb";
 $cacheDir="$saapHome/cache"; # Can be anywhere
-$pdbExt=".ent";
 $LocalSwissProt=0;      # Use web services for SwissProt
 
 ##########################################################################
