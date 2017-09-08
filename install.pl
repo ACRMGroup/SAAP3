@@ -285,6 +285,13 @@ sub BuildPackages
                        $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory
+
+    util::BuildPackage("./packages/pdbhbond_V2.1.tgz",    # Package file
+                       "",                                # Subdir containing src
+                       \["pdbhbond"],                     # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "data",                            # Data directory
+                       $config::mmDataDir);               # Destination data directory
 }
 
 
