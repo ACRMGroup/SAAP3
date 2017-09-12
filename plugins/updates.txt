@@ -1,7 +1,6 @@
 Not Done
 --------
 
-- corephilic.pl    - Needs XMAS
 - hbonds.pl        - Needs XMAS
 - impact.pl
 - interface.pl     - Needs XMAS
@@ -15,7 +14,8 @@ Done
 - clashes.pl
 - glycine.pl
 - proline.pl
-- sprotft.pl
+- sprotft.pl - still need to do non WS version
 - voids.pl
 - binding.pl
 - buriedcharge.pl
+- corephilic.pl

@@ -4,11 +4,11 @@
 #   Program:    
 #   File:       corephilic.pl
 #   
-#   Version:    V1.1
-#   Date:       07.03.12
+#   Version:    V1.2
+#   Date:       12.09.17
 #   Function:   Core Philic plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2012
+#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2017
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
@@ -50,6 +50,7 @@
 #   V1.0  16.12.11 Original
 #   V1.1  07.03.12 Generates relative accessibility in the same way that
 #                  SurfacePhobic does
+#   V1.2  12.09.17 Updated for distribution without XMAS
 #
 #*************************************************************************
 use strict;
@@ -59,7 +60,6 @@ use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
 use SAAP;
-use XMAS;
 
 # Information string about this plugin
 $::infoString = "Checking whether a hydrophilic residue has been introduced in the core";
@@ -90,7 +90,7 @@ if($status != 0)
         SAAP::PrintJsonError("CorePhilic", "Residue not found");
         exit 1;
     }
-    my $message = $XMAS::ErrorMessage[$status];
+    my $message = $SAAP::ErrorMessage;
     SAAP::PrintJsonError("CorePhilic", $message);
     exit 1;
 }
@@ -115,7 +115,7 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-corephilic.pl V1.1 (c) 2011-2012, UCL, Dr. Andrew C.R. Martin
+corephilic.pl V1.2 (c) 2011-2017, UCL, Dr. Andrew C.R. Martin
 Usage: corephilic.pl [chain]resnum[insert] newaa pdbfile
        (newaa maybe 3-letter or 1-letter code)
 

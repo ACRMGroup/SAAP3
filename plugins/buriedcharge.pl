@@ -8,7 +8,6 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
-use XMAS;
 use SAAP;
 
 # Information string about this plugin
@@ -41,7 +40,7 @@ if($status != 0)
         SAAP::PrintJsonError("BuriedCharge", "Accessibility of residue ($residue) not found");
         exit 1;
     }
-    my $message = $XMAS::ErrorMessage[$status];
+    my $message = $SAAP::ErrorMessage;
     SAAP::PrintJsonError("BuriedCharge", $message);
     exit 1;
 }

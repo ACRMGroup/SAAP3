@@ -29,6 +29,10 @@ $esigmaO      = 3.33;
 
 
 ##########################################################################
+# Used for Error messages
+$ErrorMessage = "";
+
+##########################################################################
 # Used by IMPACT
 $pdbswsURL       = "http://www.bioinf.org.uk/cgi-bin/pdbsws/query.pl";
 $impactC1        = 0.8;
@@ -337,7 +341,8 @@ sub GetRelativeAccess
         `mkdir -p $config::solvCacheDir`;
         if(! -d $config::solvCacheDir)
         {
-            print STDERR "***Error: Cannot create solvent accessibility cache directory ($config::solvCacheDir)\n";
+            $ErrorMessage = "Cannot create solvent accessibility cache directory ($config::solvCacheDir)";
+            print STDERR "***Error: $ErrorMessage\n";
             return(0,0,-1);
         }
     }
@@ -349,7 +354,8 @@ sub GetRelativeAccess
         system($exe);
         if(! -e $solvFile)
         {
-            print STDERR "***Error: Cannot create solvent accessibility cache file ($solvFile)\n";
+            $ErrorMessage = "Cannot create solvent accessibility cache file ($solvFile)";
+            print STDERR "***Error: $ErrorMessage\n";
             return(0,0,-1);
         }
     }
@@ -360,7 +366,8 @@ sub GetRelativeAccess
         system($exe);
         if(! -e $solvFileChain)
         {
-            print STDERR "***Error: Cannot create chain solvent accessibility cache file ($solvFileChain)\n";
+            $ErrorMessage = "Cannot create chain solvent accessibility cache file ($solvFileChain)";
+            print STDERR "***Error: $ErrorMessage\n";
             return(0,0,-1);
         }
     }
