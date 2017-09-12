@@ -1,7 +1,6 @@
 Not Done
 --------
 
-- hbonds.pl        - Needs XMAS
 - impact.pl
 - interface.pl     - Needs XMAS
 - ssgeom.pl        - Needs XMAS
@@ -19,3 +18,4 @@ Done
 - binding.pl
 - buriedcharge.pl
 - corephilic.pl
+- hbonds.pl

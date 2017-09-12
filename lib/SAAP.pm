@@ -6,17 +6,17 @@ $buried  = 10.0;
 $surface = 20.0;
 ##########################################################################
 # Parameters for variations of checkhbond
-$checkhbondSS = "$config::checkHBondBinDir/checkhbond";
-$chbdata1SS   = "$config::checkHBondDataDir/hbmatricesS35.dat";
-$chbdata2SS   = "";
+$checkhbondSS = "$config::binDir/checkhbond";
+$chbdata1SS   = "$config::dataDir/hbmatricesS35.dat";
+$chbdata2SS   = ""; # This should be empty
 
-$checkhbondO  = "$config::checkHBondBinDir/checkhbond_Oacceptor";
-$chbdata1O    = "$config::checkHBondDataDir/hbmatricesS35_SCMC.dat";
-$chbdata2O    = "-n $config::checkHBondDataDir/hbmatricesS35_O.dat";
+$checkhbondO  = "$config::binDir/checkhbond_Oacceptor";
+$chbdata1O    = "$config::dataDir/hbmatricesS35_SCMC.dat";
+$chbdata2O    = "-n $config::dataDir/hbmatricesS35_O.dat";
 
-$checkhbondN  = "$config::checkHBondBinDir/checkhbond_Ndonor";
-$chbdata1N    = "$config::checkHBondDataDir/hbmatricesS35_SCMC.dat";
-$chbdata2N    = "-n $config::checkHBondDataDir/hbmatricesS35_N.dat";
+$checkhbondN  = "$config::binDir/checkhbond_Ndonor";
+$chbdata1N    = "$config::dataDir/hbmatricesS35_SCMC.dat";
+$chbdata2N    = "-n $config::dataDir/hbmatricesS35_N.dat";
 
 $emeanSS      = 10.44;        # CATH v2.6.0 06.02.06
 $esigmaSS     = 2.04;

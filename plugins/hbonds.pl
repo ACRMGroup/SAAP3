@@ -101,7 +101,7 @@ sub HBondPartner
                         if(($aAtnam ne "N") && ($aAtnam ne "O"))
                         {
                             close($fp);
-                            return($dResidue, $dAtnam, $aAtnam);
+                            return($dResid, $dAtnam, $aAtnam);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ sub SetType
 {
     my($hbtype) = @_;
     my($chb, $chbdata1, $chbdata2, $emean, $esigma);
-    if($hbtype eq " N  ")
+    if($hbtype eq "N")
     {
         $chb = $SAAP::checkhbondN;
         $chbdata1 = $SAAP::chbdata1N;
@@ -197,7 +197,7 @@ sub SetType
         $emean  = $SAAP::emeanN;
         $esigma = $SAAP::esigmaN;
     }
-    elsif($hbtype eq " O  ")
+    elsif($hbtype eq "O")
     {
         $chb = $SAAP::checkhbondO;
         $chbdata1 = $SAAP::chbdata1O;

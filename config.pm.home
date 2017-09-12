@@ -24,7 +24,7 @@ $saapBinDir="$saapHome/bin";
 # Main binary and data directories
 $binDir="$saapHome/share/bin";
 $dataDir="$saapHome/share/data";
-$checkHBondDir="$saapHome/cprogs/checkhbond";
+# $checkHBondDir="$saapHome/cprogs/checkhbond";
 
 # Dependent on saapHome
 $pluginDir="$saapHome/plugins";
@@ -56,7 +56,7 @@ $specsimDumpFile="$pluginDataDir/specsim.dump";
 $matrixFile="$pluginDataDir/pet91.mat";
 
 # Dependent on $checkHBondDir
-$checkHBondDataDir="$checkHBondDir/data";
-$checkHBondBinDir="$checkHBondDir/bin";
+#$checkHBondDataDir="$checkHBondDir/data";
+#$checkHBondBinDir="$checkHBondDir/bin";
 
 1;
