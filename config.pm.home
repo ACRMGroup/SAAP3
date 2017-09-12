@@ -46,6 +46,7 @@ $xmasCacheDir="$cacheDir/xmas";
 $avpCacheDir="$cacheDir/avp";
 $consCacheDir="$cacheDir/cons";
 $hbCacheDir="$cacheDir/pdbhbond";
+$solvCacheDir="$cacheDir/pdbsolv";
 $sprotCacheDir="$cacheDir/sprot";
 $sprotIndex="$sprotCacheDir/sprot.idx";
 

@@ -292,6 +292,13 @@ sub BuildPackages
                        $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
                        $config::mmDataDir);               # Destination data directory
+
+    util::BuildPackage("./packages/pdbsolv_V1.5.tgz",     # Package file
+                       "",                                # Subdir containing src
+                       \["pdbsolv"],                      # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "data",                            # Data directory
+                       $config::mmDataDir);               # Destination data directory
 }
 
 

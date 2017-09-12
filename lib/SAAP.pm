@@ -323,43 +323,112 @@ sub WriteCache
 #*************************************************************************
 sub GetRelativeAccess
 {
-    my($pdbfile, $residueIn) = @_;
-    my $xmasFile;
+    my($pdbFile, $residueIn) = @_;
 
-    $xmasFile = SAAP::GetXmasFile($pdbfile);
+    my($chainIn, $resnumIn, $insertIn) = ParseResSpec($residueIn);
 
-    # Grab the data
-    my ($pResults, $pFields, $status) = XMAS::GetXMASData($xmasFile, "atoms");
-    if($status)
+    my $resFile = $pdbFile;
+    $resFile =~ s/\//\_/g;
+    my $solvFile = "$config::solvCacheDir/$resFile";
+    my $solvFileChain = "$config::solvCacheDir/$resFile" . "_$chainIn";
+
+    if(! -d $config::solvCacheDir)
     {
-        return(0,0,$status);
-    }
-
-    # Find which field contains the relative accessibility
-    my $relaccessField    = XMAS::FindField("residue.relaccess", $pFields);
-    my $relaccessMolField = XMAS::FindField("residue.relaccess_mol", $pFields);
-    my $chainField        = XMAS::FindField("chain.chain", $pFields);
-    my $resnumField       = XMAS::FindField("residue.resnum", $pFields);
-    # Extract what we need
-    foreach my $record (@$pResults)
-    {
-        my $relaccess    = XMAS::GetField($record, $relaccessField);
-        my $relaccessMol = XMAS::GetField($record, $relaccessMolField);
-        my $chain        = XMAS::GetField($record, $chainField);
-        my $resnum       = XMAS::GetField($record, $resnumField);
-
-        my $residueNoDot = $chain . $resnum;
-        $residueNoDot =~ s/\s+//g;
-        my $residueDot = "$chain.$resnum";
-        $residueDot =~ s/\s+//g;
-        if(($residueNoDot eq $residueIn)||($residueDot eq $residueIn))
+        `mkdir -p $config::solvCacheDir`;
+        if(! -d $config::solvCacheDir)
         {
-            return($relaccess, $relaccessMol, 0);
+            print STDERR "***Error: Cannot create solvent accessibility cache directory ($config::solvCacheDir)\n";
+            return(0,0,-1);
         }
     }
-    
-    return(0,0,-1);
+
+    # Build cached files if they don't exist
+    if(! -e $solvFile)
+    {
+        my $exe = "$config::binDir/pdbsolv -f $config::dataDir/radii.dat -r $solvFile -n $pdbFile";
+        system($exe);
+        if(! -e $solvFile)
+        {
+            print STDERR "***Error: Cannot create solvent accessibility cache file ($solvFile)\n";
+            return(0,0,-1);
+        }
+    }
+
+    if(! -e $solvFileChain)
+    {
+        my $exe = "$config::binDir/pdbgetchain $chainIn $pdbFile | $config::binDir/pdbsolv -f $config::dataDir/radii.dat -r $solvFileChain -n";
+        system($exe);
+        if(! -e $solvFileChain)
+        {
+            print STDERR "***Error: Cannot create chain solvent accessibility cache file ($solvFileChain)\n";
+            return(0,0,-1);
+        }
+    }
+
+    my $relaccessOut    = 0;
+    my $status          = -1;
+    if(open(my $fp, '<', $solvFile))
+    {
+        while(<$fp>)
+        {
+            chomp;
+            if(/^RESACC\s+([a-zA-Z0-9]+)\s+(\d+)([a-zA-z]?)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)/)
+            {
+                my $chain       = $1;
+                my $resnum      = $2;
+                my $insert      = $3;
+                my $resnam      = $4;
+                my $access      = $5;
+                my $relaccess   = $6;
+                my $scaccess    = $7;
+                my $screlaccess = $8;
+
+                if(($chain eq $chainIn) && ($resnum eq $resnumIn) && ($insert eq $insertIn))
+                {
+                    $relaccessOut = $relaccess;
+                    $status       = 0;
+                    last;
+                }
+            }
+        }
+        close $fp;
+    }
+
+    my $relaccessMolOut = 0;
+    if($status == 0)
+    {
+        $status             = -1;
+        if(open(my $fp, '<', $solvFileChain))
+        {
+            while(<$fp>)
+            {
+                chomp;
+                if(/^RESACC\s+([a-zA-Z0-9]+)\s+(\d+)([a-zA-z]?)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)/)
+                {
+                    my $chain       = $1;
+                    my $resnum      = $2;
+                    my $insert      = $3;
+                    my $resnam      = $4;
+                    my $access      = $5;
+                    my $relaccess   = $6;
+                    my $scaccess    = $7;
+                    my $screlaccess = $8;
+
+                    if(($chain eq $chainIn) && ($resnum eq $resnumIn) && ($insert eq $insertIn))
+                    {
+                        $relaccessMolOut = $relaccess;
+                        $status          = 0;
+                        last;
+                    }
+                }
+            }
+            close $fp;
+        }
+    }
+
+    return($relaccessOut, $relaccessMolOut, $status);
 }
+
 
 #*************************************************************************
 sub GetTorsion

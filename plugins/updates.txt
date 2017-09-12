@@ -1,7 +1,6 @@
 Not Done
 --------
 
-- buriedcharge.pl  - Needs XMAS
 - corephilic.pl    - Needs XMAS
 - hbonds.pl        - Needs XMAS
 - impact.pl
@@ -19,3 +18,4 @@ Done
 - sprotft.pl
 - voids.pl
 - binding.pl
+- buriedcharge.pl
