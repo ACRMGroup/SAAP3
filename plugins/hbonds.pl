@@ -13,7 +13,7 @@ use SAAP;
 $::infoString = "Analyzing disturbed hydrogen-bonds";
 
 #*************************************************************************
-$::hstrip = "$config::binDir/hstrip";
+$::hstrip = "$config::binDir/pdbhstrip";
 
 #*************************************************************************
 my $result = "OK";
@@ -33,9 +33,9 @@ if($json ne "")
 
 my($chain, $resnum, $insert) = SAAP::ParseResSpec($residue);
 
-my $xmasFile = SAAP::GetXmasFile($pdbfile);
+my $HBFile = SAAP::CacheHBondData($pdbfile);
 
-my ($partnerRes, $partnerAtom, $atom) = HBondPartner($xmasFile, $residue);
+my ($partnerRes, $partnerAtom, $atom) = HBondPartner($HBFile, $residue);
 if($partnerRes ne "NULL")
 {
     ($ok, $energy, $zval) = CheckHBond($pdbfile, $residue, $mutant, $partnerRes, $partnerAtom);
@@ -57,69 +57,64 @@ SAAP::WriteCache("HBonds", $pdbfile, $residue, $mutant, $json);
 
 
 #*************************************************************************
+# my ($partnerRes, $partnerAtom, $atom) = HBondPartner($HBFile, $residue);
 sub HBondPartner
 {
-    my($xmasFile, $residueIn) = @_;
+    my($HBFile, $residueIn) = @_;
 
-    # Grab the data
-    my ($pResults, $pFields, $status) = XMAS::GetXMASData($xmasFile, "pphbonds");
-
-    # Error in getting XMAS data
-    if($status)
+    if(open(my $fp, '<', $HBFile))
     {
-        my $message;
-        $message = $XMAS::ErrorMessage[$status];
-        SAAP::PrintJsonError("HBonds", $message);
+        my $inPPHBonds = 0;
+        while(<$fp>)
+        {
+            chomp;
+            s/\#.*//;           # Remove comments
+            s/^\s+//;           # Remove leading spaces
+            if(length)
+            {
+                if(/TYPE:\s+pphbonds/)
+                {
+                    $inPPHBonds = 1;
+                }
+                elsif(/TYPE:\s/)
+                {
+                    $inPPHBonds = 0;
+                }
+                elsif($inPPHBonds)
+                {
+                    my(@fields) = split;
+                    my $dResid = $fields[3];
+                    my $dAtnam = $fields[4];
+                    my $aResid = $fields[6];
+                    my $aAtnam = $fields[7];
+
+                    if($dResid eq $residueIn)
+                    {
+                        if(($dAtnam ne "N") && ($dAtnam ne "O"))
+                        {
+                            close($fp);
+                            return($aResid, $aAtnam, $dAtnam);
+                        }
+                    }
+                    if($aResid eq $residueIn)
+                    {
+                        if(($aAtnam ne "N") && ($aAtnam ne "O"))
+                        {
+                            close($fp);
+                            return($dResidue, $dAtnam, $aAtnam);
+                        }
+                    }
+                }
+            }
+        }
+        close($fp);
+    }
+    else
+    {
+        SAAP::PrintJsonError("HBonds", "Unable to read HBond cache file ($HBFile)");
         exit 1;
     }
 
-    # Set field names
-    # - for hbonds (pphbonds, plhbonds, pseudohbonds)
-    my $field1 = "dchain";
-    my $field2 = "dresnum";
-    my $field3 = "achain";
-    my $field4 = "aresnum";
-    my $field5 = "datnam";
-    my $field6 = "aatnam";
-
-    # Find which fields contain the chain and residue numbers
-    my $dChainField  = XMAS::FindField($field1, $pFields);
-    my $dResnumField = XMAS::FindField($field2, $pFields);
-    my $aChainField  = XMAS::FindField($field3, $pFields);
-    my $aResnumField = XMAS::FindField($field4, $pFields);
-    my $dAtnamField  = XMAS::FindField($field5, $pFields);
-    my $aAtnamField  = XMAS::FindField($field6, $pFields);
-
-    # Extract what we need
-    foreach my $record (@$pResults)
-    {
-        my $dChain     = XMAS::GetField($record, $dChainField);
-        my $dResnum    = XMAS::GetField($record, $dResnumField);
-        my $dResidue   = $dChain . $dResnum;
-        my $dAtnam     = XMAS::GetField($record, $dAtnamField);
-
-        my $aChain     = XMAS::GetField($record, $aChainField);
-        my $aResnum    = XMAS::GetField($record, $aResnumField);
-        my $aResidue   = $aChain . $aResnum;
-        my $aAtnam     = XMAS::GetField($record, $aAtnamField);
-
-        $dResidue =~ s/\s+//g;
-        $aResidue =~ s/\s+//g;
-        if($dResidue eq $residueIn)
-        {
-            if(($dAtnam ne " N  ") && ($dAtnam ne " O  "))
-            {
-                return($aResidue, $aAtnam, $dAtnam);
-            }
-        }
-        if($aResidue eq $residueIn)
-        {
-            if(($aAtnam ne " N  ") && ($aAtnam ne " O  "))
-            {
-                return($dResidue, $dAtnam, $aAtnam);
-            }
-        }
-    }
     return("NULL", "NULL", "NULL");
 }
 
@@ -153,6 +148,7 @@ sub CheckHBond
     my $tfile = "$config::tmpDir/HB_$$" . time . ".pdb";
     `$::hstrip $pdbfile $tfile`;
 
+# HERE
     my($checkhbond, $chbdata1, $chbdata2, $emean, $esigma) = SetType($partnerAtom);
     my $results = `$checkhbond -m $chbdata1 $chbdata2 -c $cutoff $tfile $partnerRes $residue $mutant 2>&1`;
     
@@ -219,4 +215,5 @@ sub SetType
     }
     return($chb, $chbdata1, $chbdata2, $emean, $esigma);
 }
+
 

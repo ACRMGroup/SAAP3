@@ -550,4 +550,25 @@ sub GetResidueAccess
     return(0,0,-1);
 }
 
+
+sub CacheHBondData
+{
+    my($pdbFile) = @_;
+    my $cacheFile = $pdbFile;
+    $cacheFile =~ s/\//_/g;
+    my $hbondFile = "$config::hbCacheDir/$cacheFile";
+
+    if(! -e $hbondFile)
+    {
+        `mkdir -p $config::hbCacheDir` if(! -d $config::hbCacheDir);
+        system("$config::binDir/pdbhbond -p $config::dataDir/Explicit.pgp $pdbFile $hbondFile");
+        if((! -e $hbondFile) || ( -z $hbondFile))
+        {
+            return("");
+        }
+    }
+
+    return($hbondFile);
+}
+
 1;

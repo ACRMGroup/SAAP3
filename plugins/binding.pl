@@ -44,18 +44,10 @@ sub IsBindingResidue
 {
     my($pdbFile, $dataType, $residueIn, $crossChain) = @_;
 
-    my $cacheFile = $pdbFile;
-    $cacheFile =~ s/\//_/g;
-    my $hbondFile = "$config::hbCacheDir/$cacheFile";
-
-    if(! -e $hbondFile)
+    my $hbondFile = SAAP::CacheHBondData($pdbFile);
+    if($hbondFile eq "")
     {
-        `mkdir -p $config::hbCacheDir` if(! -d $config::hbCacheDir);
-        system("$config::binDir/pdbhbond -p $config::dataDir/Explicit.pgp $pdbFile $hbondFile");
-        if((! -e $hbondFile) || ( -z $hbondFile))
-        {
-            ErrorDie("Can't build hbond file for $pdbFile");
-        }
+        ErrorDie("Can't build hbond file for $pdbFile");
     }
 
     my ($pResults, $pFields) = GetHBondData($hbondFile, $dataType);

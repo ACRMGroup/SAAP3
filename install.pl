@@ -228,7 +228,7 @@ sub BuildPackages
                        \["mutmodel","clashcalc"],         # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
-                       $config::mmDataDir);               # Destination data directory
+                       $config::dataDir);                 # Destination data directory
     
     util::BuildPackage("./packages/pdbhstrip_V1.4.tgz",   # Package file
                        "",                                # Subdir containing src
@@ -291,14 +291,23 @@ sub BuildPackages
                        \["pdbhbond"],                     # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
-                       $config::mmDataDir);               # Destination data directory
+                       $config::dataDir);                 # Destination data directory
 
     util::BuildPackage("./packages/pdbsolv_V1.5.tgz",     # Package file
                        "",                                # Subdir containing src
                        \["pdbsolv"],                      # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
-                       $config::mmDataDir);               # Destination data directory
+                       $config::dataDir);                 # Destination data directory
+
+    util::BuildPackage("./packages/checkhbond_V2.1.tgz",  # Package file
+                       "src",                             # Subdir containing src
+                       \["checkhbond",
+                         "checkhbond_Ndonor",
+                         "checkhbond_Oacceptor"],         # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "data",                            # Data directory
+                       $config::dataDir);                 # Destination data directory
 }
 
 
