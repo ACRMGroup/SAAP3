@@ -6,7 +6,6 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
-use XMAS;
 use SAAP;
 
 # Information string about this plugin
@@ -25,9 +24,9 @@ if($json ne "")
 
 my($chain, $resnum, $insert) = SAAP::ParseResSpec($residue);
 
-my $xmasFile = SAAP::GetXmasFile($pdbfile);
+my $cacheFile = GetPDBListSSCacheFile($pdbfile);
 
-if(IsSSCys($xmasFile, $residue))
+if(IsSSCys($cacheFile, $residue))
 {
     $result = "BAD";
 }
@@ -36,59 +35,69 @@ $json = SAAP::MakeJson("SSGeom", ('BOOL'=>$result));
 print "$json\n";
 SAAP::WriteCache("SSGeom", $pdbfile, $residue, $mutant, $json);
 
+sub GetPDBListSSCacheFile
+{
+    my ($pdbFile) = @_;
+    my $cacheFile = $pdbFile;
+    $cacheFile =~ s/\//\_/g;
+    $cacheFile = "$config::pdbssCacheDir/$cacheFile";
 
+    if(! -d $config::pdbssCacheDir)
+    {
+        system("mkdir $config::pdbssCacheDir");
+        if(! -d $config::pdbssCacheDir)
+        {
+            my $message = "Unable to create cache dir ($config::pdbssCacheDir)";
+            SAAP::PrintJsonError("SSGeom", $message);
+            print STDERR "*** Error: $message\n";
+            exit 1;
+        }
+    }
+            
+    if((! -f $cacheFile) || (-z $cacheFile))
+    {
+        my $exe = "$config::binDir/pdblistss $pdbfile $cacheFile";
+        system("$exe");
+        if((! -f $cacheFile) || (-z $cacheFile))
+        {
+            my $message = "Unable to create cache file ($cacheFile)";
+            SAAP::PrintJsonError("SSGeom", $message);
+            print STDERR "*** Error: $message\n";
+            exit 1;
+        }
+    }
+
+    return($cacheFile);
+}
 
 
 sub IsSSCys
 {
-    my($xmasFile, $residueIn) = @_;
+    my($cacheFile, $residueIn) = @_;
 
-    # Grab the data
-    my ($pResults, $pFields, $status) = XMAS::GetXMASData($xmasFile, "ssbond");
-
-    # Error in getting XMAS data
-    if($status)
+    my $found  = 0;
+    if(open(my $fp, '<', $cacheFile))
     {
-        # Status 1 is a missing file so this is a real error
-        if($status == 1)
+        while(<$fp>)
         {
-            my $message;
-            $message = $XMAS::ErrorMessage[$status];
-            SAAP::PrintJsonError("SSGeom", $message);
-            exit 1;
+            chomp;
+            s/^\s+//;
+            my @fields = split;
+            if(($fields[0] eq $residueIn) || ($fields[4] eq $residueIn))
+            {
+                $found = 1;
+                last;
+            }
         }
-        # Other status values represent missing data which is OK in this case, but means
-        # we haven't found the current residue listed
-        return(0);
+        close($fp);
+    }
+    else
+    {
+        SAAP::PrintJsonError("SSGeom", "Unable to read cached result file");
+        exit 1;
     }
 
-    # Find which fields contain the chain and residue numbers
-    my $chain1Field  = XMAS::FindField("chain1", $pFields);
-    my $resnum1Field = XMAS::FindField("resnum1", $pFields);
-    my $chain2Field  = XMAS::FindField("chain2", $pFields);
-    my $resnum2Field = XMAS::FindField("resnum2", $pFields);
-
-    # Extract what we need
-    foreach my $record (@$pResults)
-    {
-        my $chain1     = XMAS::GetField($record, $chain1Field);
-        my $resnum1    = XMAS::GetField($record, $resnum1Field);
-        my $residue1 = $chain1 . $resnum1;
-
-        my $chain2     = XMAS::GetField($record, $chain2Field);
-        my $resnum2    = XMAS::GetField($record, $resnum2Field);
-        my $residue2 = $chain2 . $resnum2;
-
-        # If we are OK with same chain bonds, or we aren't (i.e. crossChain is set)
-        # and the chains are different...
-        $residue1 =~ s/\s+//g;
-        $residue2 =~ s/\s+//g;
-        if(($residue1 eq $residueIn) || ($residue2 eq $residueIn))
-        {
-            return(1);
-        }
-    }
-    return(0);
+    return($found);
 }
 
 

@@ -308,6 +308,13 @@ sub BuildPackages
                        $config::binDir,                   # Destination binary directory
                        "data",                            # Data directory
                        $config::dataDir);                 # Destination data directory
+
+    util::BuildPackage("./packages/pdblistss_V1.0.tgz",   # Package file
+                       "",                                # Subdir containing src
+                       \["pdblistss"],                    # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
 }
 
 

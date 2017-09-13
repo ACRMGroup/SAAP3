@@ -1,7 +1,6 @@
 Not Done
 --------
 
-- ssgeom.pl        - Needs XMAS
 - impact.pl
 
 Done
@@ -19,3 +18,4 @@ Done
 - hbonds.pl
 - interface.pl
 - surfacephobic.pl
+- ssgeom.pl
