@@ -37,7 +37,7 @@ if($status != 0)
         SAAP::PrintJsonError("Interface", "Residue not found");
         exit 1;
     }
-    my $message = $XMAS::ErrorMessage[$status];
+    my $message = $SAAP::ErrorMessage;
     SAAP::PrintJsonError("Interface", $message);
     exit 1;
 }
@@ -57,7 +57,7 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-interface.pl V1.0 (c) 2011, UCL, Dr. Andrew C.R. Martin
+interface.pl V1.1 (c) 2011-2017, UCL, Dr. Andrew C.R. Martin
 Usage: interface.pl [chain]resnum[insert] newaa pdbfile
        (newaa maybe 3-letter or 1-letter code)
 
