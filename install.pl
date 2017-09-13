@@ -93,32 +93,33 @@ MakeDir($config::saapBinDir);
 InstallPrograms($config::saapHome, $config::saapBinDir);
 InstallData($config::dataDir);
 
-
-#*************************************************************************
-sub InstallData
+sub Uncompress
 {
-    my($dataDir) = @_;
+    my ($exe, $inFile, $outFile, $packageName) = @_;
 
-    if((! -f "$dataDir/specsim.dump" ) || (-z "$dataDir/specsim.dump" ))
+    my $dataFileName = $outFile;
+    $dataFileName =~ s/.*\///;
+
+    if((! -f $outFile) || (-z $outFile))
     {
-        print "\n   *** Info: Unpacking specsim.dump...";
-        my $ret = system("bzcat data/specsim.dump.bz2 >$dataDir/specsim.dump");
+        print "*** Info: Unpacking $dataFileName ... ";
+        my $ret = system("bzcat $inFile >$outFile");
         if($?)
         {
-            print "\n   *** ERROR: Data installation failed\n";
+            print "\n*** ERROR: Data installation failed\n";
             if ($? == -1) 
             {
-                print "   ***        Failed to execute: $!\n";
+                print "***        Failed to execute: $!\n";
             }
             elsif ($? & 127) 
             {
-                printf "   ***       Child died with signal %d, %s coredump\n",
+                printf "***       Child died with signal %d, %s coredump\n",
                    ($? & 127),  ($? & 128) ? 'with' : 'without';
             }
             elsif(($? >> 8) == 127)
             {
-                print "   ***        You need to install the bzcat program:\n";
-                print "   ***        yum install bzip\n";
+                print "***        You need to install the $exe program:\n";
+                print "***        yum install $packageName\n" if ($packageName ne '');
             }
             else 
             {
@@ -133,8 +134,17 @@ sub InstallData
     }
     else
     {
-        print "   *** Info: Skipped installation of specsim.dump data - already installed\n";
+        print "*** Info: Skipped installation of $dataFileName data - already installed\n";
     }
+
+}
+#*************************************************************************
+sub InstallData
+{
+    my($dataDir) = @_;
+
+    Uncompress("bzcat", "data/specsim.dump.bz2", "$dataDir/specsim.dump", "bzip");
+    CopyFile("data/pet91.mat", $dataDir);
 }
 
 #*************************************************************************
@@ -181,13 +191,17 @@ sub CopyFile
     my $outFull = abs_path($out);
     $outFull .= "/$fileName";
 
-    if($inFull ne $outFull)
+    if($inFull eq $outFull)
     {
-        util::RunCommand("cp $in $out");
+        print STDERR "*** Info: Destination and source files are the same so not copying\n";
+    }
+    elsif(-f $outFull)
+    {
+        print STDERR "*** Info: Destination file already exists so not copying\n";
     }
     else
     {
-        print STDERR "   *** Info: Destination and source files are the same so not copying\n";
+        util::RunCommand("cp $in $out");
     }
 }
 
@@ -205,7 +219,7 @@ sub MakeDir
     # Fail if it doesn't exist
     if(! -d $destination)
     {
-        print STDERR "\n   *** Error: Cannot create directory $destination ***\n";
+        print STDERR "\n*** Error: Cannot create directory $destination\n";
         return(0);
     }
     # Fail if we can't write to it
@@ -213,7 +227,7 @@ sub MakeDir
     system("touch $tFile 2>/dev/null");
     if(! -e $tFile)
     {
-        print STDERR "\n   *** Error: Cannot write to directory $destination ***\n";
+        print STDERR "\n*** Error: Cannot write to directory $destination\n";
         return(0);
     }
     unlink $tFile;
@@ -232,7 +246,7 @@ sub CopyDir
     }
     else
     {
-        print STDERR "   *** Info: Destination and source dirctories are the same so not copying\n";
+        print STDERR "*** Info: Destination and source dirctories are the same so not copying\n";
     }
 }
 

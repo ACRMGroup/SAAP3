@@ -966,7 +966,7 @@ sub BuildPackage
     }
     else
     {
-        print STDERR "   *** Info: Skipped installation of $package - already installed\n";
+        print STDERR "*** Info: Skipped installation of $package - already installed\n";
     }
 }
 
