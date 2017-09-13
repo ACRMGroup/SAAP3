@@ -2,7 +2,6 @@ Not Done
 --------
 
 - ssgeom.pl        - Needs XMAS
-- surfacephobic.pl - Needs XMAS
 - impact.pl
 
 Done
@@ -19,3 +18,4 @@ Done
 - corephilic.pl
 - hbonds.pl
 - interface.pl
+- surfacephobic.pl

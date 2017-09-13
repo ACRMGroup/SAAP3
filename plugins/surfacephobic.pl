@@ -4,11 +4,11 @@
 #   Program:    
 #   File:       surfacephobic.pl
 #   
-#   Version:    V1.0
-#   Date:       16.12.11
+#   Version:    V1.1
+#   Date:       13.09.17
 #   Function:   Surface Phobic plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011
+#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2017
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
@@ -49,6 +49,7 @@
 #   Revision History:
 #   =================
 #   V1.0  16.12.11 Original
+#   V1.1  13.09.17 Removed need for XMAS
 #
 #*************************************************************************
 use strict;
@@ -57,7 +58,6 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
-use XMAS;
 use SAAP;
 
 # Information string about this plugin
@@ -89,7 +89,7 @@ if($status != 0)
         SAAP::PrintJsonError("SurfacePhobic", "Residue not found");
         exit 1;
     }
-    my $message = $XMAS::ErrorMessage[$status];
+    my $message = $SAAP::ErrorMessage;
     SAAP::PrintJsonError("SurfacePhobic", $message);
     exit 1;
 }
@@ -114,7 +114,7 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-surfacephobic.pl V1.0 (c) 2011, UCL, Dr. Andrew C.R. Martin
+surfacephobic.pl V1.1 (c) 2011-2017, UCL, Dr. Andrew C.R. Martin
 Usage: surfacephobic.pl [chain]resnum[insert] newaa pdbfile
        (newaa maybe 3-letter or 1-letter code)
 
