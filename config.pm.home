@@ -33,6 +33,11 @@ $localBinDir="$saapHome/bin";
 
 # Dependent on $dataDir
 $mmDataDir="$dataDir";
+$specsimHashFile="$dataDir/specsim.values";
+$specsimDumpFile="$dataDir/specsim.dump";
+$matrixFile="$dataDir/pet91.mat";
+
+
 
 # Dependent on $pluginDir
 $pluginDataDir="$pluginDir/data";
@@ -51,10 +56,6 @@ $pdbssCacheDir="$cacheDir/pdblistss";
 $sprotCacheDir="$cacheDir/sprot";
 $sprotIndex="$sprotCacheDir/sprot.idx";
 
-# Dependent in $pluginDataDir
-$specsimHashFile="$pluginDataDir/specsim.values";
-$specsimDumpFile="$pluginDataDir/specsim.dump";
-$matrixFile="$pluginDataDir/pet91.mat";
 
 # Dependent on $checkHBondDir
 #$checkHBondDataDir="$checkHBondDir/data";

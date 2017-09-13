@@ -86,12 +86,56 @@ __EOF
 
 # Create the installation directories and build the C programs
 MakeDir($config::binDir);
+MakeDir($config::dataDir);
 BuildPackages();
 
 MakeDir($config::saapBinDir);
 InstallPrograms($config::saapHome, $config::saapBinDir);
+InstallData($config::dataDir);
 
 
+#*************************************************************************
+sub InstallData
+{
+    my($dataDir) = @_;
+
+    if((! -f "$dataDir/specsim.dump" ) || (-z "$dataDir/specsim.dump" ))
+    {
+        print "\n   *** Info: Unpacking specsim.dump...";
+        my $ret = system("bzcat data/specsim.dump.bz2 >$dataDir/specsim.dump");
+        if($?)
+        {
+            print "\n   *** ERROR: Data installation failed\n";
+            if ($? == -1) 
+            {
+                print "   ***        Failed to execute: $!\n";
+            }
+            elsif ($? & 127) 
+            {
+                printf "   ***       Child died with signal %d, %s coredump\n",
+                   ($? & 127),  ($? & 128) ? 'with' : 'without';
+            }
+            elsif(($? >> 8) == 127)
+            {
+                print "   ***        You need to install the bzcat program:\n";
+                print "   ***        yum install bzip\n";
+            }
+            else 
+            {
+                printf "child exited with value %d\n", $? >> 8;
+            }
+            print "\n";
+        }
+        else
+        {
+            print "done ***\n";
+        }
+    }
+    else
+    {
+        print "   *** Info: Skipped installation of specsim.dump data - already installed\n";
+    }
+}
 
 #*************************************************************************
 sub InstallPrograms
@@ -132,7 +176,10 @@ sub CopyFile
     my($in, $out) = @_;
     MakeDir($out) if(! -d $out);
     my $inFull = abs_path($in);
+    my $fileName = $inFull;
+    $fileName =~ s/.*\///;
     my $outFull = abs_path($out);
+    $outFull .= "/$fileName";
 
     if($inFull ne $outFull)
     {
@@ -140,7 +187,7 @@ sub CopyFile
     }
     else
     {
-        print STDERR "\n   *** Info: Destination and source dirctories are the same so not copying ***\n";
+        print STDERR "   *** Info: Destination and source files are the same so not copying\n";
     }
 }
 
@@ -185,7 +232,7 @@ sub CopyDir
     }
     else
     {
-        print STDERR "\n   *** Info: Destination and source dirctories are the same so not copying ***\n";
+        print STDERR "   *** Info: Destination and source dirctories are the same so not copying\n";
     }
 }
 
