@@ -6,7 +6,6 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
-use XMAS;
 use SAAP;
 
 # Information string about this plugin

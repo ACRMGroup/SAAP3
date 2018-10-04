@@ -280,8 +280,7 @@ sub DestinationOK
 #  Build all C program packages
 #
 #  06.09.17  Original  By: ACRM
-### NEED TO ADD:
-# addhetv2
+#  04.10.18  Added muscle
 sub BuildPackages
 {
     util::BuildPackage("./packages/mutmodel_V1.22.tgz",   # Package file
@@ -373,6 +372,13 @@ sub BuildPackages
     util::BuildPackage("./packages/pdblistss_V1.0.tgz",   # Package file
                        "",                                # Subdir containing src
                        \["pdblistss"],                    # Generated executable
+                       $config::binDir,                   # Destination binary directory
+                       "",                                # Data directory
+                       "");                               # Destination data directory
+
+    util::BuildPackage("./packages/muscle_V3.8.1551.tgz", # Package file
+                       "",                                # Subdir containing src
+                       \["muscle"],                       # Generated executable
                        $config::binDir,                   # Destination binary directory
                        "",                                # Data directory
                        "");                               # Destination data directory

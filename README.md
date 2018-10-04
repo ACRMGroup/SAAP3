@@ -5,6 +5,9 @@ Installation
 ------------
 1. Ensure you have the following packages installed system wide:
 - R
+- perl (with LWP and the LWP::Protocol::https plugin)
+
+You can do this by running `./preinstall.sh`
 
 2. Ensure you have a mirror of the PDB installed; you can use
 `ftpmirror` from http://github.com/AndrewCRMartin/bioscripts for this

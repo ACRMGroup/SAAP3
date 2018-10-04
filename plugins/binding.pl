@@ -5,8 +5,11 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
 use config;
-use XMAS;
 use SAAP;
+
+# Note that this no longer uses XMAS files, but fakes the XMAS data
+# format instead, so the XMAS package is still used.
+use XMAS;
 
 # Information string about this plugin
 $::infoString = "Analyzing specific binding interactions";

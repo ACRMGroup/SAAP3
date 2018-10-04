@@ -1,7 +1,7 @@
 Not Done
 --------
 
-- impact.pl
+- impact.pl - MUSCLE now runs locally
 
 Done
 ----
@@ -19,3 +19,24 @@ Done
 - interface.pl
 - surfacephobic.pl
 - ssgeom.pl
+
+
+Lib files that need updating
+----------------------------
+FOSTA.pm - uses my web services
+PDBSWS.pm - uses my web services
+SAAP.pm - needs some cleanup ($pdbswsURL not used?)
+UNIPROT.pm - needs splitting into two files as we have done elsewhere
+
+Lib files done
+--------------
+MUSCLE.pm - done
+SPECSIM.pm - done
+
+Lib files N/A
+-------------
+HSL.pm
+JSONHTML.pm
+JSONSAAP.pm
+TLPCL.pm
+WEB.pm

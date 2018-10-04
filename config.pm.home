@@ -1,27 +1,49 @@
 package config;
 
+# The location of the installed SAAP code
 # $saapHome="$ENV{'HOME'}/saapinstall";
 $saapHome="$ENV{'HOME'}/git/SAAP3";
-$email="andrew\@andrew-martin.org"; # For EBI Webservices
-$RExe="/usr/bin/R";
-$tmpDir="/tmp";
+
+# Email address for EBI Webservices
+$email="andrew\@andrew-martin.org"; 
+
+# Temporary directory
+$tmpDir="/var/tmp";
+
+# Location of the PDB - what you put on the start and end of a PDB
+# code to find the file
 $pdbPrep="/acrm/data/pdb/pdb";
 $pdbExt=".ent";
 
+# Location for storing the cached results from SAAP analysis
+# Put this wherever you want with lots of space!
+$cacheDir="$saapHome/cache";
 
+# The XMAS files
 $xmasDir="/acrm/data/xmas/pdb";
-$swissprot="/acrm/data/swissprot/full/uniprot_sprot.dat";
-$indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
-$getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
-$cacheDir="$saapHome/cache"; # Can be anywhere
+
+# Use local or web services for SwissProt
+#$LocalSwissProt=1;     # Use local version of SwissProt
 $LocalSwissProt=0;      # Use web services for SwissProt
+
+# If using local Swissprot...
+# ---------------------------
+# Location of the SwissProt data
+$swissprot="/acrm/data/swissprot/full/uniprot_sprot.dat";
+# Program for indexing SwissProt
+$indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
+# Program for retrieving an entry from SwissProt
+$getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
 
 ##########################################################################
 #             Shouldn't need to alter anything below here                #
 ##########################################################################
+# Location of the R executable
+$RExe="/usr/bin/R";
+# SAAP src and binary directory
 $saapSrcDir="$saapHome/src";
 $saapBinDir="$saapHome/bin";
-# Main binary and data directories
+# Binary and data directories for other packages used by SAAP
 $binDir="$saapHome/share/bin";
 $dataDir="$saapHome/share/data";
 # $checkHBondDir="$saapHome/cprogs/checkhbond";
@@ -37,14 +59,12 @@ $specsimHashFile="$dataDir/specsim.values";
 $specsimDumpFile="$dataDir/specsim.dump";
 $matrixFile="$dataDir/pet91.mat";
 
-
-
 # Dependent on $pluginDir
 $pluginDataDir="$pluginDir/data";
-$modulesDir="$pluginDir/modules";
+#$modulesDir="$pluginDir/modules";
 
-# Dependent on $modulesDir
-$RProg="$modulesDir/conservation_threshold.R";
+# Dependent on $libDir
+$RProg="$libDir/conservation_threshold.R";
 
 # Dependent on $cacheDir
 $xmasCacheDir="$cacheDir/xmas";
