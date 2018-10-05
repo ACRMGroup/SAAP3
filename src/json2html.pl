@@ -1,14 +1,14 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    json2html
 #   File:       json2html.pl
 #   
-#   Version:    V1.2
-#   Date:       05.10.15
+#   Version:    V1.3
+#   Date:       05.10.18
 #   Function:   Converts a SAAP pipeline JSON file to HTML for display
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-15
+#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2018
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
@@ -53,14 +53,18 @@
 #   V1.0  12.12.11 Original
 #   V1.1  20.06.12 Added Javascript for getElementsByClassName()
 #   V1.2  05.10.15 Added support for running prediction
+#   V1.3  05.10.18 Updated for reorganization of code
 #
 #*************************************************************************
-use config;
-use lib $config::modulesDir;
-use JSONHTML;
-use JSONSAAP;
 use strict;
 no strict 'refs';
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
+use config;
+use JSONHTML;
+use JSONSAAP;
 
 #*************************************************************************
 $::webfilesDir = "$config::saapHome/webdata";

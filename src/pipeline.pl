@@ -1,14 +1,14 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    pipeline
 #   File:       pipeline.pl
 #   
-#   Version:    V1.0
-#   Date:       04.11.11
+#   Version:    V1.1
+#   Date:       05.10.18
 #   Function:   Runs the SAAP analysis pipeline
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011
+#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2018
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
@@ -50,13 +50,18 @@
 #
 #   Revision History:
 #   =================
+#   V1.0  04.11.11 Original   By: ACRM
+#   V1.1  05.10.18 Updated for reorganization of code
 #
 #*************************************************************************
+use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
-use lib $config::modulesDir;
 use SAAP;
 use PDBSWS;
-use strict;
 
 #*************************************************************************
 my $programName = "SAAP";

@@ -1,8 +1,11 @@
 #!/usr/bin/perl -s
-use FindBin;
-use lib $FindBin::Bin;
-
+#   V1.0  11.11.11 Original   By: ACRM
+#   V1.1  05.10.18 Updated for reorganization of code
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
 
 if(scalar(@ARGV) != 4)

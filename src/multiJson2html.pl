@@ -1,15 +1,15 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 #*************************************************************************
 #
 #   Program:    multiJson2html
 #   File:       multiJson2html.pl
 #   
-#   Version:    V1.1
-#   Date:       05.10.15
+#   Version:    V1.2
+#   Date:       05.10.18
 #   Function:   Convert a set of JSON files to HTML creating an index.html
 #               file at the same time to provide links to all the data
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2015
+#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2018
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
@@ -49,15 +49,19 @@
 #   =================
 #   V1.0   12.12.11 Original   By: ACRM
 #   V1.1   05.10.15 Added -name and -wkdir parameters to json2html.pl call
+#   V1.2   05.10.18 Updated for reorganization of code
 #
 #*************************************************************************
+use strict;
+no strict 'refs';
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
-use lib $config::modulesDir;
 use JSONSAAP;
 use JSONHTML;
 use HSL;
-use strict;
-no strict 'refs';
 
 #*************************************************************************
 $::json2html   = "$config::saapHome/json2html.pl";

@@ -1,4 +1,4 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 
 # TODO - implement the code for deleting from a given uniprot code
 
@@ -7,11 +7,11 @@
 #   Program:    delCache
 #   File:       delCache.pl
 #   
-#   Version:    V1.0
-#   Date:       11.03.14
+#   Version:    V1.1
+#   Date:       05.10.18
 #   Function:   Remove cached entries for a specified mutation
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2014
+#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2014-2018
 #   Author:     Dr. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
@@ -52,14 +52,19 @@
 #
 #   Revision History:
 #   =================
+#   V1.0  11.03.14 Original   By: ACRM
+#   V1.1  05.10.18 Updated for reorganization of code
 #
 #*************************************************************************
+use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
-use lib $config::modulesDir;
 use SAAP;
 use TLPCL;
 use PDBSWS;
-use strict;
 
 #*************************************************************************
 my $programName = "delcache";

@@ -1,4 +1,10 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
+#   V1.0  11.11.11 Original   By: ACRM
+#   V1.1  05.10.18 Updated for reorganization of code
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 use config;
 
 $::plugin = "Voids" if(!defined($::plugin));
