@@ -68,6 +68,14 @@ my $programName = "SAAP";
 my $uniprot = "";
 my($residue, $mutant, $pdbfile, $pdbcode) = ParseCmdLine($programName, $::u, (defined($::c)?1:0));
 
+if(defined($::model))
+{
+    UsageDie() if(!defined($::u) || !defined($::i));
+
+    $::uniAC = $::u;
+    $::uniID = $::i;
+}
+
 if(opendir(PLUGINS, $config::pluginDir))
 {
     my @plugins = sort grep !/~$/, grep !/^\./, readdir PLUGINS;
