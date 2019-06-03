@@ -54,11 +54,11 @@ sub GetPDBListSSCacheFile
         }
     }
             
-    if((! -f $cacheFile) || (-z $cacheFile))
+    if(! -f $cacheFile) # || (-z $cacheFile))
     {
         my $exe = "$config::binDir/pdblistss $pdbfile $cacheFile";
         system("$exe");
-        if((! -f $cacheFile) || (-z $cacheFile))
+        if(! -f $cacheFile) # || (-z $cacheFile))
         {
             my $message = "Unable to create cache file ($cacheFile)";
             SAAP::PrintJsonError("SSGeom", $message);

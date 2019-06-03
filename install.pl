@@ -307,6 +307,7 @@ sub DestinationOK
 #
 #  06.09.17  Original  By: ACRM
 #  04.10.18  Added muscle
+#  03.06.19  Moved to getresol V0.2
 sub BuildPackages
 {
     util::BuildPackage("./packages/mutmodel_V1.22.tgz",   # Package file
@@ -330,7 +331,7 @@ sub BuildPackages
                        "",                                # Data directory
                        "");                               # Destination data directory
 
-    util::BuildPackage("./packages/getresol_V0.1.tgz",    # Package file
+    util::BuildPackage("./packages/getresol_V0.2.tgz",    # Package file
                        "",                                # Subdir containing src
                        \["getresol"],                     # Generated executable
                        $config::binDir,                   # Destination binary directory
