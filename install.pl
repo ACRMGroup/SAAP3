@@ -6,7 +6,7 @@
 #   
 #   Version:    V1.0
 #   Date:       06.09.17
-#   Function:   Installation script for the abYmod program
+#   Function:   Installation script for the SAAP program
 #   
 #   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2017
 #   Author:     Dr. Andrew C. R. Martin

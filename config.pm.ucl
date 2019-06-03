@@ -1,0 +1,84 @@
+package config;
+
+# The location of the installed SAAP code
+# $saapHome="$ENV{'HOME'}/saapinstall";
+$saapHome="$ENV{'HOME'}/git/SAAP3";
+
+# Email address for EBI Webservices
+$email="andrew\@bioinf.org.uk"; 
+
+# Temporary directory
+$tmpDir="/var/tmp";
+
+# Location of the PDB - what you put on the start and end of a PDB
+# code to find the file
+$pdbPrep="/acrm/data/pdb/pdb";
+$pdbExt=".ent";
+
+# Location for storing the cached results from SAAP analysis
+# Put this wherever you want with lots of space!
+$cacheDir="$saapHome/cache";
+
+# The XMAS files
+$xmasDir="/acrm/data/xmas/pdb";
+
+# Use local or web services for SwissProt
+#$LocalSwissProt=1;     # Use local version of SwissProt
+$LocalSwissProt=0;      # Use web services for SwissProt
+
+# If using local Swissprot...
+# ---------------------------
+# Location of the SwissProt data
+$swissprot="/acrm/data/swissprot/full/uniprot_sprot.dat";
+# Program for indexing SwissProt
+$indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
+# Program for retrieving an entry from SwissProt
+$getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
+
+##########################################################################
+#             Shouldn't need to alter anything below here                #
+##########################################################################
+# Location of the R executable
+$RExe="/usr/bin/R";
+# SAAP src and binary directory
+$saapSrcDir="$saapHome/src";
+$saapBinDir="$saapHome/bin";
+# Binary and data directories for other packages used by SAAP
+$binDir="$saapHome/share/bin";
+$dataDir="$saapHome/share/data";
+# $checkHBondDir="$saapHome/cprogs/checkhbond";
+
+# Dependent on saapHome
+$pluginDir="$saapHome/plugins";
+$libDir="$saapHome/lib";
+$localBinDir="$saapHome/bin";
+
+# Dependent on $dataDir
+$mmDataDir="$dataDir";
+$specsimHashFile="$dataDir/specsim.values";
+$specsimDumpFile="$dataDir/specsim.dump";
+$matrixFile="$dataDir/pet91.mat";
+
+# Dependent on $pluginDir
+$pluginDataDir="$pluginDir/data";
+#$modulesDir="$pluginDir/modules";
+
+# Dependent on $libDir
+$RProg="$libDir/conservation_threshold.R";
+
+# Dependent on $cacheDir
+$xmasCacheDir="$cacheDir/xmas";
+$avpCacheDir="$cacheDir/avp";
+$consCacheDir="$cacheDir/cons";
+$hbCacheDir="$cacheDir/pdbhbond";
+$solvCacheDir="$cacheDir/pdbsolv";
+$pdbssCacheDir="$cacheDir/pdblistss";
+$sprotCacheDir="$cacheDir/sprot";
+$sprotIndex="$sprotCacheDir/sprot.idx";
+
+
+# Dependent on $checkHBondDir
+#$checkHBondDataDir="$checkHBondDir/data";
+#$checkHBondBinDir="$checkHBondDir/bin";
+
+1;
