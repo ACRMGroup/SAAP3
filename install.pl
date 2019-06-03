@@ -84,6 +84,32 @@ __EOF
     exit 1;
 }
 
+# Pre-install - glibc-static to compile Muscle
+if(!( -f '/usr/lib64/libm.a' ) && !( -f '/usr/lib/libm.a'))
+{
+    if ( -x '/usr/bin/dnf')
+    {
+        print "Password required to install glibc-static using sudo";
+        system("sudo dnf -y install glibc-static");
+    }
+    elsif ( -x '/usr/bin/yum')
+    {
+        print "Password required to install glibc-static using sudo";
+        system("sudo yum -y install glibc-static");
+    }
+    else
+    {
+        print <<__EOF;
+
+Installation aborting. You must install the glibc-static package manually
+in order to compile Muscle (sudo install failed). 
+
+__EOF
+        exit 1;
+
+    }
+}
+
 # Create the installation directories and build the C programs
 MakeDir($config::binDir);
 MakeDir($config::dataDir);
