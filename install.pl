@@ -84,31 +84,16 @@ __EOF
     exit 1;
 }
 
-# Pre-install - glibc-static to compile Muscle
-if(!( -f '/usr/lib64/libm.a' ) && !( -f '/usr/lib/libm.a'))
+if(!CheckPreInstall())
 {
-    if ( -x '/usr/bin/dnf')
-    {
-        print "Password required to install glibc-static using sudo";
-        system("sudo dnf -y install glibc-static");
-    }
-    elsif ( -x '/usr/bin/yum')
-    {
-        print "Password required to install glibc-static using sudo";
-        system("sudo yum -y install glibc-static");
-    }
-    else
-    {
-        print <<__EOF;
+    print <<__EOF;
 
-Installation aborting. You must install the glibc-static package manually
-in order to compile Muscle (sudo install failed). 
-
+Installation aborting. You must run the preinstall.sh script first.
+    
 __EOF
-        exit 1;
-
-    }
+    exit 1;
 }
+
 
 # Create the installation directories and build the C programs
 MakeDir($config::binDir);
@@ -410,6 +395,38 @@ sub BuildPackages
                        "",                                # Data directory
                        "");                               # Destination data directory
 }
+
+
+
+
+
+#*************************************************************************
+sub CheckPreinstall
+{
+    # Check glibc-static
+    if(!( -f '/usr/lib64/libm.a' ) && !( -f '/usr/lib/libm.a'))
+    {
+        return(0);
+    }
+    # Check R
+    if(!( -f '/usr/bin/R'))
+    {
+        return(0);
+    }
+    # Check perl-LWP-Protocol-https
+    my $https = `find /usr/lib/   -name SSLeay.so -print`;
+    $https   .= `find /usr/lib64/ -name SSLeay.so -print`;
+    $https =~ s/\s//g;
+    if(!length($https))
+    {
+        return(0);
+    }
+
+    $return 1;
+}
+
+
+
 
 
 #*************************************************************************
