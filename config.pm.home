@@ -9,6 +9,7 @@ $saapHome="/home/amartin/git/SAAP3";
 # Config for the web interface                                          #
 #########################################################################
 # The location of the web site
+$webServer="http://home.stagleys.co.uk";  # No trailing slash!
 $webRoot="/home/httpd/html";
 $saapWeb="$webRoot/saap";
 $webTmpDir="$webRoot/tmp";

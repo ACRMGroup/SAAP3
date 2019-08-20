@@ -4,7 +4,7 @@ var gProcessID = null;   // ProcessID for the analysis - also
                          // used for temp directory containing results
 var gRedirect  = "index.html";    // Filename in URL /tmp/gProcessID to which 
                                   // we redirect on completion
-var gServer    = "http://www.bioinf.org.uk"; // Server name - NO TRAILING /
+var gServer    = "$[SERVER]"; // Server name - NO TRAILING /
 
 function createRequest() {
    var req = null;

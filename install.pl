@@ -123,7 +123,8 @@ sub BuildHTML
         CopyFile("www/includes/bo.css", $config::webRoot);
     }
 
-    $ENV{'WWW'} = $config::webIncludes;
+    $ENV{'WWW'}    = $config::webIncludes;
+    $ENV{'SERVER'} = $config::webServer;
     `(cd www/ajax; make)`
 }
 

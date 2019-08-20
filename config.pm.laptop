@@ -9,6 +9,7 @@ $saapHome="/home/andrew/git/SAAP3";
 # Config for the web interface                                          #
 #########################################################################
 # The location of the web site
+$webServer="http://localhost";  # No trailing slash!
 $webRoot="/var/www/html";
 $saapWeb="$webRoot/saap";
 $webTmpDir="$webRoot/tmp";
