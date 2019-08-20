@@ -1,0 +1,31 @@
+<html>
+<head>
+<script src='ajax.js'></script>
+
+<style type='text/css'>
+#results { background: #CCFFFF; 
+           padding: 1em}
+</style>
+</head>
+
+<body>
+
+<form>
+<p>SwissProtID: <input type='text' size='10' name='sprotID' id='sprotID' /></p>
+<p>Native: <input type='text' size='4'  name='native' id='native' /></p>
+<p>Resnum: <input type='text' size='4'  name='resnum' id='resnum' /></p>
+<p>Mutant: <input type='text' size='4'  name='mutant' id='mutant' /></p>
+
+<div id='submit' style='display:inline;'>
+<p><input type='button' value='Submit' onclick='DisplayPage()'</p>
+<p><input type='reset' value='Clear' /></p>
+</div>
+
+</form>
+
+<div id='throbber' style='display:none;'><img src='throbber.gif' />Please wait...</div>
+
+<div id='results'>&nbsp;</div>
+
+</body>
+</html>

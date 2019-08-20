@@ -1,0 +1,10 @@
+<div id='submenu'>
+<ul>
+<li[% info %]><a href='/mutations/'>Info</a></li>
+<li[% p53 %]><a href='/p53/'>p53</a></li>
+<li[% g6pd %]><a href='/g6pd'>G6PD</a></li>
+<li[% saap %]><a href='/saap/'>SAAPs</a></li>
+<li[% omim %]><a href='/omim/'>OMIM</a></li>
+</ul>
+</div>
+<div id='subpage'>

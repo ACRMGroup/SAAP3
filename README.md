@@ -4,18 +4,24 @@ SAAPdap/SAAPpred
 Installation
 ------------
 1. Ensure you have the following packages installed system wide:
+
 - R
 - perl (with LWP and the LWP::Protocol::https plugin)
+- glibc-static
 
 You can do this by running `./preinstall.sh`
 
-2. Ensure you have a mirror of the PDB installed; you can use
-`ftpmirror` from http://github.com/AndrewCRMartin/bioscripts for this
-purpose
+2. Ensure you have an uncompressed mirror of the PDB installed; you
+can use `ftpmirror` from http://github.com/AndrewCRMartin/bioscripts
+for this purpose.
 
+3. Modify `config.pm` as required - see the example `config.pm.*`
+files as examples.
 
+4. Run `./install.pl` to install the software
 
-Modify config.pm as required
+Interface install
+-----------------
 
 1. Ensure `getElementsByClassName.js` is in `$WWW/js/`
    (copy from webdata directory)

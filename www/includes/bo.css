@@ -1,0 +1,578 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*** Basic style elements ***/
+html {margin: 0px;
+      padding: 0px;
+      width: 100%;
+}
+h1 { margin: 0em;
+     border: none;
+     background: #ffffff;
+     color: #a03030;
+     font: bold 26px Verdana, Helvetica, sans-serif;
+     padding: 0em;
+   }
+h2 { font: bold italic 24px Verdana, Helvetica, sans-serif;
+     margin: 0px;
+     padding: 4px 4px 4px 0px;
+     border-bottom: 2px solid #617485;
+     color: #617485;
+   }
+h3 { font: bold italic 20px Verdana, Helvetica, sans-serif; 
+     color: #a03030;
+   }
+h4 { font: bold italic 14px Verdana, Helvetica, sans-serif; 
+     color: #a03030;
+   }
+p, td, th, li, dt, dd { font: 14px Verdana, Helvetica, sans-serif;}
+th { font: bold 14px Verdana, Helvetica, sans-serif;}
+address { font: italic 14px Times-Roman, Times, serif;
+          text-align: right;
+        }
+img { border: none; }
+
+.rsslink {text-align: right;}
+
+/*** Backgrounds for the pages ***/
+#mainpage { background: #ffffff; 
+            margin: 0px 10px 0px 0px;
+            position: relative;
+            border: none;
+          }
+
+#subpage  { background: #ffffff; 
+            margin: 1em 0px 0px 160px;   /* LC width + 10px */
+            padding: 0px 20px 0px 0px; 
+            border: none;
+          }
+#mainpagetext  { background: #ffffff; 
+            margin: 1em 0px 0px 0px;
+            padding: 0px 210px 0px 0px;  /* RC width + 10px */
+            border: none;
+          }
+body {padding: 0px;
+      margin: 0px;
+      background: #ffffff;
+      min-width: 650px;      /* LC width + RC width + 300px */
+}
+
+#header, #mainpage, #separator {
+    min-width: 650px;  /* LC + RC + 300px */
+}
+
+#mainpage {
+    max-width: 1230px; /* LC + RC + 880px */
+}
+
+#header {padding: 0px;
+         margin: 0px;
+         width: 100%;
+}
+
+#header p { background: #333366;
+          margin: 0px;
+          padding: 4px 0px 0px 8px;
+          height: 60px;
+          font: bold 14px Verdana, Helvetica, sans-serif; 
+          color: #ffffff;
+          background-image: url(ucl.gif);
+          background-repeat: no-repeat;
+          background-position: bottom right;
+        }
+
+#separator form { background: #92aec7; 
+padding: 1pt 0pt 1pt 2pt;
+margin: 0em;
+}
+#separator p { 
+padding: 0em;
+margin: 0em;
+}
+
+/*** Paragraph styles ***/
+.welcome p {text-align: center;
+          font: bold 24px Verdana, Helvetica, sans-serif; 
+          clear: both;
+         }
+/* .visitors {text-align: center; } */
+.visitors {display: none; }
+
+/*** Used for publications page ***/
+.yearindex {
+        text-align: center;
+}
+.yearindex a {
+        color: #a03030;
+        text-decoration: none;
+        font: bold 12px Verdana, Helvetica, sans-serif;
+} 
+.pubtypeindex {
+        margin: 5px 0px -20px 0px;
+        text-align: center;
+        font: 16px Verdana, Helvetica, sans-serif;
+}
+.pubtypeindex p {
+        padding: 0px;
+        margin: 0px;
+}
+.pubtypeindex a {
+        color: #617485;
+        text-decoration: none;
+} 
+.bibtoc {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+}
+.bibtochead { font-weight: bold;
+        display: block;
+}
+
+.textbutton {
+   border: 1pt solid #333366;
+   border-radius: 6px;
+   padding: 4pt;
+   background: #617485;
+   margin: 0pt;
+}
+a.textbutton
+{
+   text-decoration: none;
+   color: #eeeeee;
+}
+
+
+/*** Used for all pages ***/
+.newsitems { 
+  width: 200px;          /* RC width */
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.systemfailure {background: red;
+               padding: 10pt;
+               margin: 0;
+}
+
+.systemfailure p {background: red;
+                  text-align: center;
+                  font: bold 12pt Helvetica, Arial, sans-serif;
+                  margin: 0;
+}
+
+.warning {float: right;
+          padding: 0px;
+          width: 200px;   /* RC width */
+          margin: 1px 2px;
+          background-color: #e8ecd8;
+          color: #000000;
+}
+
+.warning p, .warning li {
+          color: #000000;
+          margin: 0px 0px 0px 0px;
+          padding: 0px;
+          font: 12px/13px Verdana, Helvetica, sans-serif; 
+}
+.warning ul, .warning ol {
+          margin: 0px 0px 0px 14px;
+          padding: 4px 4px;
+}
+.warning p {
+          padding: 4px;
+          font: bold 12px/13px Verdana, Helvetica, sans-serif;
+}
+.warning h1 {
+          background-color: #e78f47;
+          margin: 0px;
+          padding: 2px 4px;
+          color: #ffffff;
+          font: bold 12px Verdana, Helvetica, sans-serif; 
+}
+
+
+.news {float: right;
+          padding: 0px;
+          width: 200px;   /* RC width */
+          margin: 1px 2px;
+          background-color: #e8ecd8;
+          color: #000000;
+}
+
+.news p, .news li {
+          color: #000000;
+          margin: 0px 0px 0px 0px;
+          padding: 0px;
+          font: 12px/13px Verdana, Helvetica, sans-serif; 
+}
+.news ul, .news ol {
+          margin: 0px 0px 0px 14px;
+          padding: 4px 4px;
+}
+.news p {
+          padding: 4px;
+}
+.news h1 {
+          background-color: #306470;
+          margin: 0px;
+          padding: 2px 4px;
+          color: #ffffff;
+          font: bold 12px Verdana, Helvetica, sans-serif; 
+}
+
+
+
+/* Just makes simple news items as normal inline text - used to demote
+   a 'news' item
+*/
+.plainnews { }
+.plainnews h1 {
+          font: 14px Verdana, Helvetica, sans-serif;
+          padding: 8px 0px 0px 0px;
+          margin: 0px;
+}
+.plainnews p {
+          padding: 0px 0px 0px 0px;
+          margin: 0px;
+}
+
+
+
+
+.announce {float: right;
+          padding: 0px;
+          width: 200px;   /* RC Width */
+          margin: 1px 2px;
+          background-color: #e8ecd8;
+          color: #000000;
+}
+
+.announce p, .announce li {
+          color: #000000;
+          margin: 0px 0px 0px 0px;
+          padding: 0px;
+          font: 12px/13px Verdana, Helvetica, sans-serif; 
+}
+.announce ul, .announce ol {
+          margin: 0px 0px 0px 14px;
+          padding: 4px 4px;
+}
+.announce p {
+          padding: 4px;
+}
+.announce h1 {
+          background-color: #306470;
+          margin: 0px;
+          padding: 2px 4px;
+          color: #ffffff;
+          font: bold 12px Verdana, Helvetica, sans-serif; 
+}
+
+
+
+.highlight {
+          padding: 0px;
+          margin: 1px 2px;
+          background-color: #e8ecd8;
+          color: #000000;
+}
+
+.highlight p, .highlight li {
+          color: #000000;
+          margin: 0px 0px 0px 0px;
+          padding: 0px;
+          font: 14px Verdana, Helvetica, sans-serif; 
+}
+.highlight ul, .highlight ol {
+          margin: 0px 0px 0px 14px;
+          padding: 4px 4px;
+}
+.highlight p {
+          padding: 4px;
+}
+.highlight h1 {
+          background-color: #306470;
+          margin: 0px;
+          padding: 2px 4px;
+          color: #ffffff;
+          font: bold 12px Verdana, Helvetica, sans-serif; 
+}
+
+
+
+
+.samplecode { margin: 0em;
+              border-style: ridge;
+              border-width: 2px;
+              background: #eeeeee;
+              padding: 4px;
+              font: 14px Courier, monospace;
+            }
+.sampledata { margin: 0em;
+              border-style: ridge;
+              border-width: 2px;
+              background: white;
+              padding: 4px;
+              font: 14px Courier, monospace;
+            }
+.boxed { border: medium solid red;
+         text-align: center;
+         padding: 0.25em; 
+}
+.lastmodified { text-align: right;
+                padding: 20px 10px 0px 10px;
+                margin: 0px;
+                font: italic 12px Times-Roman, Times, serif;
+              }
+.caption {text-align: center;
+          padding: 5px 0px 0px 0px;
+          margin: 0px;
+          font: 12px Verdana, Helvetica, sans-serif;
+          }
+.bbkmsc {padding: 10px;
+         margin:  10px 20px 0px 20px;
+         font: 14px Verdana, Helvetica, sans-serif;
+}
+
+
+
+/*** Table of links ***/
+.linktable {padding: 1em 0em 1em 0em; }
+.linktable th {font: bold 14px Verdana, Helvetica, sans-serif; 
+            text-align: left;
+            padding: 4px 4px 4px 4px;
+            background: #92aec7; 
+            color: #000000;
+           }
+col.link { width: 20%; }
+col.description { width: 80%; }
+table.linktable { border-collapse: collapse;
+                  border-spacing: 0pt;
+                  border-width: 0pt;
+                  border-style: ridge;
+                  width: 100%;
+                  padding: 4pt 4pt 4pt 4pt;
+                }
+
+/*** Servers and forms ***/
+.exampleinput { font: 10px italic Verdana, Helvetica, sans-serif;
+}
+.errormessage { color: #aa0000;
+}
+/*** General purpose table ***/
+.mytable { margin: 10pt;
+}
+.mytable {
+           background: #92aec7; 
+           border-collapse: collapse;
+                  border-spacing: 0pt;
+                  border-width: 2pt;
+                  border-style: solid;
+                  border-color: #ffffff;
+                  padding: 8pt 4pt 4pt 4pt;
+                }
+.mytable th {
+           color: #ffffff;
+           background: #333366;
+           padding: 4pt 4pt 4pt 4pt;
+                }
+.mytable td {
+           padding: 0pt 4pt 2pt 4pt;
+                }
+
+
+/*** Jobs pages ***/
+.studentships {padding: 0em 2em 0em 2em;}
+.postdocs     {padding: 0em 2em 0em 2em;}
+.fellowships  {padding: 0em 2em 0em 2em;}
+.notfunded    {font: bold 26px Verdana, Helvetica, sans-serif;
+               text-align: center;
+              }
+.challenge    { font-style: italic; }
+
+/*** Antibody pages ***/
+td.col1 {background: #ccffcc;}
+td.col2 {background: #ccccff;}
+
+/*** Menu structure ***/
+#mainmenu { margin: 0px 0px 0px 0px;
+     padding: 0px;
+     border: none;
+     background: #000000 url("navBarBg.gif") repeat-x 20px;
+     background: #ffffff;
+     text-align: center;
+}
+#mainmenu ul {
+     padding: 0;
+     margin: 4px 20px 8px 0px;
+     text-align: center;
+     list-style-type: none;
+     height: 20px;
+}
+#mainmenu li {
+        font: 13px Verdana, Helvetica, sans-serif;
+	float: left;
+	margin: 0px 4px;
+        border: 1px solid #000000;
+	padding: 0px;
+} 
+#mainmenu a {
+        background: #000000 url("navBarBg.gif") repeat-x 20px;
+        font: bold italic 13px Verdana, Helvetica, sans-serif;
+	display:block;
+        padding: 0px 10px 2px 10px; 
+        color: #000000;
+        text-decoration: none;
+} 
+
+#mainmenu #mcurrent {
+}
+#mainmenu #mcurrent a {
+        font: bold 13px Verdana, Helvetica, sans-serif;
+        background: #000000 url("navBarBgHover.gif") repeat-x 20px;
+        color: #000000;
+}
+#mainmenu a:hover {
+        background: #000000 url("navBarBgHover.gif") repeat-x 20px;
+        color: #000000;
+}
+
+#submenu { 
+   background-color: #ffffff; 
+   padding: 0px;
+   margin: 0px;
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   width: 150px;          /* LC width */
+}
+
+#submenu ul {
+   padding: 10px 0px; 
+   margin: 0px 0px 0px 4px; 
+}
+#submenu ul li {
+   list-style: none; 
+   padding: 2px;
+   margin: 15px 0px; 
+   border-bottom: 2px dotted #a03030; 
+} 
+#submenu ul li a {
+   padding: 0px 2px;
+   margin-left: 0px;
+   text-decoration: none; 
+   font: 14px Verdana, Helvetica, sans-serif; 
+} 
+
+#submenu ul li a:link { 
+   color: #000000;
+} 
+
+#submenu ul li a:visited { 
+   color: #000000;
+} 
+
+#submenu ul li a:link:hover, #submenu ul li a:visited:hover {
+   color: #a03030; 
+}
+
+#submenu ul li a#current {
+   background: #ffffff; 
+   font-weight: bold;
+   color: #a03030; 
+}
+
+/* Used for special highlighting */
+.red { background: #FFAAAA;
+       color: black;
+     }
+.green { background: #AAFFAA;
+         color: black;
+       }
+.blue {  background: #AAAAFF;
+         color: black;
+      }
+.yellow { background: #FFFFAA;
+          color: black;
+        }
+.black { background: #000000;
+         color: white;
+       }
+.bcblogo { float: left; border: none; }
+.ismblogo { float: right; border: none; }
+.center { text-align: center; }
+
+#footer {
+  clear: both;
+}
+
+.commercial
+{
+   background: #e4e4e4;
+   color: #274c7b;
+   padding: 8pt;
+   margin: 4pt;
+}
+
+.commercial h1
+{
+   color: #274c7b;
+   background: #e4e4e4;
+   font: bold 14px Helvetica, verdana, sans-serif;
+   padding: 0px 0px 6px 0px;
+   margin: 0px;
+}
+
+.commercial p
+{
+   padding: 0px 0px 4px 0px;
+   margin: 0px;
+}
+
+
+/* The Holly Hack */
+/* hide from Mac IE5 \*/
+* html #mainpage {
+   height: 1%;
+}
+/* end hide from Max IE5 */
+

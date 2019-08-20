@@ -1,0 +1,14 @@
+<div id='header'>
+<p>SAAPdap / SAAPpred</p>
+</div> <!-- header -->
+<div id='separator'>
+<p>
+</p>
+</div> <!-- separator -->
+
+
+<div id='mainmenu'>
+<!-- Needs full paths since it is access from sub-dirs -->
+<!-- ...unordered list... -->
+</div> <!-- mainmenu -->
+<div id='mainpage'>

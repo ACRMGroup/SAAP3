@@ -62,6 +62,7 @@ use lib abs_path("$FindBin::Bin/");
 use config;
 use SAAP;
 use PDBSWS;
+use PDB;
 
 #*************************************************************************
 my $programName = "SAAP";
@@ -257,6 +258,17 @@ sub ParseCmdLine
             $file    = "\L$file";   # Lower case
             $pdbfile = $config::pdbPrep . $file . $config::pdbExt;
             $pdbcode = "$file";
+
+            if(! -e $pdbfile)
+            {
+                $pdbfile = "/var/tmp/$file" . $config::pdbExt;
+                if(! -e $pdbfile)
+                {
+                    print STDERR "Grabbing $pdbfile..." if(defined($::d));
+                    PDB::GrabPDB($pdbcode, $pdbfile);
+                    print STDERR "done\n" if(defined($::d));
+                }
+            }
         }
         else
         {

@@ -73,36 +73,80 @@ use config;
 
 UsageDie() if(defined($::h));
 
-# Check that the destination is correct
-if(!DestinationOK("SAAP", $config::saapHome))
+if($ARGV[0] eq "interface")
 {
-    print <<__EOF;
+    shift(@ARGV);
+    InstallInterface();
+}
+else
+{
+    InstallCode();
+}
 
+sub InstallInterface
+{
+    # Check that the destination is correct
+    if(!DestinationOK("SAAP", $config::saapWeb))
+    {
+        print <<__EOF;
+        
 Installation aborting. Modify config.pm if you wish to install elsewhere.
 
 __EOF
-    exit 1;
+        exit 1;
+    }
+
+    BuildHTML();
+    
+    my $webDir  = "$config::saapWeb";
+    CopyFile("www/webdata/getElementsByClassName.js", "$webDir/js");
+    CopyFile("www/packages/overlib.js", "$webDir/js/overlib");
+    CopyDir("www/packages/fontawesome", "$webDir/css/font-awesome");
 }
 
-if(!CheckPreInstall())
+sub BuildHTML
 {
-    print <<__EOF;
+    if(! -f "$config::webRoot/bo.css")
+    {
+        CopyFile("www/includes/bo.css", $config::webRoot);
+    }
+
+    `(cd www/ajax; WWW=$config::webIncludes; make)`
+}
+
+sub InstallCode
+{
+    # Check that the destination is correct
+    if(!DestinationOK("SAAP", $config::saapHome))
+    {
+        print <<__EOF;
+        
+Installation aborting. Modify config.pm if you wish to install elsewhere.
+
+__EOF
+        exit 1;
+    }
+
+    if(!CheckPreInstall())
+    {
+        print <<__EOF;
 
 Installation aborting. You must run the preinstall.sh script first.
     
 __EOF
-    exit 1;
+        exit 1;
+    }
+
+
+    # Create the installation directories and build the C programs
+    MakeDir($config::binDir);
+    MakeDir($config::dataDir);
+    BuildPackages();
+
+    MakeDir($config::saapBinDir);
+    InstallPrograms($config::saapHome, $config::saapBinDir);
+    InstallData($config::dataDir);
 }
-
-
-# Create the installation directories and build the C programs
-MakeDir($config::binDir);
-MakeDir($config::dataDir);
-BuildPackages();
-
-MakeDir($config::saapBinDir);
-InstallPrograms($config::saapHome, $config::saapBinDir);
-InstallData($config::dataDir);
 
 sub Uncompress
 {
@@ -400,8 +444,8 @@ sub BuildPackages
 
 
 
-#*************************************************************************
-sub CheckPreinstall
+#*********************************************************************
+sub CheckPreInstall
 {
     # Check glibc-static
     if(!( -f '/usr/lib64/libm.a' ) && !( -f '/usr/lib/libm.a'))
@@ -422,7 +466,7 @@ sub CheckPreinstall
         return(0);
     }
 
-    $return 1;
+    return(1);
 }
 
 
