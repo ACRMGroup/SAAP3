@@ -3,7 +3,7 @@ package config;
 # The location of the installed SAAP code
 # You can't use $ENV{'HOME'} for the web install
 # $saapHome="$ENV{'HOME'}/saapinstall";
-$saapHome="/home/andrew/git/SAAP3";
+$saapHome="/home/amartin/git/SAAP3";
 
 #########################################################################
 # Config for the web interface                                          #
