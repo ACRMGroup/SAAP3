@@ -39,16 +39,23 @@ You can do this by running `./preinstall.sh`
 Directories and files present in the main distribution folder
 =============================================================
 
+Files
+-----
+
 - **config.pm.xxx** Example config files
 - **install.pl** Install script
 - **README.md** This README file
 - **preinstall.sh** System install script
 - **util.pm** Utilities used by the install script
 
+Directories
+-----------
+
 - **data/** Data files
 - **lib/** Perl and R library files
 - **packages/** C program packages
 - **plugins/** The analysis plugins
+- **pred/** The prediction code
 - **src/** The analysis programs
 - **www/** The web interface
 

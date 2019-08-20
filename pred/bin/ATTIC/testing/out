@@ -1,0 +1,14 @@
+Header:  Uniprotac, Nat, Resnum, Mut, PDBcode, Chain, Structype, Resolution, Rfactor, Predection, Confidant
+Model1:     Q92838,   I,    360,   N,    1rj7,     A,   crystal,      2.30A,  20.10%,         PD, 0.777
+Model2:     Q92838,   I,    360,   N,    1rj7,     A,   crystal,      2.30A,  20.10%,         PD, 0.732
+Model3:     Q92838,   I,    360,   N,    1rj7,     A,   crystal,      2.30A,  20.10%,         PD, 0.817
+Avrg1:      Q92838,   I,    360,   N,    1rj7,     A,   crystal,      2.30A,  20.10%,         PD, 0.78
+Model1:     Q92838,   I,    360,   N,    1rj7,     B,   crystal,      2.30A,  20.10%,         PD, 0.603
+Model2:     Q92838,   I,    360,   N,    1rj7,     B,   crystal,      2.30A,  20.10%,         PD, 0.650
+Model3:     Q92838,   I,    360,   N,    1rj7,     B,   crystal,      2.30A,  20.10%,         PD, 0.601
+Avrg2:      Q92838,   I,    360,   N,    1rj7,     B,   crystal,      2.30A,  20.10%,         PD, 0.62
+Model1:     Q92838,   I,    360,   N,    1rj7,     D,   crystal,      2.30A,  20.10%,        SNP, 0.505
+Model2:     Q92838,   I,    360,   N,    1rj7,     D,   crystal,      2.30A,  20.10%,         PD, 0.585
+Model3:     Q92838,   I,    360,   N,    1rj7,     D,   crystal,      2.30A,  20.10%,         PD, 0.633
+Avrg3:      Q92838,   I,    360,   N,    1rj7,     D,   crystal,      2.30A,  20.10%,         PD, 0.57
+AvrgALL:    Q92838,   I,    360,   N,        ,      ,          ,           ,        ,         PD, 0.66

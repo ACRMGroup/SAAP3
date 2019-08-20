@@ -1,0 +1,122 @@
+#!/acrm/usr/local/bin/perl -s
+#*************************************************************************
+use config;
+use strict;
+
+submit_jobs($::sprot,$::nat,$::pos,$::mut,$::PDBlimit); 
+#we can add specific PDB structure later
+#submit_jobs($::sprot,$::nat,$::pos,$::mut,$::PDBlimit,$::PDBcode);
+sleep( 2 );
+print STDERR "     ----------------------- Waiting -----------------------\n";
+clearup($::sprot,$::nat,$::pos,$::mut);
+exit;
+
+#-------------------------------------------------------------------------
+sub submit_jobs
+{
+    ($::sprot,$::nat,$::pos,$::mut,$::PDBlimit) = @_;
+    #my $outfile = $config::pipelineJSON."/".$::sprot."_".$::nat."_".$::pos."_".$::mut.".json";
+    my $shfile = &create_sh_file($::sprot,$::nat,$::pos,$::mut,$::PDBlimit);
+    my $job = `qsub -cwd -o $config::gridOutDir -e $config::gridOutDir $shfile`;
+    $job =~ s/\s+$//;
+    print "$job\n";
+    print STDERR "    submitted $job\n";
+}
+
+#-------------------------------------------------------------------------
+sub create_sh_file
+{
+    ($::sprot,$::nat,$::pos,$::mut,$::PDBlimit) = @_;
+    my $outfile = $config::pipelineJSON."/".$::sprot."_".$::nat."_".$::pos."_".$::mut.".json";
+    my $fname = $config::gridOutDir."id_".$::sprot."_".$::nat."_".$::pos."_".$::mut.".sh";
+    
+    open ( FILE, ">$fname" ) || die "Cannot write to file '$fname'\n$!\n";
+    print FILE "#!/bin/sh\n#\$ -S /bin/sh\n\n";
+    #-- Define command line inputs
+    print FILE  "cd ".$config::piplineDir." \n";
+    print FILE  "source ./init.sh \n";
+    print FILE  $config::perl." ".$config::pipeline_uniprot." -v -limit=".$::PDBlimit." ".$::sprot." ".$::nat." ".$::pos." ".$::mut."  > ".$outfile." \n";
+    print FILE "echo COMPLETE\t".$fname." in \$HOSTNAME\n";
+    close ( FILE );
+    return ( $fname );
+}
+#-------------------------------------------------------------------------
+sub clearup
+{
+    ($::sprot,$::nat,$::pos,$::mut) = @_;
+    #opendir( DIR, $config::gridOutDir ) || die "Cannot read directory $$config::orkingDir\n";
+    my $done =0;
+    my $ofile = "id_".$::sprot."_".$::nat."_".$::pos."_".$::mut.".sh.o*";
+#my $ofile = "id_$::sprot_$::nat_$::pos_$::mut.sh.o\n";
+    print "$ofile\n";
+    do
+    {
+        #print "id_\$::sprot_\$::nat_\$::pos_\$::mut.sh.o\d+$\n";
+        #opendir( DIR, $config::gridOutDir ) || die "Cannot read directory $$config::orkingDir\n";
+        #my @ofiles = grep {/c*.sh.o\d+$/} readdir( DIR );
+        #$ofile = grep {/id_\$\:\:sprot_\$\:\:nat_\$\:\:pos_\$\:\:mut.sh.o\d+$/} readdir( DIR );
+#print "@ofiles\n";
+        #my @ofiles = grep {/c*.sh.o\d+$/} readdir( DIR );    
+       # my @ofiles = grep {/c*.sh.o\d+$/} readdir( DIR );   
+        #print "$config::gridOutDir\n$ofile\n";
+        
+        #foreach my $ofile ( @ofiles )
+        #{
+        
+        if ( `grep COMPLETE $config::gridOutDir$ofile` )
+            #if ( `grep COMPLETE $config::gridOutDir$ofile` )
+        {
+            my $grep =`grep COMPLETE $config::gridOutDir$ofile`;        # 'COMPLETE '$file'
+            chomp $grep;
+            print "$grep\n";
+            my @array = split(/\./, $ofile);
+            my $file = $array[0];
+            my $jobnum = substr($array[2], 1, 7);
+            my $efile= $file.".sh.e".$jobnum;
+            
+            if (-s $efile)
+            {
+                if ( `grep directory $efile` )
+                {
+                    my $copystring = "mv $file* $config::errorDir/noPDBfile;";
+                        system( $copystring );
+                }
+                elsif ( `grep mutmodel $efile` )
+                {
+                    my $copystring = "mv $file* $config::errorDir/mutmodel;";
+                    system( $copystring );
+                }
+                elsif (`grep atom $efile`)
+                {
+                    my $copystring = "mv $file* $config::errorDir/opiningPDBfile;";
+                        system( $copystring );
+                }
+                elsif ( `grep ERROR $efile` )
+                {
+                    my $copystring = "mv $file* $config::errorDir/generalError;";
+                    system( $copystring );
+                }
+            }
+            
+            print STDERR "     ---- Cleaning grid standard output and error files ----\n";
+            my $delstring = "rm -f $config::gridOutDir$file*;";
+            system( $delstring );
+            $done = 1;
+        }
+        
+        else
+        {
+            print STDERR "     ----------------------- Waiting -----------------------\n";
+            sleep( 2 );
+            $done = 0; print "again\n";
+        }
+    #}
+        
+     #   close( DIR );
+    } 
+    while ($done = 0);
+#while (($done = 0) && (!$ofile)); 
+}
+#-------------------------------------------------------------------------  
+    
+   

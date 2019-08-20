@@ -1,0 +1,266 @@
+#!/usr/bin/perl -s
+#*************************************************************************
+#
+#   Program:    saapPred
+#   File:       saapPred.pl
+#   
+#   Version:    V1.0
+#   Date:       29.10.12
+#   Function:   
+#   
+#   Copyright:  (c) Nouf S. Al Numair, UCL, 2012
+#   Author:     Nouf S. Al Numair
+#   EMail:      
+#               
+#*************************************************************************
+#
+#   Description:
+#   ============
+#
+#*************************************************************************
+#
+#   Usage:
+#   ======
+#   Run SAAPdb predection using the Humvar models
+#
+#*************************************************************************
+#
+#   Revision History:
+#   =================
+#   V1.0   29.10.12  Original
+#
+#*************************************************************************
+use configPred;
+use strict;
+use SAAP;
+
+my($sprot, $pos, $nat, $mut) = ParseCmdLine();
+
+#-- Check for -h - help request
+UsageDie() if(defined($::h));
+
+$::v    = defined($::v)?"-v":"";
+$::info = defined($::info)?"-info":"";
+
+#-- Check for user-specified PDBlimit and prePred
+$::PDBlimit = "3" if(!defined($::PDBlimit));
+$::prePred  = "PD" if(!defined($::prePred)); #PD or SNP
+
+my $jsonFile = $configPred::pipelineJSON."/".$sprot."_".$nat."_".$pos."_".$mut.".json";
+my $csvFile  = $configPred::csvDir."/".$sprot."_".$nat."_".$pos."_".$mut.".csv";
+my $arffFile = $configPred::arffDir."/".$sprot."_".$nat."_".$pos."_".$mut.".arff";
+my $idFile   = $configPred::arffDir."/".$sprot."_".$nat."_".$pos."_".$mut."_id";
+my $predFile = $configPred::predDir."/".$sprot."_".$nat."_".$pos."_".$mut.".txt";
+my $piplineOut = $configPred::tmpDir."/".$sprot."_".$nat."_".$pos."_".$mut.".out";
+
+#-- Run the pipline using the uniprotPipeline.pl and save the JSON file 
+print STDERR "\n     ... Run the pipline";
+my $shfile = create_sh_file();
+my$run_pipline = "sh $shfile > $piplineOut";
+system( $run_pipline );
+print STDERR "     ... Done\n";
+
+#-- Pars JSON file to get csv file
+print STDERR "     ... Run parsJson";
+if (-e $jsonFile)
+{
+    my $run_parseJSON = "$configPred::perl $configPred::parseJSON $jsonFile $::prePred > $csvFile";
+    system( $run_parseJSON );
+}
+print STDERR "        ... Done\n";
+
+#-- Run csv2arff.pl to get arff file
+print STDERR "     ... Run csv2arff";
+if ( `grep -Ev 'PDBSWS|acrm|ERROR|Error' $csvFile` )
+{
+     my $run_csv2arff = "$configPred::perl $configPred::csv2arff -ni -no -norm=$configPred::normScale -class=PD,SNP -id=$configPred::id -idfile=$idFile -inputs=$configPred::features dataset $csvFile > $arffFile ";
+    system( $run_csv2arff );
+}    
+
+else
+{
+    my $error = `cat $csvFile` ;
+    print STDERR "ERROR   $error\n"; 
+}
+print STDERR "        ... Done\n";
+
+#-- save IDs in array num:uniprotac:res:nat:mut:pdbcode:chain:resnum:mutation:structuretype:resolution:rfactor
+my $count=0;
+my %id;
+my @ID;
+
+if(open(FILE, $idFile))
+{
+    while(<FILE>)
+    {
+        chomp;
+        my @values    = split(',');
+        @ID        = split('\:', $values[0]);
+        $id{num}[$count]         = $ID[0];  
+        $id{uniprotac}[$count]   = $ID[1]; 
+        $id{res}[$count]         = $ID[2];   
+        $id{nat}[$count]         = $ID[3];       
+        $id{mut}[$count]         = $ID[4];         
+        $id{pdbcode}[$count]     = $ID[5];     
+        $id{chain}[$count]       = $ID[6];    
+        $id{resnum}[$count]      = $ID[7];   
+        $id{mutation}[$count]    = $ID[8];   
+        $id{structype}[$count]   = $ID[9];   
+        $id{reseolution}[$count] = $ID[10]; 
+        $id{rfactor}[$count]     = $ID[11];     
+  
+        $count++;
+    }
+    close FILE;
+} 
+else
+{
+    print STDERR "Can't open $idFile file with IDs fields\n";
+    exit 1;
+}
+
+
+#-- Run the predectour
+print STDERR "     ... Run the predectour";
+my $pred = "$configPred::java -Xmx6g -cp $configPred::weka weka.classifiers.trees.RandomForest -T $arffFile -l $configPred::model_1 -p 0 &> $predFile";
+system( $pred );
+print STDERR "  ... Done\n";
+
+#  Print result
+print STDERR "     ... Printing results";
+
+my @modl1 = `grep 1: $predFile`;
+my $n =int(@modl1);
+
+for(my $i=0; $i<$n; $i++) # or $count
+{ 
+    if(!defined($::v))
+    {
+        printf "%6s %1s %d %1s Model Pred %s\n",$sprot, $nat, $pos, $mut, $modl1[$i]; 
+    }
+    else
+    {
+        print "$sprot $nat $pos $mut 
+                    num       : $id{num}[$i]  
+                    uniprotac : $id{uniprotac}[$i]
+                    res       : $id{res}[$i]
+                    nat       : $id{nat}[$i]
+                    mut       : $id{mut}[$i]
+                    pdbcode   : $id{pdbcode}[$i]
+                    chain     : $id{chain}[$i]
+                    resnum    : $id{resnum}[$i]
+                    mutation  : $id{mutation}[$i]
+                    structype : $id{structype}[$i]
+                    resolution: $id{reseolution}[$i]
+                    rfactor   : $id{rfactor}[$i]\n
+                    predection $modl1[$i] \n"; 
+        }
+}
+
+print STDERR "    ... Done\n";
+
+#*************************************************************************
+sub runPredectour
+{
+#hard code
+#my $Mod2_pred
+#print "$PiplineResulte.Mod1.txt\n" ; 
+}
+
+#*************************************************************************
+sub ParseCmdLine
+{
+    #print "@ARGV\n";
+    #if(@ARGV != 4)
+    #{
+    #    &::UsageDie();
+    #}
+
+    my $ac      = shift(@ARGV);
+    my $native  = shift(@ARGV);
+    my $resnum  = shift(@ARGV);
+    my $mutant  = shift(@ARGV);
+
+    $ac = "\U$ac";
+
+    $native = "\U$native";
+    if(defined($SAAP::onethr{$native}))
+    {
+        $native = $SAAP::onethr{$native};
+    }
+
+    $mutant = "\U$mutant";
+    if(defined($SAAP::onethr{$mutant}))
+    {
+        $mutant = $SAAP::onethr{$mutant};
+    }
+
+    #SAAP::Initialize();
+
+    return($ac, $resnum, $native, $mutant);
+
+}
+#-------------------------------------------------------------------------
+sub create_sh_file
+{
+    my $file = $configPred::tmpDir."/id_".$sprot."_".$nat."_".$pos."_".$mut.".sh";
+   
+    open ( FILE, ">$file" ) || die "Cannot write to file '$file'\n$!\n";
+    print FILE "#!/bin/sh\n#\$ -S /bin/sh\n\n";
+    #-- Define command line inputs
+    print FILE  "cd ".$configPred::piplineDir." \n";
+    print FILE  "source ./init.sh \n";
+    print FILE  $configPred::perl." ".$configPred::pipeline_uniprot." -limit=".$::PDBlimit." ".$sprot." ".$nat." ".$pos." ".$mut."  > ".$jsonFile." \n"; 
+    #print FILE  $configPred::perl." ".$configPred::pipeline_uniprot." -v -limit=".$::PDBlimit." ".$sprot." ".$nat." ".$pos." ".$mut."  > ".$jsonFile." \n";
+    print FILE "echo COMPLETE\t".$file."\n";
+    close ( FILE );
+    return ( $file );
+}
+#-------------------------------------------------------------------------
+
+sub UsageDie
+{
+    print <<__EOF;
+
+saapPred V1.0 (c) 2012, UCL, Nouf S. Al Numair
+Usage: 
+        saapPred uniprotAC native resnum mutant
+        [-v [-info]] [-limit=n] [-prePred=PD or SNP] > predection.txt
+
+         -prePred
+        -limit   Set the maximum number of PDB chains
+                 to analyze
+        -v       Verbose
+        -info    Used with -v to get pipeline plugins 
+                 to report their info strings
+             
+
+Runs the SAAP analysis pipeline on each PDB chain that matches a
+specified uniprot accession.
+
+uniprotAC us a UniProt accession (e.g. P69905)
+
+The native and mutant residues (native, newres) may be specified in 
+upper, lower or mixed case and using 1-letter or 3-letter code.
+
+
+__EOF
+
+    exit 0;
+}
+#*************************************************************************
+
+#Usage: 
+#        saapPred -uniprot=uniprotAC -nat=native -pos=resnum -mut=mutres
+#        [-v [-info]] [-limit=n] [-prePred=PD or SNP] > predection.txt
+#        -uniprot UniprotAC
+#        -nat     Native amino acid 
+#        -pos     Reside number
+#        -mut     Mutated amino acid 
+#        -limit   Set the maximum number of PDB chains
+#                 to analyze
+#        -v       Verbose
+#        -info    Used with -v to get pipeline plugins 
+#                 to report their info strings
+             
+
