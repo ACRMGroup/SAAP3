@@ -9,3 +9,6 @@ sudo $packagemanager -y install perl-LWP-Protocol-https
 sudo $packagemanager -y install libstdc++-static glibc-static
 # Needed to read JSON files
 sudo $packagemanager -y install perl-JSON
+# Needed to create PDF versions of web pages
+sudo $packagemanager -y install wkhtmltopdf
+

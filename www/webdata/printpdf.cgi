@@ -71,7 +71,7 @@ use strict;
 #*************************************************************************
 # CONFIGURE THIS to point to your HTML to PDF converter - with any options
 # needed 
-my $html2pdf = "/acrm/usr/local/bin/wkhtmltopdf64 -q -s A4";
+my $html2pdf = "wkhtmltopdf64 -q -s A4";
 
 #*************************************************************************
 my $cgi = new CGI;
