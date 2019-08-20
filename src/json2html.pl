@@ -266,7 +266,7 @@ function fixIE()
 <!-- Ajax for Predict button -->
 <script type='text/javascript' src='$config::predictURL/predictAjax.js'></script>
 
-<link rel='stylesheet' href='$config::saapWeb/css/font-awesome/css/font-awesome.min.css' />
+<link rel='stylesheet' href='$config::saapURL/css/font-awesome/css/fontawesome.min.css' />
 
 <style type='text/css'>
 <!--
