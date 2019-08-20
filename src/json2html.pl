@@ -194,12 +194,12 @@ function toggle_text_arrow(obj1, obj2)
    if (( text.style.display == 'inline' ) || ( text.style.display == 'block' ))
    { 
       text.style.display = 'none'; 
-      arrow.className = 'fliparrow fa fa-toggle-down';
+      arrow.className = 'fliparrow fas fa-angle-down';
    }
    else 
    { 
       text.style.display = 'inline'; 
-      arrow.className = 'fliparrow fa fa-toggle-up';
+      arrow.className = 'fliparrow fas fa-angle-up';
    }
 }
 function expand_all()
@@ -213,7 +213,7 @@ function expand_all()
    var arrows = document.getElementsByClassName('fliparrow');
    for(var tag=0; tag<arrows.length; tag++)
    {
-      arrows[tag].className = 'fliparrow fa fa-toggle-up';
+      arrows[tag].className = 'fliparrow fas fa-angle-up';
    }
 }
 
@@ -228,7 +228,7 @@ function collapse_all()
    var arrows = document.getElementsByClassName('fliparrow');
    for(var tag=0; tag<arrows.length; tag++)
    {
-      arrows[tag].className = 'fliparrow fa fa-toggle-down';
+      arrows[tag].className = 'fliparrow fas fa-angle-down';
    }
 }
 
@@ -266,7 +266,8 @@ function fixIE()
 <!-- Ajax for Predict button -->
 <script type='text/javascript' src='$config::predictURL/predictAjax.js'></script>
 
-<link rel='stylesheet' href='$config::saapURL/css/font-awesome/css/fontawesome.min.css' />
+<link rel='stylesheet' href='$config::saapWeb/css/font-awesome/css/fontawesome.min.css' />
+<link rel='stylesheet' href='$config::saapWeb/css/font-awesome/css/solid.min.css' />
 
 <style type='text/css'>
 <!--
@@ -515,7 +516,7 @@ __EOF
         {
             $warning = " <a href=\"javascript:void(0);\" 
         onmouseover=\"return overlib('The structure has poor resolution. Detailed structural analyses should be interpreted with caution.');\" 
-        onmouseout=\"return nd();\"><span style='color: orange;' class='fa fa-warning'></span></a>";
+        onmouseout=\"return nd();\"><span style='color: orange;' class='fas fa-exclamation-triangle'></span></a>";
         }
         print <<__EOF;
         <tr><td align='left'><a href='$id'>$pdbcode</a> $warning</td>
@@ -587,7 +588,7 @@ sub PrintStructuralAnalysis
     {
         $experimental .= " <a href=\"javascript:void(0);\" 
         onmouseover=\"return overlib('The structure has poor resolution. Detailed structural analyses should be interpreted with caution.');\" 
-        onmouseout=\"return nd();\"><span style='color: orange;' class='fa fa-warning'></span></a>";
+        onmouseout=\"return nd();\"><span style='color: orange;' class='fas fa-exclamation-triangle'></span></a>";
     }
 
     my $id = "P$pdbcode$chain";
@@ -624,7 +625,7 @@ __EOF
     <td>
         <h4>$analysis
         <a href="javascript:toggle_text_arrow('$aid','${aid}Arrow')">
-        <span class='fliparrow fa fa-toggle-down ' id='${aid}Arrow' ></span>
+        <span class='fliparrow fas fa-angle-down ' id='${aid}Arrow' ></span>
         </a> 
         </h4>
 __EOF
