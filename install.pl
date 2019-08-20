@@ -78,9 +78,15 @@ if($ARGV[0] eq "interface")
     shift(@ARGV);
     InstallInterface();
 }
+elsif($ARGV[0] eq "pred")
+{
+    shift(@ARGV);
+    InstallPredCode();
+}
 else
 {
-    InstallCode();
+    InstallDAPCode();
+#    InstallPredCode();
 }
 
 sub InstallInterface
@@ -128,7 +134,7 @@ sub BuildHTML
     `(cd www/ajax; make)`
 }
 
-sub InstallCode
+sub InstallDAPCode
 {
     # Check that the destination is correct
     if(!DestinationOK("SAAP", $config::saapHome))
@@ -151,14 +157,13 @@ __EOF
         exit 1;
     }
 
-
     # Create the installation directories and build the C programs
     MakeDir($config::binDir);
     MakeDir($config::dataDir);
     BuildPackages();
 
     MakeDir($config::saapBinDir);
-    InstallPrograms($config::saapHome, $config::saapBinDir);
+    InstallDAPPrograms($config::saapHome, $config::saapBinDir);
     InstallData($config::dataDir);
 
     MakeDir($config::cacheDir);
@@ -167,9 +172,30 @@ __EOF
     util::RunCommand("chmod +t  $config::cacheDir/*");
 
     # Do a specsim accecss in order to create/update the DBM hash file
-    print "*** Info: Updating SpecSim DBM file";
+    print "*** Info: Updating SpecSim DBM file if needed\n";
     SPECSIM::GetSpecsim($config::specsimDumpFile, $config::specsimHashFile, "MEAN", "MEAN");
 
+}
+
+sub InstallPredCode
+{
+    MakeDir($config::dataDir);  # Should be there already!
+
+    # Unpack the Random Forest models if they aren't there
+    if(! -d "$config::dataDir/models" )
+    {
+        print "*** Info: Unpacking RF Models\n";
+        util::RunCommand("(here=`pwd`; cd $config::dataDir; tar jxvf \$here/pred/models.tjz)");
+    }
+    else
+    {
+        print "*** Info: Skipped installation of RF Models - already installed\n";
+    }
+
+    MakeDir($config::saapBinDir);
+    InstallPredPrograms($config::saapPredHome, $config::saapBinDir);
+    
+    
 }
 
 sub Uncompress
@@ -227,7 +253,7 @@ sub InstallData
 }
 
 #*************************************************************************
-sub InstallPrograms
+sub InstallDAPPrograms
 {
     my($saapHome, $binDir) = @_;
     CopyDir("./src", "$saapHome/src");
@@ -237,6 +263,15 @@ sub InstallPrograms
     LinkFiles("$saapHome/src", $binDir);
 }
 
+#*************************************************************************
+sub InstallPredPrograms
+{
+    my($saapPredHome, $binDir) = @_;
+    CopyDir("./pred/src", "$saapPredHome/src");
+    LinkFiles("$saapPredHome/src", $binDir);
+}
+
+#*************************************************************************
 sub LinkFiles
 {
     my($inDir, $outDir) = @_;
@@ -247,15 +282,18 @@ sub LinkFiles
     {
         my $fullFile = "$inDir/$file";
 
-        if( $fullFile =~ /\.pl$/ )
+        if( -f $fullFile )
         {
-            my $newFile = $file;
-            $newFile =~ s/\..*?$//;
-            `(cd $outDir; ln -sf $fullFile ./$newFile)`;
-        }
-        else
-        {
-            `(cd $outDir; ln -sf $fullFile .)`;
+            if( $fullFile =~ /\.pl$/ )
+            {
+                my $newFile = $file;
+                $newFile =~ s/\..*?$//;
+                `(cd $outDir; ln -sf $fullFile ./$newFile)`;
+            }
+            else
+            {
+                `(cd $outDir; ln -sf $fullFile .)`;
+            }
         }
     }
 }

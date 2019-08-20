@@ -1,6 +1,10 @@
-#!/acrm/usr/local/bin/perl -s
+#!/usr/bin/perl -s
 
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
 
 my $verbose  = defined($::v)?"-v=$::v":"";
 my $modlimit = defined($::modlimit)?"-modlimit=$::modlimit":"";

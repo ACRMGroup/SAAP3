@@ -41,12 +41,14 @@
 #   V1.3   06.10.15  Now takes -log parameter
 #
 #*************************************************************************
-use FindBin;
-use lib $FindBin::Bin;
 
-use config;
-use configPred;
 use strict;
+use FindBin;
+use Cwd qw(abs_path);
+use lib abs_path("$FindBin::Bin/..");
+use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/");
+use config;
 use SAAP;
 
 $|=1;                           # Turn on flushing
@@ -65,7 +67,7 @@ $::log       = defined($::log)?$::log:'';
 #-- Check for pdblimit (should be be an odd number) 
 if(!defined($::pdblimit))
 {
-    $::pdblimit = $configPred::pdblimit;
+    $::pdblimit = $config::pdblimit;
 } 
 else 
 {
@@ -100,7 +102,7 @@ if(!defined($::prePred))
 
 #-- Make a unique temporary directory under /tmp/ 
 # 06.12.13 Added 'time' to directory name   By: ACRM 
-my $tmpDir = "$configPred::tmpRootDir" . "/saapPred$$" . time . "/";
+my $tmpDir = "$config::tmpDir" . "/saapPred$$" . time . "/";
 `mkdir $tmpDir`;
 
 #-- Define files 
@@ -122,12 +124,12 @@ my $predFile = $tmpDir.$sprot."_".$nat."_".$pos."_".$mut.".txt";
 my $jsonOut  = $tmpDir.$sprot."_".$nat."_".$pos."_".$mut."_pred.json";
 
 #--------------------------------------------------------------------------#
-#-- Run the pipeline using the uniprotPipeline.pl and save the JSON file --#
+#-- Run the pipeline using uniprotPipeline and save the JSON file        --#
 #--------------------------------------------------------------------------#
 if(!($::json))  
 {
     Log("Running SAAP Pipeline ... ");
-    my $exec1 = "$configPred::perl $config::saapUniprotPipeline -limit=$::pdblimit $sprot $nat $pos $mut > $jsonFile";
+    my $exec1 = "$config::saapUniprotPipeline -limit=$::pdblimit $sprot $nat $pos $mut > $jsonFile";
     `$exec1`; 
     Log("Done\n");
 }
@@ -138,7 +140,7 @@ if(!($::json))
 Log("Converting JSON to CSV ... ");
 if(-e $jsonFile)
 {
-    my $exec2  = "$configPred::perl $configPred::parseJSON $jsonFile $::prePred > $csvFile";
+    my $exec2  = "$config::parseJSON $jsonFile $::prePred > $csvFile";
     `$exec2`;
 }
 else # 06.12.13 Added this if JSON file not found By: ACRM
@@ -155,7 +157,7 @@ Log("Done\n");
 Log("Converting CSV to ARFF ... ");
 if(`grep -Ev 'PDBSWS|acrm|ERROR|Error' $csvFile` )  ## Check this! ACRM
 {
-    my $exec3 = "$configPred::perl $configPred::csv2arff $configPred::options -norm=$configPred::normScale -class=$configPred::class -id=$configPred::id -idfile=$idFile -inputs=$configPred::features $configPred::output $csvFile > $arffFile "; 
+    my $exec3 = "$config::csv2arff $config::csv2arffOptions -norm=$configPred::normScale -class=$config::class -id=$config::id -idfile=$idFile -inputs=$config::features $config::output $csvFile > $arffFile "; 
     `$exec3`;
 }    
 else
@@ -255,16 +257,16 @@ sub runPredictor
     {   
         Log("Running Model $i of $numberOfModels ... ");
 
-        my $theModel = sprintf ( $configPred::model,$i) ;
+        my $theModel = sprintf ( $config::model,$i) ;
         my $runPredictors = "";
 
-        if($configPred::remote eq "")
+        if($config::remote eq "")
         {
-            $runPredictors = `$configPred::java $configPred::memory -cp $configPred::weka $configPred::classifiers -T $arffFile -l $theModel -p 0 > $predFile.$i`;
+            $runPredictors = `$config::java $config::memory -cp $config::weka $config::classifiers -T $arffFile -l $theModel -p 0 > $predFile.$i`;
         }
         else
         {
-            $runPredictors = `ssh $configPred::remote "$configPred::java $configPred::memory -cp $configPred::weka $configPred::classifiers -T $arffFile -l $theModel -p 0 > $predFile.$i"`;
+            $runPredictors = `ssh $config::remote "$config::java $config::memory -cp $config::weka $config::classifiers -T $arffFile -l $theModel -p 0 > $predFile.$i"`;
         }
        
         my $instance= 1;
@@ -500,11 +502,10 @@ sub PrintJson
       "pdbs"  : \[
 __EOF
 
-
         for(my $i=1; $i<$::pdblimit+1; $i++) 
         {    
             #-- To turn PDB codes into a filename...
-            my $pdbfile = $configPred::pdbprep.$id{pdbcode}[$i].$configPred::pdbext;
+            my $pdbfile = $config::pdbPrep.$id{pdbcode}[$i].$config::pdbExt;
 
             print JSON <<__EOF;
                  \{"$programName":\{
