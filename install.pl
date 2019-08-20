@@ -51,7 +51,6 @@
 #
 #*************************************************************************
 use strict;
-
 if(! -e 'config.pm')
 {
     print <<__EOF;
@@ -67,9 +66,10 @@ use Cwd qw(abs_path);
 # Add the path of the executable to the library path
 use FindBin;
 use lib $FindBin::Bin;
-use lib abs_path("$FindBin::Bin/src/lib");
+use lib abs_path("$FindBin::Bin/lib");
 use util;
 use config;
+use SPECSIM;
 
 UsageDie() if(defined($::h));
 
@@ -99,9 +99,16 @@ __EOF
     BuildHTML();
     
     my $webDir  = "$config::saapWeb";
+    MakeDir($config::webTmpDir);
+    util::RunCommand("chmod a+w $config::webTmpDir");
+    util::RunCommand("chmod +t  $config::webTmpDir");
     CopyFile("www/webdata/getElementsByClassName.js", "$webDir/js");
     CopyFile("www/packages/overlib.js", "$webDir/js/overlib");
     CopyDir("www/packages/fontawesome", "$webDir/css/font-awesome");
+    CopyDir("www/ajax", $webDir);
+    CopyDir("www/webdata", "$webDir/webdata");
+    util::RunCommand("rm -f $webDir/config.pm");
+    CopyFile("config.pm", $webDir);
 }
 
 sub BuildHTML
@@ -111,7 +118,8 @@ sub BuildHTML
         CopyFile("www/includes/bo.css", $config::webRoot);
     }
 
-    `(cd www/ajax; WWW=$config::webIncludes; make)`
+    $ENV{'WWW'} = $config::webIncludes;
+    `(cd www/ajax; make)`
 }
 
 sub InstallCode
@@ -146,6 +154,15 @@ __EOF
     MakeDir($config::saapBinDir);
     InstallPrograms($config::saapHome, $config::saapBinDir);
     InstallData($config::dataDir);
+
+    MakeDir($config::cacheDir);
+    util::RunCommand("chmod a+w $config::cacheDir");
+    util::RunCommand("chmod +t  $config::cacheDir");
+
+    # Do a specsim accecss in order to create/update the DBM hash file
+    print "*** Info: Updating SpecSim DBM file";
+    SPECSIM::GetSpecsim($config::specsimDumpFile, $config::specsimHashFile, "MEAN", "MEAN");
+
 }
 
 sub Uncompress

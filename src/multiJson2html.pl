@@ -64,8 +64,8 @@ use JSONHTML;
 use HSL;
 
 #*************************************************************************
-$::json2html   = "$config::saapHome/json2html.pl";
-$::webfilesDir = "$config::saapHome/webdata";
+$::json2html   = "$config::saapBinDir/json2html";
+$::webfilesDir = "$config::gifDir";
 
 #*************************************************************************
 if(int(@ARGV) != 1)

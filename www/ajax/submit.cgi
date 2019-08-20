@@ -1,6 +1,8 @@
-#!/acrm/usr/local/bin/perl
+#!/usr/bin/perl
 use strict;
 use CGI;
+use FindBin;
+use lib $FindBin::Bin;
 use config;
 $|=1;
 

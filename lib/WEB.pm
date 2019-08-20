@@ -138,7 +138,7 @@ sub CreateUserAgent
     my($webproxy) = @_;
 
     my($ua);
-    $ua = LWP::UserAgent->new;
+    $ua = LWP::UserAgent->new(timeout => 300);
     if(length($webproxy))
     {
         $ua->proxy(['http', 'ftp'] => $webproxy);

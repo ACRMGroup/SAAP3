@@ -1,16 +1,28 @@
 package config;
 
 # The location of the installed SAAP code
+# You can't use $ENV{'HOME'} for the web install
 # $saapHome="$ENV{'HOME'}/saapinstall";
-$saapHome="$ENV{'HOME'}/git/SAAP3";
+$saapHome="/home/andrew/git/SAAP3";
 
+#########################################################################
+# Config for the web interface                                          #
+#########################################################################
 # The location of the web site
 $webRoot="/var/www/html";
 $saapWeb="$webRoot/saap";
+$webTmpDir="$webRoot/tmp";
+
+$saapURL="/saap";
+$predictURL="$saapURL/dap/";
+
 
 # The location of header, footer, main_menu and mutations_menu TT files
 $webIncludes="$saapHome/www/includes";
 
+#########################################################################
+# Config for the SAAPdap pipeline                                       #
+#########################################################################
 # Email address for EBI Webservices
 $email="andrew\@andrew-martin.org"; 
 
@@ -44,6 +56,8 @@ $getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
 
 ##########################################################################
 #             Shouldn't need to alter anything below here                #
+#                                                                        #
+#             The data analysis pipeline                                 #
 ##########################################################################
 # Location of the R executable
 $RExe="/usr/bin/R";
@@ -59,6 +73,7 @@ $dataDir="$saapHome/share/data";
 $pluginDir="$saapHome/plugins";
 $libDir="$saapHome/lib";
 $localBinDir="$saapHome/bin";
+$predHome="$saapHome/pred";
 
 # Dependent on $dataDir
 $mmDataDir="$dataDir";
@@ -87,5 +102,19 @@ $sprotIndex="$sprotCacheDir/sprot.idx";
 # Dependent on $checkHBondDir
 #$checkHBondDataDir="$checkHBondDir/data";
 #$checkHBondBinDir="$checkHBondDir/bin";
+
+##########################################################################
+#                             The web site                               #
+##########################################################################
+
+$saapMultiPipeline   = "$saapBinDir/multiUniprotPipeline";
+$saapUniprotPipeline = "$saapBinDir/uniprotPipeline";
+$saapMultiJSON2HTML  = "$saapBinDir/multiJson2html";
+$saapPipeline        = "$saapBinDir/pipeline";
+$saapJSON2HTML       = "$saapBinDir/json2html";
+$gifDir              = "$saapWeb/webdata";
+$predBin             = "$predHome/bin";
+$ENV{'PBIN'}         = $predBin;
+$EOF                 = "\n__EOF__\n";
 
 1;

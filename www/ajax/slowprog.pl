@@ -1,4 +1,6 @@
-#!/acrm/usr/local/bin/perl
+#!/usr/bin/perl
+use FindBin;
+use lib $FindBin::Bin;
 use config;
 my($processID, $uppdb, $ac, $native, $resnum, $mutant) = @ARGV;
 $|=1;
@@ -9,10 +11,8 @@ my $wkdir = "$config::webTmpDir/$processID";
 
 if($uppdb eq "pdb")
 {
-    my $exe;
-
     WriteMessage($wkdir, "Starting analysis...");
-    $exe = "cd $wkdir; $config::saapPipeline -v -info -c $resnum $mutant $ac 2>$wkdir/log >$wkdir/results.json";
+    my $exe = "cd $wkdir; $config::saapPipeline -v -info -c $resnum $mutant $ac 2>$wkdir/log >$wkdir/results.json";
     WriteMessage($wkdir, $exe);
     system($exe);
 
@@ -34,7 +34,14 @@ else
         close FILE;
 
         WriteMessage($wkdir, "Starting analysis...");
-        system("cd $wkdir; $config::saapMultiPipeline -v -info -f data mutant.lis >>$wkdir/log 2>&1");
+        my $exe = "cd $wkdir; $config::saapMultiPipeline -v -info -f data mutant.lis >>$wkdir/log 2>&1";
+        WriteMessage($wkdir, $exe);
+        system($exe);
+        
+        $exe = "cd $wkdir; $config::saapMultiPipeline -v -info -f data mutant.lis >>$wkdir/log 2>&1";
+        WriteMessage($wkdir, $exe);
+        system($exe);
+
         WriteMessage($wkdir, "Building HTML...");
         system("cd $wkdir; $config::saapMultiJSON2HTML -wkdir=$wkdir data >$wkdir/index.html");
         WriteMessage($wkdir, "done\n");

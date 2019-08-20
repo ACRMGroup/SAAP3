@@ -68,6 +68,8 @@ my $programName = "SAAPS";
 my $uniprot = "";
 my($ac, $resnum, $native, $mutant) = ParseCmdLine($programName);
 
+my $pipeline = $config::saapPipeline;
+
 $::v    = defined($::v)?"-v":"";
 $::info = defined($::info)?"-info":"";
 
@@ -85,7 +87,7 @@ foreach my $pdbres (@pdbresidues)
         print ",\n";
     }
     my($pdb, $resid) = split(/:/,$pdbres);
-    my $exe = "$config::saapHome/pipeline.pl $::v $::info -c $resid $mutant $pdb";
+    my $exe = "$pipeline $::v $::info -c $resid $mutant $pdb";
     if($::v ne "")
     {
         print STDERR "Running pipeline command:\n";
@@ -112,7 +114,7 @@ sub UsageDie
 
 SAAP UniProt Pipeline (c) 2011, UCL, Dr. Andrew C.R. Martin
 Usage: 
-uniprot_pipeline [-v [-info]] [-limit=n] uniprotAC native resnum newres
+uniprotPipeline [-v [-info]] [-limit=n] uniprotAC native resnum newres
                  -v     Verbose
                  -info  Used with -v to get pipeline plugins 
                         to report their info strings

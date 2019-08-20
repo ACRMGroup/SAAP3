@@ -57,16 +57,16 @@
 #
 #*************************************************************************
 use strict;
-use config;
 use FindBin;
 use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
 use lib abs_path("$FindBin::Bin/");
+use config;
 use SAAP;
 use PDBSWS;
 
 #*************************************************************************
-my $uniprotPipeline = "$config::saapHome/uniprotPipeline.pl";
+my $uniprotPipeline = $config::saapUniprotPipeline;
 
 #*************************************************************************
 if(defined($::h) || (int(@ARGV) < 1) || (int(@ARGV) > 2))
@@ -170,7 +170,7 @@ sub UsageDie
 
 multiUniprotPipeline  V1.1 (c) UCL, Dr. Andrew C.R. Martin
 
-Usage: multiUniprotPipeline.pl [-v [-info]] [-r] [-f] [-limit=n] dirName mutantFile
+Usage: multiUniprotPipeline [-v [-info]] [-r] [-f] [-limit=n] dirName mutantFile
        dirName    - Directory name for results files. Should not exist unless -f
                     specified in which case it will be deleted and re-created.
                     Use -f with care!!!

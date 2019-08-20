@@ -1,6 +1,8 @@
-#!/acrm/usr/local/bin/perl
+#!/usr/bin/perl
 use strict;
 use CGI;
+use FindBin;
+use lib $FindBin::Bin;
 use config;
 $|=1;
 
@@ -11,7 +13,7 @@ my $prevContent;
 
 if(! -e $logfile)
 {
-    sleep 5;                        # Give NFS time to realize directory is there
+    sleep 5;          # Give NFS time to realize directory is there
 }
 
 if(! -e $logfile)

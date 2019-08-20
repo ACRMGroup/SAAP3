@@ -1,4 +1,6 @@
 #!/acrm/usr/local/bin/perl
+use FindBin;
+use lib $FindBin::Bin;
 use config;
 my($processID, $sprotID, $native, $resnum, $mutant) = @ARGV;
 $|=1;
