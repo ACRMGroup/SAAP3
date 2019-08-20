@@ -2,11 +2,14 @@ SAAPdap/SAAPpred
 ================
 
 Installation
-------------
+============
+
+Compiling and installing the code
+---------------------------------
 1. Ensure you have the following packages installed system wide:
 
 - R
-- perl (with LWP and the LWP::Protocol::https plugin)
+- perl LWP and LWP::Protocol::https modules
 - glibc-static
 
 You can do this by running `./preinstall.sh`
@@ -18,36 +21,37 @@ for this purpose.
 3. Modify `config.pm` as required - see the example `config.pm.*`
 files as examples.
 
-4. Run `./install.pl` to install the software
+4. Run `./install.pl` to compile and install the software
 
 Interface install
 -----------------
 
-1. Ensure `getElementsByClassName.js` is in `$WWW/js/`
-   (copy from webdata directory)
-2. Ensure `overlib.js` is in `$WWW/js/overlib/`
-   (grab from web)
-3. Ensure `font-awesome` is in `$WWW/css/font-awesome`
-4. Ensure `wkhtmltopdf` is installed in `/acrm/usr/local/bin`
-   (alter `webdata/printcgi.pl` to fix path)
+1. In addition to the standard code install, ensure you have the
+following packages installed system wide:
 
-### Moving the install
+- perl JSON module
+- wkhtmltopdf
 
-    rm cache/sprot/sprot.idx*
-    rm plugins/data/specsim.idx*
+You can do this by running `./preinstall.sh`
 
-### Dump the fosta database
+2. Run `./install.pl interface` to install the interface
 
-    ./dump_fosta.sh
-    rm ./plugins/data/specsim.idx*
+Directories and files present in the main distribution folder
+=============================================================
 
-### Clean the cache
+- **config.pm.xxx** Example config files
+- **install.pl** Install script
+- **README.md** This README file
+- **preinstall.sh** System install script
+- **util.pm** Utilities used by the install script
 
-    rm -rf cache/*
+- **data/** Data files
+- **lib/** Perl and R library files
+- **packages/** C program packages
+- **plugins/** The analysis plugins
+- **src/** The analysis programs
+- **www/** The web interface
 
-*or for a specific PDB file:*
-
-    rm cache/*/*PDBID*
 
 -----------------------------------------------------------------
 
@@ -108,6 +112,28 @@ Makes a PDF version of all HTML pages in a specified directory
 
 
 ### dump_fosta.pl
+
+
+----------------------------------------------------------------------
+
+
+### Moving the install
+
+    rm cache/sprot/sprot.idx*
+    rm plugins/data/specsim.idx*
+
+### Dump the fosta database
+
+    ./dump_fosta.sh
+    rm ./plugins/data/specsim.idx*
+
+### Clean the cache
+
+    rm -rf cache/*
+
+*or for a specific PDB file:*
+
+    rm cache/*/*PDBID*
 
 
 -------------------------------------------------------------------------
