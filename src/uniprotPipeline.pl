@@ -90,7 +90,7 @@ foreach my $pdbres (@pdbresidues)
     my $exe = "$pipeline $::v $::info -c $resid $mutant $pdb";
     if($::v ne "")
     {
-        print STDERR "Running pipeline command:\n";
+        print STDERR "\nRunning pipeline command:\n";
         my $progname = $exe;
         $progname =~ s/.*\///;
         print STDERR "   $progname\n";

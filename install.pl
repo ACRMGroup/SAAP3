@@ -109,6 +109,11 @@ __EOF
     CopyDir("www/webdata", "$webDir/webdata");
     util::RunCommand("rm -f $webDir/config.pm");
     CopyFile("config.pm", $webDir);
+
+    MakeDir($config::cacheDir);
+    util::RunCommand("chmod a+w $config::cacheDir");
+    util::RunCommand("chmod a+w $config::cacheDir/*");
+    util::RunCommand("chmod +t  $config::cacheDir/*");
 }
 
 sub BuildHTML
@@ -157,7 +162,8 @@ __EOF
 
     MakeDir($config::cacheDir);
     util::RunCommand("chmod a+w $config::cacheDir");
-    util::RunCommand("chmod +t  $config::cacheDir");
+    util::RunCommand("chmod a+w $config::cacheDir/*");
+    util::RunCommand("chmod +t  $config::cacheDir/*");
 
     # Do a specsim accecss in order to create/update the DBM hash file
     print "*** Info: Updating SpecSim DBM file";

@@ -7,3 +7,5 @@ sudo $packagemanager -y install R
 sudo $packagemanager -y install perl-LWP-Protocol-https
 # Needed for Muscle
 sudo $packagemanager -y install libstdc++-static glibc-static
+# Needed to read JSON files
+sudo $packagemanager -y install perl-JSON
