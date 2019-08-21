@@ -15,7 +15,7 @@ $saapWeb="$webRoot/saap";
 $webTmpDir="$webRoot/tmp";
 
 $saapURL="/saap";
-$predictURL="$saapURL/dap/";
+$predictURL="$saapURL";
 
 
 # The location of header, footer, main_menu and mutations_menu TT files
@@ -115,7 +115,8 @@ $saapMultiJSON2HTML  = "$saapBinDir/multiJson2html";
 $saapPipeline        = "$saapBinDir/pipeline";
 $saapJSON2HTML       = "$saapBinDir/json2html";
 $gifDir              = "$saapWeb/webdata";
-$predBin             = "$predHome/bin";
+$predBin             = "$saapBinDir";
+#$predBin             = "$predHome/bin";
 $ENV{'PBIN'}         = $predBin;
 $EOF                 = "\n__EOF__\n";
 
