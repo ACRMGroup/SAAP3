@@ -16,7 +16,7 @@ WriteMessage($wkdir, "Parameters are AC: $ac, ORIG: $orig, RESNUM: $resnum, MUTA
 
 my $logfile = "$wkdir/log";
 
-my $exe = "(cd $config::predBin; $config::predBin/saapPred.pl -printall -v=3 -log=$logfile -json=$jsonpath $ac $orig $resnum $mutant 2>&1 >$wkdir/log2)";
+my $exe = "(cd $config::predBin; $config::predBin/saapPred -printall -v=3 -log=$logfile -json=$jsonpath $ac $orig $resnum $mutant 2>&1 >$wkdir/log2)";
 `$exe`;
 
 WriteNewIndexFile($wkdir);
