@@ -8,8 +8,8 @@
 #   Date:       06.09.17
 #   Function:   Installation script for the SAAP program
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2017
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) Prof. Andrew C. R. Martin, UCL, 2017
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
 #               University College
@@ -73,12 +73,12 @@ use SPECSIM;
 
 UsageDie() if(defined($::h));
 
-if($ARGV[0] eq "interface")
+if($ARGV[0] eq "interface") # install the web interface
 {
     shift(@ARGV);
     InstallInterface();
 }
-elsif($ARGV[0] eq "pred")
+elsif($ARGV[0] eq "pred") # only install the prediction code
 {
     shift(@ARGV);
     InstallPredCode();
@@ -86,7 +86,7 @@ elsif($ARGV[0] eq "pred")
 else
 {
     InstallDAPCode();
-#    InstallPredCode();
+    InstallPredCode();
 }
 
 sub InstallInterface
@@ -268,6 +268,7 @@ sub InstallPredPrograms
 
     CopyDir("./pred/src", "$saapPredHome/src");
     LinkFiles("$saapPredHome/src", $binDir);
+    unlink("$binDir/$config::wekaZip");
 
     if(! -d "$saapPredHome/src/weka-$config::wekaVersion")
     {
@@ -522,11 +523,31 @@ sub CheckPreInstall
     # Check glibc-static
     if(!( -f '/usr/lib64/libm.a' ) && !( -f '/usr/lib/libm.a'))
     {
+        print STDERR "***Error: glibc-static not installed\n";
         return(0);
     }
     # Check R
     if(!( -f '/usr/bin/R'))
     {
+        print STDERR "***Error: R not installed\n";
+        return(0);
+    }
+    # Check Java
+    if(!( -f '/usr/bin/java'))
+    {
+        print STDERR "***Error: Java not installed\n";
+        return(0);
+    }
+    # Check Unzip
+    if(!( -f '/usr/bin/unzip'))
+    {
+        print STDERR "***Error: Unzip not installed\n";
+        return(0);
+    }
+    # Check wkhtmltopdf
+    if(!( -f '/usr/bin/wkhtmltopdf'))
+    {
+        print STDERR "***Error: wkhtmltopdf not installed\n";
         return(0);
     }
     # Check perl-LWP-Protocol-https
@@ -535,14 +556,22 @@ sub CheckPreInstall
     $https =~ s/\s//g;
     if(!length($https))
     {
+        print STDERR "***Error: perl LWP not installed\n";
+        return(0);
+    }
+
+    # Check perl-JSON
+    $https  = `find /usr/share/perl5 -name JSON.pm -print`;
+    $https .= `find /usr/lib64/      -name JSON    -print`;
+    $https  =~ s/\s//g;
+    if(!length($https))
+    {
+        print STDERR "***Error: perl JSON not installed\n";
         return(0);
     }
 
     return(1);
 }
-
-
-
 
 
 #*************************************************************************
@@ -555,13 +584,19 @@ sub UsageDie
 {
     print <<__EOF;
 
-SAAP V1.0 install (c) 2017, Dr. Andrew C.R. Martin, UCL
+SAAP V1.0 install (c) 2017-2019, Prof. Andrew C.R. Martin, UCL
 
 Usage: ./install.pl [interface]
 
 install is the SAAP installer.
 
       !!!  YOU MUST EDIT config.pm BEFORE USING THIS SCRIPT  !!!
+
+Run as 
+   ./install.pl
+first to compiled and install the code. Then run
+   ./install.pl interface
+to install the web interface
 
 __EOF
 

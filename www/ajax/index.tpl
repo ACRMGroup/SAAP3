@@ -82,7 +82,8 @@ the web server will only analyze a maximum of <b>two structures</b>
 that represent your sequence. In future we will allow users to
 register to analyze all structures.</p>
 
-<form name='inputform' action='' >
+<form name='inputform' action='' style='background: #cccccc; padding: 10px 10px 1px 10px;'>
+
    <p style='display: none;'>
       <input type='radio' name='uppdb' id='uppdbup'  value='up' checked='checked' onclick='ActivateUP();'/>UniProt
       <input type='radio' name='uppdb' id='uppdbpdb' value='pdb' onclick='ActivatePDB();'/>PDB
@@ -127,7 +128,7 @@ register to analyze all structures.</p>
 
 <div id='throbber' style='display:none;'><p><img src='throbber.gif' alt='WAIT'/>Please wait...</p></div>
 
-<div id='results'>
+<div id='results' style='background: #eeeeee; padding: 10px 10px 1px 10px;'>
     <p>Progress on the analysis will appear here...</p>
     <p><b>Note</b> Some mobile browsers (such as the default Android
        browser) will not submit this page. If this progress box 

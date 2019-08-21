@@ -169,7 +169,7 @@ sub WriteHTMLHeader
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
 <head>
-<title>SAAP XXX analysis</title>
+<title>SAAP analysis</title>
 
 <script type='text/javascript' src='$config::saapURL/js/getElementsByClassName.js'>
 <!-- http://robertnyman.com -->
