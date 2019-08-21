@@ -1,7 +1,10 @@
 Overlib
 -------
 ```
-wget https://github.com/overlib/overlib/blob/master/overlib.js
+wget https://github.com/overlib/overlib/archive/4.21.tar.gz
+tar xvf 4.21.tar.gz
+mv overlib-4.21/overlib.js .
+rm -rf *4.21*
 ```
 
 Font-awesome

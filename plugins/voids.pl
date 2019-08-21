@@ -63,7 +63,7 @@ use config;
 use SAAP;
 
 # Information string about this plugin
-$::infoString = "Analyzing voids (this will take some time!)";
+$::infoString = "Analyzing voids - this will take some time! (Ignore any sort/broken pipe errors!!!)";
 
 # Programs we use
 my $getchain = $config::binDir . "/pdbgetchain";

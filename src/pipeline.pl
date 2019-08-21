@@ -228,7 +228,7 @@ sub ParseCmdLine
 {
     my ($programName, $uniprot, $pdbcode) = @_;
 
-    if(@ARGV != 3)
+    if(scalar(@ARGV) != 3)
     {
         &::UsageDie();
     }

@@ -169,12 +169,12 @@ sub WriteHTMLHeader
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
 <head>
-<title>SAAP analysis</title>
+<title>SAAP XXX analysis</title>
 
-<script type='text/javascript' src='/js/getElementsByClassName.js'>
+<script type='text/javascript' src='$config::saapURL/js/getElementsByClassName.js'>
 <!-- http://robertnyman.com -->
 </script>
-<script type="text/javascript" src="/js/overlib/overlib.js">
+<script type="text/javascript" src="$config::saapURL/js/overlib/overlib.js">
 <!-- overLIB (c) Erik Bosrup -->
 </script>
 

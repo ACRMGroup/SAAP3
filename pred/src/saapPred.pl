@@ -29,9 +29,9 @@
 #   =================
 #   V1.0   23.10.12  Original
 #   V1.1   16.04.13  Added 
-#                    $configPred::tmpRootDir 
+#                    $config::tmpRootDir 
 #                      - specifies base tmp dir rather than /tmp
-#                    $configPred::remote
+#                    $config::remote
 #                      - specifies remote machine on which to run Weka
 #                    Corrected some spelling errors in output
 #                    By: ACRM
@@ -80,7 +80,7 @@ else
 #-- Check for modlimit (should be be an odd number between 1-9)
 if(!defined($::modlimit)) 
 {
-    $::modlimit = $configPred::modlimit;
+    $::modlimit = $config::modlimit;
 } 
 else 
 {

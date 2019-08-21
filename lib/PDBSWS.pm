@@ -79,6 +79,7 @@ sub PDBQuery
     }
     if($res ne "")
     {
+        $res =~ s/^[A-Za-z]+//;  # Remove starting letters
         $url .= "&res=$res";
     }
     my $ua = WEB::CreateUserAgent("");
@@ -124,6 +125,7 @@ sub IDQuery
     my $url = $pdbswsURL . "id&id=$id";
     if($res ne "")
     {
+        $res =~ s/[A-Za-z]//g;  # Remove any letters
         $url .= "&res=$res";
     }
     my $ua = WEB::CreateUserAgent("");
@@ -168,6 +170,7 @@ sub ACQuery
     my $url = $pdbswsURL . "ac&id=$id";
     if($res ne "")
     {
+        $res =~ s/[A-Za-z]//g;  # Remove any letters
         $url .= "&res=$res";
     }
     my $ua = WEB::CreateUserAgent("");
@@ -210,6 +213,7 @@ sub ACQueryAll
     my $url = $pdbswsURL . "ac&id=$id";
     if($res ne "")
     {
+        $res =~ s/[A-Za-z]//g;  # Remove any letters
         $url .= "&res=$res";
     }
     my $ua = WEB::CreateUserAgent("");
