@@ -157,7 +157,7 @@ Log("Done\n");
 Log("Converting CSV to ARFF ... ");
 if(`grep -Ev 'PDBSWS|acrm|ERROR|Error' $csvFile` )  ## Check this! ACRM
 {
-    my $exec3 = "$config::csv2arff $config::csv2arffOptions -norm=$configPred::normScale -class=$config::class -id=$config::id -idfile=$idFile -inputs=$config::features $config::output $csvFile > $arffFile "; 
+    my $exec3 = "$config::csv2arff $config::csv2arffOptions -norm=$config::normScale -class=$config::class -id=$config::id -idfile=$idFile -inputs=$config::features $config::output $csvFile > $arffFile "; 
     `$exec3`;
 }    
 else

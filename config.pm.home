@@ -59,7 +59,7 @@ $getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
 #########################################################################
 # Config for the predictor                                              #
 #########################################################################
-$weka = "/home/andrew/work/Packages/weka-3-6-7/weka.jar";
+$weka = "/home/amartin/git/IntPred/packages/TCNlib-0.1/extpackages/weka-3-7-10/weka.jar"
 
 
 ##########################################################################
@@ -148,7 +148,7 @@ $model           = "$saapPredModels/humVarSNPandPD_bestPDB_NoErrorsNoMissing_%d_
 $remote          = "";
 
 # Java settings
-$java            = "java";
+$java            = "/usr/bin/java";
 $memory          = "-Xmx6g";
 $classifiers     = "weka.classifiers.trees.RandomForest";
 
