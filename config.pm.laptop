@@ -56,12 +56,6 @@ $indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
 $getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
 
 
-#########################################################################
-# Config for the predictor                                              #
-#########################################################################
-$weka = "/home/andrew/work/Packages/weka-3-6-7/weka.jar";
-
-
 ##########################################################################
 #             Shouldn't need to alter anything below here                #
 #                                                                        #
@@ -143,12 +137,16 @@ $features        = "Binding,SProtFT2,SProtFT4,SProtFT5,SProtFT6,SProtFT7,SProtFT
 $output          = "dataset"; # name of field to be used as output
 $model           = "$saapPredModels/humVarSNPandPD_bestPDB_NoErrorsNoMissing_%d_4.model";
 
+$wekaVersion     = "3-6-7"; # Note that the models don't run on Weka 3-8-3
+$wekaZip         = "weka-$wekaVersion.zip";
+$weka            = "$saapPredHome/src/weka-$wekaVersion/weka.jar";
+
 # To run Weka on a different machine
 #$remote         = "acrm3";
 $remote          = "";
 
 # Java settings
-$java            = "java";
+$java            = "/usr/bin/java";
 $memory          = "-Xmx6g";
 $classifiers     = "weka.classifiers.trees.RandomForest";
 

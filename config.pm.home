@@ -56,12 +56,6 @@ $indexsprot="$saapHome/scripts/indexfasta/indexswissprot.pl";
 $getsprot="$saapHome/scripts/indexfasta/getswissprot.pl";
 
 
-#########################################################################
-# Config for the predictor                                              #
-#########################################################################
-$weka = "/home/amartin/git/IntPred/packages/TCNlib-0.1/extpackages/weka-3-7-10/weka.jar"
-
-
 ##########################################################################
 #             Shouldn't need to alter anything below here                #
 #                                                                        #
@@ -142,6 +136,10 @@ $id              = "num:uniprotac:res:nat:mut:pdbcode:chain:resnum:mutation:stru
 $features        = "Binding,SProtFT2,SProtFT4,SProtFT5,SProtFT6,SProtFT7,SProtFT8,SProtFT9,SProtFT10,SProtFT11,SProtFT12,Interface,Relaccess,Impact,HBonds,SPhobic,CPhim,BCharge,SSGeom,Voids,MLargest1,MLargest2,MLargest3,MLargest4,MLargest5,MLargest6,MLargest7,MLargest8,MLargest9,MLargest10,NLargest1,NLargest2,NLargest3,NLargest4,NLargest5,NLargest6,MLargest7,MLargest8,NLargest9,NLargest10,Clash,Glycine,Proline,CisPro";
 $output          = "dataset"; # name of field to be used as output
 $model           = "$saapPredModels/humVarSNPandPD_bestPDB_NoErrorsNoMissing_%d_4.model";
+
+$wekaVersion     = "3-6-7"; # Note that the models don't run on Weka 3-8-3
+$wekaZip         = "weka-$wekaVersion.zip";
+$weka            = "$saapPredHome/src/weka-$wekaVersion/weka.jar";
 
 # To run Weka on a different machine
 #$remote         = "acrm3";

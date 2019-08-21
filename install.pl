@@ -194,8 +194,6 @@ sub InstallPredCode
 
     MakeDir($config::saapBinDir);
     InstallPredPrograms($config::saapPredHome, $config::saapBinDir);
-    
-    
 }
 
 sub Uncompress
@@ -267,8 +265,20 @@ sub InstallDAPPrograms
 sub InstallPredPrograms
 {
     my($saapPredHome, $binDir) = @_;
+
     CopyDir("./pred/src", "$saapPredHome/src");
     LinkFiles("$saapPredHome/src", $binDir);
+
+    CopyFile("./pred/packages/$config::wekaZip", "$saapPredHome/src");
+    if(! -d "$saapPredHome/src/weka-$config::wekaVersion")
+    {
+        util::RunCommand("(cd $saapPredHome/src; unzip $config::wekaZip)");
+        unlink("$saapPredHome/src/$config::wekaZip");
+    }
+    else
+    {
+        print "*** Info: Skipped unpacking Weka - already done\n";
+    }
 }
 
 #*************************************************************************

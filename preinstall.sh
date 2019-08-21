@@ -11,4 +11,6 @@ sudo $packagemanager -y install libstdc++-static glibc-static
 sudo $packagemanager -y install perl-JSON
 # Needed to create PDF versions of web pages
 sudo $packagemanager -y install wkhtmltopdf
+# Needed to unpack Weka
+sudo $packagemanager -y install unzip
 
