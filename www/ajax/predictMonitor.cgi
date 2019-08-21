@@ -13,7 +13,7 @@ my $prevContent;
 
 if(! -e $logfile)
 {
-    sleep 5;                        # Give NFS time to realize directory is there
+    sleep 5;    # Give NFS time to realize directory is there
 }
 
 if(! -e $logfile)
@@ -46,7 +46,8 @@ else
         }
 
         last if($changed);
-        sleep 5;
+#        sleep 5;
+        sleep 1;
     }
 }
 

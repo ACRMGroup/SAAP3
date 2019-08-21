@@ -46,7 +46,8 @@ else
         }
 
         last if($changed);
-        sleep 5;
+#        sleep 5;
+        sleep 1;
     }
 }
 
