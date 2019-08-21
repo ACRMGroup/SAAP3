@@ -269,9 +269,9 @@ sub InstallPredPrograms
     CopyDir("./pred/src", "$saapPredHome/src");
     LinkFiles("$saapPredHome/src", $binDir);
 
-    CopyFile("./pred/packages/$config::wekaZip", "$saapPredHome/src");
     if(! -d "$saapPredHome/src/weka-$config::wekaVersion")
     {
+        CopyFile("./pred/packages/$config::wekaZip", "$saapPredHome/src");
         util::RunCommand("(cd $saapPredHome/src; unzip $config::wekaZip)");
         unlink("$saapPredHome/src/$config::wekaZip");
     }
