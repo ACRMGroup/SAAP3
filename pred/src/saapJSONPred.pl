@@ -4,7 +4,9 @@ use strict;
 use FindBin;
 use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/..");
 use lib abs_path("$FindBin::Bin/");
+use config;
 
 my $verbose  = defined($::v)?"-v=$::v":"";
 my $modlimit = defined($::modlimit)?"-modlimit=$::modlimit":"";
@@ -33,7 +35,7 @@ elsif($filename =~ /(.*)_(.)_(\d+)_(.)\.json/)
 
 $ac =~ s/^.*\///;           # Strip path
 
-my $exec="\$PBIN/saapPred.pl $verbose $modlimit $printall -json=$filename $ac $orig $resnum $mutant";
+my $exec="$config::saapBinDir/saapPred $verbose $modlimit $printall -json=$filename $ac $orig $resnum $mutant";
 my $result = `$exec`;
 print $result;
 

@@ -5,6 +5,7 @@ use strict;
 use FindBin;
 use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/..");
 use lib abs_path("$FindBin::Bin/");
 use config;
 
@@ -12,16 +13,18 @@ if(scalar(@ARGV) != 4)
 {
    print <<__EOF;
 
-Usage: del.pl plugin pdbcode resid newres
+Usage: del plugin pdbcode resid newres
+
+Removes the cache file for a given mutation and plugin
 
 __EOF
     exit 0;
 }
 
-my $plugin = shift(@ARGV);
+my $plugin  = shift(@ARGV);
 my $pdbcode = shift(@ARGV);
-my $resid = shift(@ARGV);
-my $newres= shift(@ARGV);
+my $resid   = shift(@ARGV);
+my $newres  = shift(@ARGV);
 
 my $pdbfile = $config::pdbPrep . $pdbcode . $config::pdbExt;
 $pdbfile =~ s/\//_/g;

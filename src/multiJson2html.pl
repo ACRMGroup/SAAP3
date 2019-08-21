@@ -57,6 +57,7 @@ no strict 'refs';
 use FindBin;
 use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../lib");
+use lib abs_path("$FindBin::Bin/..");
 use lib abs_path("$FindBin::Bin/");
 use config;
 use JSONSAAP;
