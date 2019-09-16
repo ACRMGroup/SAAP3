@@ -15,4 +15,6 @@ sudo $packagemanager -y install wkhtmltopdf
 sudo $packagemanager -y install java
 # Needed to unpack Weka
 sudo $packagemanager -y install unzip
+# Needed to build interface
+sudo $packagemanager -y install perl-Template-Toolkit
 

@@ -108,8 +108,8 @@ __EOF
     
     my $webDir  = "$config::saapWeb";
     MakeDir($config::webTmpDir);
-    util::RunCommand("chmod a+w $config::webTmpDir");
-    util::RunCommand("chmod +t  $config::webTmpDir");
+    util::RunCommand("sudo chmod a+w $config::webTmpDir");
+    util::RunCommand("sudo chmod +t  $config::webTmpDir");
     CopyFile("www/webdata/getElementsByClassName.js", "$webDir/js");
     CopyFile("www/packages/overlib.js", "$webDir/js/overlib");
     CopyDir("www/packages/fontawesome", "$webDir/css/font-awesome");
