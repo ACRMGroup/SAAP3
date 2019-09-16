@@ -102,6 +102,10 @@ __EOF
         exit 1;
     }
 
+    # Fix the web temp URL so it starts and ends with a single /
+    $config::webTmpURL = '/' . $config::webTmpURL . '/';  # Add slashes to start and end
+    $config::webTmpURL =~ s/\/\//\//g;                    # Replace double slash with single
+    
     CopyDir("www", "$config::saapHome/www");
     
     BuildHTML();
@@ -134,6 +138,7 @@ sub BuildHTML
 
     $ENV{'WWW'}    = $config::webIncludes;
     $ENV{'SERVER'} = $config::webServer;
+    $ENV{'TMPURL'} = $config::webTmpURL;
     `(cd www/ajax; make)`
 }
 

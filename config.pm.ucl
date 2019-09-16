@@ -17,7 +17,8 @@ $saapURL             = "/saap3";
 $saapWeb             = "$webRoot/saap3";
 
 # The temporary directory on the web server
-$webTmpDir           = "$webRoot/tmp";
+$webTmpDir           = "$webRoot/tmp/saap3";
+$webTmpURL           = "/tmp/saap3";
 
 # Location of the PDB - what you put on the start and end of a PDB
 # code to find the file. If you don't have a local PDB install, it

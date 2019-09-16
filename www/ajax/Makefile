@@ -1,4 +1,4 @@
-HTML = index.html ajax.js
+HTML = index.html ajax.js predictAjax.js
 INCLUDES = $(WWW)/header.tt $(WWW)/footer.tt $(WWW)/main_menu.tt $(WWW)/mutations/mutations_menu.tt
 
 all: $(HTML)
@@ -11,6 +11,9 @@ index.html : index.tt $(INCLUDES)
 	tpage --define WWW=$(WWW) $< > $@
 
 ajax.js : ajax.tpl
+	./tpl2tt.pl $< > $@
+
+predictAjax.js : predictAjax.tpl
 	./tpl2tt.pl $< > $@
 
 clean:

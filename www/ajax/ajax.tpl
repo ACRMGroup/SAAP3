@@ -5,6 +5,7 @@ var gProcessID = null;   // ProcessID for the analysis - also
 var gRedirect  = "index.html";    // Filename in URL /tmp/gProcessID to which 
                                   // we redirect on completion
 var gServer    = "$[SERVER]"; // Server name - NO TRAILING /
+var gTmpURL    = "$[TMPURL]"; // Temp URL, must start and end with /
 
 function createRequest() {
    var req = null;
@@ -119,7 +120,7 @@ function getProcessID()
    { 
       var sequenceElement = document.getElementById("results");
       gProcessID = gRequest.responseText;
-      var url = gServer+"/tmp/"+gProcessID+"/";
+      var url = gServer+gTmpURL+gProcessID+"/";
 
       sequenceElement.innerHTML = "<p>The process ID for your analysis is: "+gProcessID+"</p><p>If you do not wish to wait for the results now, you will be able to access them at<br /><b>"+url+"</b><br />when the run is complete.</p><div id='progress'><pre>Progress on the analysis will appear here...</pre></div>";
 
@@ -155,7 +156,7 @@ function updatePage()
 //         Don't need to remove the throbber as we redirect to a new page
 //         var throbberElement = document.getElementById("throbber");
 //         throbberElement.style.display = 'none';
-         var newURL = "/tmp/"+gProcessID+"/"+gRedirect;
+         var newURL = gTmpURL+gProcessID+"/"+gRedirect;
 //         location.replace(newURL); // This doesn't put the query page in the history
          window.location=newURL;
       }

@@ -6,8 +6,9 @@
 var gRedirect  = "";   
 // Server name, just used to report a URL (NO TRAILING / !!!)
 // Set to blank if you aren't doing a redirect
-//var gServer    = "http://home.stagleys.co.uk";
-var gServer    = "";
+var gServer    = "$[SERVER]"; // Server name - NO TRAILING /
+var gTmpURL    = "$[TMPURL]"; // Temp URL, must start and end with /
+
 // The submission CGI script
 var gSubmitCGI = "predictSubmit.cgi";  
 // The monitor CGI script
@@ -96,7 +97,7 @@ function getProcessID()
         }
         else
         {
-            var url = gServer+"/tmp/"+gProcessID+"/";
+            var url = gServer+gTmpURL+gProcessID+"/";
 
             resultsElement.innerHTML = "<p>The process ID for your analysis is: "+gProcessID+"</p><p>If you do not wish to wait for the results now, you will be able to access them at<br /><b>"+url+"</b><br />when the run is complete.</p><div id='progress'><pre>Progress on the analysis will appear here...</pre></div>";
         }
@@ -144,7 +145,7 @@ function updatePage()
             }
             else  // We are replacing the page
             {
-                var newURL = "/tmp/"+gProcessID+"/"+gRedirect;
+                var newURL = gTmpURL+gProcessID+"/"+gRedirect;
                 window.location=newURL;
             }
         }

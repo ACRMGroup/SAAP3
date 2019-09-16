@@ -18,6 +18,7 @@ $saapWeb             = "$webRoot/saap/dap";
 
 # For the Interface: The temporary directory on the web server
 $webTmpDir           = "$webRoot/tmp/saap";
+$webTmpURL           = "/tmp/saap";
 
 # Location of the PDB - what you put on the start and end of a PDB
 # code to find the file. If you don't have a local PDB install, it
