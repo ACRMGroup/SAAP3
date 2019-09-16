@@ -170,9 +170,9 @@ __EOF
     InstallData($config::dataDir);
 
     MakeDir($config::cacheDir);
-    util::RunCommand("chmod a+w $config::cacheDir");
-    util::RunCommand("chmod a+w $config::cacheDir/*");
-    util::RunCommand("chmod +t  $config::cacheDir/*");
+    util::RunCommand("sudo chmod a+w $config::cacheDir");
+    util::RunCommand("sudo chmod a+w $config::cacheDir/*");
+    util::RunCommand("sudo chmod +t  $config::cacheDir/*");
 
     # Do a specsim accecss in order to create/update the DBM hash file
     print "*** Info: Updating SpecSim DBM file if needed\n";
