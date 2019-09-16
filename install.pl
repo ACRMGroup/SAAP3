@@ -348,7 +348,7 @@ sub MakeDir
     if(! -d $destination)
     {
         print STDERR "\n*** Error: Cannot create directory $destination\n";
-        return(0);
+        exit 1;
     }
     # Fail if we can't write to it
     my $tFile = "$destination/testWrite.$$";
@@ -356,7 +356,7 @@ sub MakeDir
     if(! -e $tFile)
     {
         print STDERR "\n*** Error: Cannot write to directory $destination\n";
-        return(0);
+        exit 1;
     }
     unlink $tFile;
 }
