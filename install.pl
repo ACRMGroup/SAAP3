@@ -102,6 +102,8 @@ __EOF
         exit 1;
     }
 
+    CopyDir("www", $saapHome);
+    
     BuildHTML();
     
     my $webDir  = "$config::saapWeb";
