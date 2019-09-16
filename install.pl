@@ -120,9 +120,9 @@ __EOF
 
     MakeDir($config::cacheDir);
     print "*** Ignore Error Messages! ***\n";
-    util::RunCommand("chmod a+w $config::cacheDir");
-    util::RunCommand("chmod a+w $config::cacheDir/*");
-    util::RunCommand("chmod +t  $config::cacheDir/*");
+    util::RunCommand("sudo chmod a+w $config::cacheDir");
+    util::RunCommand("sudo chmod a+w $config::cacheDir/*");
+    util::RunCommand("sudo chmod +t  $config::cacheDir/*");
 }
 
 sub BuildHTML
