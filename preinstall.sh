@@ -1,5 +1,5 @@
-#packagemanager=yum
-packagemanager=dnf
+packagemanager=yum
+#packagemanager=dnf
 
 # Needed for conservation
 sudo $packagemanager -y install R
