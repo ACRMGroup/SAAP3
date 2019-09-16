@@ -102,7 +102,7 @@ __EOF
         exit 1;
     }
 
-    CopyDir("www", $config::saapHome);
+    CopyDir("www", "$config::saapHome/www");
     
     BuildHTML();
     
