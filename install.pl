@@ -552,12 +552,12 @@ sub CheckPreInstall
         print STDERR "***Error: Unzip not installed\n";
         return(0);
     }
-    # Check wkhtmltopdf
-    if(!( -f '/usr/bin/wkhtmltopdf'))
-    {
-        print STDERR "***Error: wkhtmltopdf not installed\n";
-        return(0);
-    }
+#    # Check wkhtmltopdf
+#    if(!( -f '/usr/bin/wkhtmltopdf'))
+#    {
+#        print STDERR "***Error: wkhtmltopdf not installed\n";
+#        return(0);
+#    }
     # Check perl-LWP-Protocol-https
     my $https = `find /usr/lib/   -name SSLeay.so -print`;
     $https   .= `find /usr/lib64/ -name SSLeay.so -print`;
