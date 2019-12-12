@@ -2,7 +2,7 @@ package config;
 
 # The location of the installed SAAP code (can be the git directory)
 # Can't use $ENV{'HOME'} for web install
-$saapHome            = "/home/SAAP3";
+$saapHome            = "/home/SAAP3newsite";
 
 # For the Interface: The root directory for web files
 $webRoot             = "/serv/www/html_newsite";
