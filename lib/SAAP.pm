@@ -34,7 +34,7 @@ $ErrorMessage = "";
 
 ##########################################################################
 # Used by IMPACT
-$pdbswsURL       = "http://www.bioinf.org.uk/cgi-bin/pdbsws/query.pl";
+$pdbswsURL       = "http://www.bioinf.org.uk/pdbsws/query.pl";
 $impactC1        = 0.8;
 $impactC2        = 2.0;
 
