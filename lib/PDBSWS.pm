@@ -45,7 +45,7 @@ use strict;
 use WEB;
 
 #-------------------------------------------------------------------------
-my $pdbswsURL = "http://www.bioinf.org.uk/cgi-bin/pdbsws/query.pl?plain=1&qtype=";
+my $pdbswsURL = "http://www.bioinf.org.uk/pdbsws/query.pl?plain=1&qtype=";
 #&qtype=ttt&id=iii&chain=ccc&res=rrr
 
 #-------------------------------------------------------------------------
