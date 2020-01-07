@@ -63,7 +63,7 @@ use WEB;
 use UNIPROT;
 
 #-------------------------------------------------------------------------
-my $fostaURL = "http://www.bioinf.org.uk/cgi-bin/fosta/fosta_XML.pl?id=";
+my $fostaURL = "http://www.bioinf.org.uk/fosta/cgi/fosta_XML.cgi?id=";
 my $uniprotURL = "http://www.uniprot.org/uniprot/%s.fasta";
 
 #-------------------------------------------------------------------------
