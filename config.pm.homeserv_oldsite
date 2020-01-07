@@ -1,0 +1,156 @@
+package config;
+
+# The location of the installed SAAP code (can be the git directory)
+# Can't use $ENV{'HOME'} for web install
+$saapHome            = "/home/SAAP3newsite";
+
+# For the Interface: The root directory for web files
+$webRoot             = "/serv/www/html_oldsite";
+
+# For the Interface: The web server
+$webServer           = "http://www.bioinf.org.uk";  # No trailing slash!
+
+# For the Interface: The URL for the SAAP server under the web server URL
+$saapURL             = "/saap/dap";
+
+# For the Interface: The equivalent directory for the SAAP server web install
+$saapWeb             = "$webRoot/saap/dap";
+
+# For the Interface: The temporary directory on the web server
+$webTmpDir           = "$webRoot/tmp/saap";
+$webTmpURL           = "/tmp/saap";
+
+# Location of the PDB - what you put on the start and end of a PDB
+# code to find the file. If you don't have a local PDB install, it
+# doesn't matter as the files will be downloaded automatically
+# $pdbPrep             = "/data/pdb/pdb";
+$pdbPrep             = "/tmp";
+$pdbExt              = ".ent";
+
+# Location for storing the cached results from SAAP analysis
+# Put this wherever you want with lots of space!
+$cacheDir            = "$saapHome/cache";
+
+# Use local or web services for SwissProt
+#$LocalSwissProt=1;     # Use local version of SwissProt
+$LocalSwissProt=0;      # Use web services for SwissProt
+
+# Temporary directory
+$tmpDir              = "/var/tmp";
+
+# For the Interface:
+# The location of header, footer, main_menu and mutations_menu TT files
+# If you have your own versions of these used system wide, then
+# alter this
+$webIncludes         = "$saapHome/www/html_oldsite";
+
+# If using MUSCLE over the web, your email address
+$email               = "andrew\@andrew-martin.org"; 
+
+# If you wish to run Weka on a different machine (with NFS access to the
+# same files)
+#$remote             = "acrm3";
+$remote              = "";
+
+# If you are using the local Swissprot...
+# ---------------------------------------
+# Location of the SwissProt data
+$swissprot           = "/acrm/data/swissprot/full/uniprot_sprot.dat";
+# Program for indexing SwissProt
+$indexsprot          = "$saapHome/scripts/indexfasta/indexswissprot.pl";
+# Program for retrieving an entry from SwissProt
+$getsprot            = "$saapHome/scripts/indexfasta/getswissprot.pl";
+
+##########################################################################
+#             Shouldn't need to alter anything below here                #
+#                                                                        #
+#             The data analysis pipeline                                 #
+##########################################################################
+$predictURL          = "$saapURL";
+
+# Location of the R executable
+$RExe                = "/usr/bin/R";
+# SAAP src and binary directory
+$saapSrcDir          = "$saapHome/src";
+$saapBinDir          = "$saapHome/bin";
+# Binary and data directories for other packages used by SAAP
+$binDir              = "$saapHome/share/bin";
+$dataDir             = "$saapHome/share/data";
+#$checkHBondDir       = "$saapHome/cprogs/checkhbond";
+
+# Dependent on saapHome
+$pluginDir           = "$saapHome/plugins";
+$libDir              = "$saapHome/lib";
+$localBinDir         = "$saapHome/bin";
+$predHome            = "$saapHome/pred";
+
+# Dependent on $dataDir
+$mmDataDir           = "$dataDir";
+$specsimHashFile     = "$dataDir/specsim.values";
+$specsimDumpFile     = "$dataDir/specsim.dump";
+$matrixFile          = "$dataDir/pet91.mat";
+
+# Dependent on $pluginDir
+$pluginDataDir       = "$pluginDir/data";
+#$modulesDir          = "$pluginDir/modules";
+
+# Dependent on $libDir
+$RProg               = "$libDir/conservation_threshold.R";
+
+# Dependent on $cacheDir
+$avpCacheDir         = "$cacheDir/avp";
+$consCacheDir        = "$cacheDir/cons";
+$hbCacheDir          = "$cacheDir/pdbhbond";
+$solvCacheDir        = "$cacheDir/pdbsolv";
+$pdbssCacheDir       = "$cacheDir/pdblistss";
+$sprotCacheDir       = "$cacheDir/sprot";
+$sprotIndex          = "$sprotCacheDir/sprot.idx";
+
+
+# Dependent on $checkHBondDir
+#$checkHBondDataDir   = "$checkHBondDir/data";
+#$checkHBondBinDir    = "$checkHBondDir/bin";
+
+##########################################################################
+#                             The web site                               #
+##########################################################################
+
+$saapMultiPipeline   = "$saapBinDir/multiUniprotPipeline";
+$saapUniprotPipeline = "$saapBinDir/uniprotPipeline";
+$saapMultiJSON2HTML  = "$saapBinDir/multiJson2html";
+$saapPipeline        = "$saapBinDir/pipeline";
+$saapJSON2HTML       = "$saapBinDir/json2html";
+$gifDir              = "$saapWeb/webdata";
+$predBin             = "$saapBinDir";
+#$predBin             = "$predHome/bin";
+## $ENV{'PBIN'}         = $predBin;
+$EOF                 = "\n__EOF__\n";
+
+
+##########################################################################
+#                           Prediction Code                              #
+##########################################################################
+$saapPredHome        = "$saapHome/pred";
+$saapPredModels      = "$dataDir/models";
+$pdblimit            = "3"; # Limit the number of files processed
+$modlimit            = "3"; # The number of RF models to use (odd number 1-9)
+$parseJSON           = "$saapBinDir/json2csv_uniprot_allPDB";
+$csv2arff            = "$saapBinDir/csv2arff";
+$csv2arffOptions     = "-ni -no";
+$normScale           = "$saapPredModels/HumVar_norm_scale_bestPDB";
+$class               = "PD,SNP";
+$id                  = "num:uniprotac:res:nat:mut:pdbcode:chain:resnum:mutation:structuretype:resolution:rfactor";
+$features            = "Binding,SProtFT2,SProtFT4,SProtFT5,SProtFT6,SProtFT7,SProtFT8,SProtFT9,SProtFT10,SProtFT11,SProtFT12,Interface,Relaccess,Impact,HBonds,SPhobic,CPhim,BCharge,SSGeom,Voids,MLargest1,MLargest2,MLargest3,MLargest4,MLargest5,MLargest6,MLargest7,MLargest8,MLargest9,MLargest10,NLargest1,NLargest2,NLargest3,NLargest4,NLargest5,NLargest6,MLargest7,MLargest8,NLargest9,NLargest10,Clash,Glycine,Proline,CisPro";
+$output              = "dataset"; # name of field to be used as output
+$model               = "$saapPredModels/humVarSNPandPD_bestPDB_NoErrorsNoMissing_%d_4.model";
+
+$wekaVersion         = "3-6-7"; # Note that the models don't run on Weka 3-8-3
+$wekaZip             = "weka-$wekaVersion.zip";
+$weka                = "$saapPredHome/src/weka-$wekaVersion/weka.jar";
+
+# Java settings
+$java                = "/usr/bin/java";
+$memory              = "-Xmx6g";
+$classifiers         = "weka.classifiers.trees.RandomForest";
+
+1;
