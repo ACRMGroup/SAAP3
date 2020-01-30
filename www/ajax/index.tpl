@@ -64,8 +64,8 @@ function ActivatePDB()
 }
 </script>
 
-<h1>SAAPdap - Single Amino Acid Polymorphism data analysis
-  pipeline</h1>
+<h1>SAAPdap/SAAPpred - Single Amino Acid Polymorphism data analysis
+  pipeline and prediction</h1>
 
 <p>SAAPdap allows you to run the SAAP mutation analysis pipeline to
 examine the likely local structural effects of a mutation.
@@ -78,9 +78,11 @@ structures) or analyzing a mutation in a specified PDB file.
 </p>
 
 <p><b>Note</b> that if you specify a mutation in a UniProt sequence,
-the web server will only analyze a maximum of <b>two structures</b>
+the web server will only analyze a maximum of <b>three structures</b>
 that represent your sequence. In future we will allow users to
 register to analyze all structures.</p>
+
+<p><b>To run SAAPpred, you must run SAAPdap first!</b></p>
 
 <form name='inputform' action='' style='background: #cccccc; padding: 10px 10px 1px 10px;'>
 
