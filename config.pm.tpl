@@ -5,7 +5,7 @@ package config;
 $saapHome            = "[%saapHome%]";
 
 # For the Interface: The root directory for web files
-$webRoot             = "[%dest%]";
+$webRoot             = "[%webRoot%]";
 
 # For the Interface: The web server
 $webServer           = "http://www.bioinf.org.uk";  # No trailing slash!
