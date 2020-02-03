@@ -97,7 +97,7 @@ function getProcessID()
         }
         else
         {
-            var url = gServer+gTmpURL+gProcessID+"/";
+            var url = gServer+gTmpURL+gProcessID+"/log";
 
             resultsElement.innerHTML = "<p>The process ID for your analysis is: "+gProcessID+"</p><p>If you do not wish to wait for the results now, you will be able to access them at<br /><b>"+url+"</b><br />when the run is complete.</p><div id='progress'><pre>Progress on the analysis will appear here...</pre></div>";
         }
