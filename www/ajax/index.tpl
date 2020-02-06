@@ -125,6 +125,9 @@ register to analyze all structures.</p>
    </div>
 </form>
 
+<p><i>Please note that the structural analysis of your mutation will be cached to speed
+up future access. These results may be shared with third parties.</i></p>
+
 <p><b>The analysis (particularly of voids in large proteins) is
 <i>slow</i> and can take several minutes! Please be patient!</b></p>
 
