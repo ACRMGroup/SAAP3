@@ -232,6 +232,9 @@ If -model is used then both UniProt accession and UniProt IDs must be
 supplied. If the residue number in the UniProt file differs from the
 number in the PDB file, then the UniProt residue number must be given
 with -r (as well as the PDB residue number supplied as an argument).
+NOTE - cacheing is based on the PDB residue number, not the UniProt
+residue number given with -r so you will have to use -force to
+recalculate everything if you make a mistake with the residue numbers.    
 
 If it is not a model, then if -u is used to specify a UniProt accession
 (e.g. P69905), then resnum is a residue number within the UniProt entry.
