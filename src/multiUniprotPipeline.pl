@@ -4,20 +4,19 @@
 #   Program:    multiUniprotPipeline
 #   File:       multiUniprotPipeline.pl
 #   
-#   Version:    V1.2
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Runs the SAAP analysis on a set of mutations (held in a 
 #               file) writing the output to a directory
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
 #               Gower Street,
 #               London.
 #               WC1E 6BT.
-#   Phone:      +44 (0)207 679 7034
 #   EMail:      andrew@bioinf.org.uk
 #               andrew.martin@ucl.ac.uk
 #   Web:        http://www.bioinf.org.uk/
@@ -51,9 +50,10 @@
 #
 #   Revision History:
 #   =================
-#   V1.0   11.11.11  Original   By: ACRM
-#   V1.1   12.12.12  Added -r (restart) option
-#   V1.2   05.10.18 Updated for reorganization of code
+#   V1.0  11.11.11  Original   By: ACRM
+#   V1.1  12.12.12  Added -r (restart) option
+#   V1.2  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 use strict;
@@ -169,7 +169,7 @@ sub UsageDie
 {
     print <<__EOF;
 
-multiUniprotPipeline  V1.1 (c) UCL, Dr. Andrew C.R. Martin
+multiUniprotPipeline V3.2 (c) UCL, Dr. Andrew C.R. Martin 2011-2020
 
 Usage: multiUniprotPipeline [-v [-info]] [-r] [-f] [-limit=n] dirName mutantFile
        dirName    - Directory name for results files. Should not exist unless -f

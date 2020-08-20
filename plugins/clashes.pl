@@ -1,15 +1,15 @@
 #!/usr/bin/perl -s
 #*************************************************************************
 #
-#   Program:    
-#   File:       
+#   Program:    SAAP
+#   File:       clashes.pl
 #   
-#   Version:    
-#   Date:       
-#   Function:   
+#   Version:    V3.2
+#   Date:       20.08.20
+#   Function:   Clashes plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
@@ -48,6 +48,8 @@
 #
 #   Revision History:
 #   =================
+#   V1.0  2011     Original
+#   V3.2  20.08.20 Added -force
 #
 #*************************************************************************
 use strict;
@@ -83,6 +85,7 @@ my($resid, $newaa, $pdbfile) = SAAP::ParseCmdLine("Clash");
 
 # See if the results are cached
 my $json = SAAP::CheckCache("Clash", $pdbfile, $resid, $newaa);
+$json = "" if(defined($::force)); 
 if($json ne "")
 {
     print "$json\n";
@@ -160,8 +163,10 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-clashes.pl V1.0 (c) 2011, UCL, Dr. Andrew C.R. Martin
-Usage: clashes.pl [chain]resnum[insert] newaa pdbfile
+clashes.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
+Usage: clashes.pl [-force] [chain]resnum[insert] newaa pdbfile
+       -force   Force calculation even if results are cached
        (newaa maybe 3-letter or 1-letter code)
 
 Does clash calculations for the SAAP server.

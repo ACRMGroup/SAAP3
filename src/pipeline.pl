@@ -4,19 +4,18 @@
 #   Program:    pipeline
 #   File:       pipeline.pl
 #   
-#   Version:    V1.1
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Runs the SAAP analysis pipeline
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
 #               Gower Street,
 #               London.
 #               WC1E 6BT.
-#   Phone:      +44 (0)207 679 7034
 #   EMail:      andrew@bioinf.org.uk
 #               andrew.martin@ucl.ac.uk
 #   Web:        http://www.bioinf.org.uk/
@@ -52,6 +51,10 @@
 #   =================
 #   V1.0  04.11.11 Original   By: ACRM
 #   V1.1  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Added some command line error checking for use with
+#                  -model and new -r parameter to allow the residue number
+#                  in the UniProt file to be different from in the PDB
+#                  file with -model
 #
 #*************************************************************************
 use strict;
@@ -74,8 +77,23 @@ if(defined($::model))
 {
     UsageDie() if(!defined($::u) || !defined($::i));
 
-    $::uniAC = $::u;
-    $::uniID = $::i;
+    $::uniAC  = $::u;
+    $::uniID  = $::i;
+    $::uniRes = $residue;
+    
+    if(!defined($::r))
+    {
+        print STDERR <<__EOF;
+
+Warning: assuming the residue number in the UniProt file is the same as the
+         one provided for the PDB file.
+
+__EOF
+    }
+    else
+    {
+        $::uniRes = $::r;
+    }
 }
 
 if(opendir(PLUGINS, $config::pluginDir))
@@ -116,24 +134,25 @@ if(opendir(PLUGINS, $config::pluginDir))
                     {
                         print STDERR "Running plugin: $plugin...";
                     }
+                    
                     if(defined($::model))
                     {
-                        push @results, `$fullPlugin -v -force -uniAC=$::uniAC -uniID=$::uniID $residue $mutant $pdbfile`;
+                        push @results, `$fullPlugin -v $::force -uniAC=$::uniAC -uniID=$::uniID -uniRes=$::uniRes $residue $mutant $pdbfile`;
                     }
                     else
                     {
-                        push @results, `$fullPlugin -v $residue $mutant $pdbfile`;
+                        push @results, `$fullPlugin -v $::force $residue $mutant $pdbfile`;
                     }
                 }
                 else
                 {
                     if(defined($::model))
                     {
-                        push @results, `$fullPlugin -force -uniAC=$::uniAC -uniID=$::uniID $residue $mutant $pdbfile`;
+                        push @results, `$fullPlugin $::force -uniAC=$::uniAC -uniID=$::uniID -uniRes=$::uniRes $residue $mutant $pdbfile`;
                     }
                     else
                     {
-                        push @results, `$fullPlugin $residue $mutant $pdbfile`;
+                        push @results, `$fullPlugin $::force $residue $mutant $pdbfile`;
                     }
                 }
                 if(defined($::v))
@@ -187,7 +206,7 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-SAAP Pipeline (c) 2011, UCL, Dr. Andrew C.R. Martin
+SAAP Pipeline V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
 Usage: 
        pipeline [chain]resnum[insert] newres pdbfile
    --or--
@@ -197,20 +216,28 @@ Usage:
    --or--
        pipeline -u=uniprotAC -c resnum newres pdbcode
    --or--
-       pipeline -model -u=uniprotAC -i=uniprotID [chain]resnum[insert] newres pdbfile
+       pipeline -model -u=uniprotAC -i=uniprotID [-r=uniprotResnum]
+                [chain]resnum[insert] newres pdbfile
 
-Options:
-   -v    Run in verbose mode - reports which plugin is being run and
-         causes plugins to run in verbose mode
-   -info With -v causes each plugin to report its info string rather
-         that just naming the plugin
+Options for all forms:
+   -v     Run in verbose mode - reports which plugin is being run and
+          causes plugins to run in verbose mode
+   -info  With -v causes each plugin to report its info string rather
+          that just naming the plugin
+   -force Do not use cached values, but force recalculating
+    
 Runs the SAAP analysis pipeline.
 
-If -u is used to specify a UniProt accession (e.g. P69905), then
-resnum is a residue number within the UniProt entry. Otherwise it is a
-residue ID within a PDB file. Note that if the number is given within
-the UniProt entry using -u, then only the first chain that matches
-this UniProt ID in the PDB file will be analyzed.
+If -model is used then both UniProt accession and UniProt IDs must be
+supplied. If the residue number in the UniProt file differs from the
+number in the PDB file, then the UniProt residue number must be given
+with -r (as well as the PDB residue number supplied as an argument).
+
+If it is not a model, then if -u is used to specify a UniProt accession
+(e.g. P69905), then resnum is a residue number within the UniProt entry.
+Otherwise it is a residue ID within a PDB file. Note that if the number 
+is given within the UniProt entry using -u, then only the first chain 
+that matches this UniProt ID in the PDB file will be analyzed.
 
 If -c is used then the PDB code must be given. Otherwise a full PDB
 file specification must be given.
@@ -239,6 +266,8 @@ sub ParseCmdLine
 
     my $pdbfile = "";
 
+    $::force = (defined($::force))?"-force":"";
+    
     if(defined($::model))
     {
         $pdbfile = $file;

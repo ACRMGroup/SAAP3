@@ -7,12 +7,12 @@
 #   Program:    delCache
 #   File:       delCache.pl
 #   
-#   Version:    V1.1
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Remove cached entries for a specified mutation
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2014-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2014-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
@@ -54,6 +54,7 @@
 #   =================
 #   V1.0  11.03.14 Original   By: ACRM
 #   V1.1  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 use strict;
@@ -157,7 +158,7 @@ sub UsageDie
 *** INCOMPLETE! NEEDS CODE TO DELETE FROM A GIVEN UNIPROT CODE TO BE DONE ***
 *****************************************************************************
 
-SAAP Pipeline (c) 2014, UCL, Dr. Andrew C.R. Martin
+SAAP Pipeline (c) 2014-2020, UCL, Prof. Andrew C.R. Martin
 Usage: 
    Remove cached items for a given PDB file
        delcache [chain]resnum[insert] newres pdbfile

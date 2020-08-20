@@ -1,15 +1,15 @@
 #!/usr/bin/perl -s
 #*************************************************************************
 #
-#   Program:    
-#   File:       
+#   Program:    SAAP
+#   File:       impact.pl
 #   
-#   Version:    V1.2
-#   Date:       26.02.14
-#   Function:   
+#   Version:    V3.2
+#   Date:       20.08.20
+#   Function:   IMPact plugin for the SAAP server
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2014
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) Prof. Andrew C. R. Martin, UCL, 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
 #               University College
@@ -50,6 +50,7 @@
 #   V1.1 26.02.14   Added -force and -nocache
 #   V1.2 15.10.14   Fixed bug in checking for error return from PDBSWS
 #   V1.3 22.10.14   Added -uniID
+#   V3.2 20.08.20   Added -uniRes
 #
 #*************************************************************************
 use strict;
@@ -81,6 +82,7 @@ my($resid, $newaa, $pdbfile) = SAAP::ParseCmdLine("Impact");
 # See if the results are cached
 my $json = SAAP::CheckCache("Impact", $pdbfile, $resid, $newaa);
 $json = "" if(defined($::force)); 
+
 if($json ne "")
 {
     print "$json\n";
@@ -104,7 +106,7 @@ my $sprotRes;
 if(defined($::uniID))
 {
     $id = $::uniID;
-    $sprotRes = $resnum;
+    $sprotRes = (defined($::uniRes))?$::uniRes:$resnum;
 }
 else
 {
@@ -459,14 +461,20 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-impact.pl V1.1 (c) 2011-2014, UCL, Dr. Andrew C.R. Martin
-Usage: impact.pl [-v] [-nocache] [-force] [chain]resnum[insert] newaa pdbfile
+impact.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+Usage: impact.pl [-v] [-nocache] [-force] [-uniID=xxx] [-uniRes=xxx]
+                 [chain]resnum[insert] newaa pdbfile
+
        (newaa maybe 3-letter or 1-letter code)
+
        -v       Verbose - prints progress
        -vv      More verbose
        -force   Force calculation even if results are cached
        -nocache Do not cache results
-
+       -uniID   Specify UniProt ID rather than using PDBSWS
+       -uniRes  Specify UniProt residue number rather than assume it
+                is the same as the PDB residue number
+    
 Does ImPACT conservation calculations for the SAAP server.
        
 __EOF

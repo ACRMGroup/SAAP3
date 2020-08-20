@@ -1,4 +1,56 @@
 #!/usr/bin/perl -s
+#*************************************************************************
+#
+#   Program:    SAAP
+#   File:       sprotft.pl
+#   
+#   Version:    V3.2
+#   Date:       20.08.20
+#   Function:   SwissProt features plugin for the SAAP server
+#   
+#   Copyright:  (c) Prof. Andrew C. R. Martin, UCL, 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
+#   Address:    Institute of Structural and Molecular Biology
+#               Division of Biosciences
+#               University College
+#               Gower Street
+#               London
+#               WC1E 6BT
+#   EMail:      andrew@bioinf.org.uk
+#               
+#*************************************************************************
+#
+#   This program is not in the public domain, but it may be copied
+#   according to the conditions laid out in the accompanying file
+#   COPYING.DOC
+#
+#   The code may be modified as required, but any modifications must be
+#   documented so that the person responsible can be identified. If 
+#   someone else breaks this code, I don't want to be blamed for code 
+#   that does not work! 
+#
+#   The code may not be sold commercially or included as part of a 
+#   commercial product except as described in the file COPYING.DOC.
+#
+#*************************************************************************
+#
+#   Description:
+#   ============
+#
+#*************************************************************************
+#
+#   Usage:
+#   ======
+#
+#*************************************************************************
+#
+#   Revision History:
+#   =================
+#   V1.0 2011       Original
+#   V1.3 22.10.14   Added -uniAC
+#   V3.2 20.08.20   Added -uniRes
+#
+#*************************************************************************
 
 use strict;
 use FindBin;
@@ -35,6 +87,8 @@ my($residue, $mutant, $pdbfile) = SAAP::ParseCmdLine("SProtFT");
 
 # See if the results are cached
 my $json = SAAP::CheckCache("SProtFT", $pdbfile, $residue, $mutant);
+$json = "" if(defined($::force)); 
+
 if($json ne "")
 {
     print "$json\n";
@@ -52,7 +106,7 @@ my $sprotnum;
 if(defined($::uniAC))
 {
     $ac = $::uniAC;
-    $sprotnum = $resnum;
+    $sprotnum = (defined($::uniRes))?$::uniRes:$resnum;
 }
 else
 {
@@ -167,14 +221,23 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-sprotft.pl V1.0 (c) 2011, UCL, Dr. Andrew C.R. Martin
-Usage: sprotft.pl [chain]resnum[insert] newaa pdbfile
+sprotft.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
+Usage: sprotft.pl [-force] [-uniAC=xxx] [-uniRes=xxx] 
+                  [chain]resnum[insert] newaa pdbfile
+
        (newaa maybe 3-letter or 1-letter code)
 
-Examines SwissProt feature (FT) records. First looks up the residue of interest in
-PDBSWS then extracts the SwissProt entry and checks whether the residue is annotated
-as described below. The annotation information is returned in SProtFT-FEATURES as
-a binary string:
+       -force   Force calculation even if results are cached
+       -uniAC   Specify UniProt AC rather than using PDBSWS
+       -uniRes  Specify UniProt residue number rather than assume it
+                is the same as the PDB residue number
+
+Examines SwissProt feature (FT) records. First looks up the residue of
+interest in PDBSWS then extracts the SwissProt entry and checks
+whether the residue is annotated as described below. The annotation
+information is returned in SProtFT-FEATURES as a binary string:
+
    ACT_SITE  000000000001
    BINDING   000000000010
    CA_BIND   000000000100
@@ -187,9 +250,12 @@ a binary string:
    LIPID     001000000000
    DISULFID  010000000000
    CROSSLNK  100000000000
-If a residue is annotated by more than one feature, then the binary strings will be
-ORd together
-Also returns SProtFT-NAMES which is a colon-separated list of the feature names.
+
+If a residue is annotated by more than one feature, then the binary
+strings will be ORd together.
+
+Also returns SProtFT-NAMES which is a colon-separated list of the
+feature names.
 
 __EOF
    exit 0;

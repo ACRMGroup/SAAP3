@@ -4,20 +4,19 @@
 #   Program:    dump_fosta
 #   File:       dump_fosta.pl
 #   
-#   Version:    V1.1
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Dumps species similarity information from Lisa's FOSTA 
 #               database into a flat file for use in ImPACT calculations
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
 #               Gower Street,
 #               London.
 #               WC1E 6BT.
-#   Phone:      +44 (0)207 679 7034
 #   EMail:      andrew@bioinf.org.uk
 #               andrew.martin@ucl.ac.uk
 #   Web:        http://www.bioinf.org.uk/
@@ -53,6 +52,7 @@
 #   =================
 #   V1.0  05.09.11 Original   By: ACRM
 #   V1.1  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 my $dbname="mcmillan";

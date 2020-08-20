@@ -1,15 +1,15 @@
 #!/usr/bin/perl -s
 #*************************************************************************
 #
-#   Program:    
+#   Program:    SAAP
 #   File:       corephilic.pl
 #   
-#   Version:    V1.2
-#   Date:       12.09.17
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Core Philic plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2017
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
@@ -51,6 +51,7 @@
 #   V1.1  07.03.12 Generates relative accessibility in the same way that
 #                  SurfacePhobic does
 #   V1.2  12.09.17 Updated for distribution without XMAS
+#   V3.2  20.08.20 Added -force
 #
 #*************************************************************************
 use strict;
@@ -72,6 +73,7 @@ my($residue, $mutant, $pdbfile) = SAAP::ParseCmdLine("CorePhilic");
 
 # See if the results are cached
 my $json = SAAP::CheckCache("CorePhilic", $pdbfile, $residue, $mutant);
+$json = "" if(defined($::force)); 
 if($json ne "")
 {
     print "$json\n";
@@ -115,8 +117,10 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-corephilic.pl V1.2 (c) 2011-2017, UCL, Dr. Andrew C.R. Martin
-Usage: corephilic.pl [chain]resnum[insert] newaa pdbfile
+corephilic.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
+Usage: corephilic.pl [-force] [chain]resnum[insert] newaa pdbfile
+       -force   Force calculation even if results are cached
        (newaa maybe 3-letter or 1-letter code)
 
 Does core hydrophobilic calculations for the SAAP server.

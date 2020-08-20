@@ -4,12 +4,12 @@
 #   Program:    json2html
 #   File:       json2html.pl
 #   
-#   Version:    V1.3
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Converts a SAAP pipeline JSON file to HTML for display
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) Prof. Andrew C. R. Martin, UCL, 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
 #               University College
@@ -54,6 +54,7 @@
 #   V1.1  20.06.12 Added Javascript for getElementsByClassName()
 #   V1.2  05.10.15 Added support for running prediction
 #   V1.3  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 use strict;

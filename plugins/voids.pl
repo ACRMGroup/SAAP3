@@ -1,15 +1,15 @@
 #!/usr/bin/perl -s
 #*************************************************************************
 #
-#   Program:    
+#   Program:    SAAP
 #   File:       voids.pl
 #   
-#   Version:    V1.2
-#   Date:       07.03.12
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Voids plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2012
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
@@ -53,6 +53,8 @@
 #                  filename path instead of trying to extract PDB code
 #   V1.3  07.03.12 Number of voids now a variable and pads to this number
 #                  if AVP returns fewer voids
+#   V3.2  20.08.20 Added -force
+#
 #*************************************************************************
 use strict;
 use FindBin;
@@ -87,6 +89,8 @@ my($resid, $newaa, $pdbfile) = SAAP::ParseCmdLine("Voids");
 
 # See if the results are cached
 my $json = SAAP::CheckCache("Voids", $pdbfile, $resid, $newaa);
+$json = "" if(defined($::force)); 
+
 if($json ne "")
 {
     print "$json\n";
@@ -194,10 +198,13 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-voids.pl V1.2 (c) 2011-2012, UCL, Dr. Andrew C.R. Martin
-Usage: voids.pl [chain]resnum[insert] newaa pdbfile
+voids.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
+Usage: voids.pl [-force] [chain]resnum[insert] newaa pdbfile
+       -force   Force calculation even if results are cached
        (newaa maybe 3-letter or 1-letter code)
 
+    
 Does void calculations for the SAAP server.
        
 __EOF

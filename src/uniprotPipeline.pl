@@ -4,19 +4,18 @@
 #   Program:    uniprot_pipeline
 #   File:       uniprot_pipeline.pl
 #   
-#   Version:    V1.1
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Runs the SAAP analysis pipeline for a UniProt code
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
 #               Gower Street,
 #               London.
 #               WC1E 6BT.
-#   Phone:      +44 (0)207 679 7034
 #   EMail:      andrew@bioinf.org.uk
 #               andrew.martin@ucl.ac.uk
 #   Web:        http://www.bioinf.org.uk/
@@ -52,6 +51,7 @@
 #   =================
 #   V1.0  11.11.11 Original   By: ACRM
 #   V1.1  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 use strict;
@@ -113,7 +113,8 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-SAAP UniProt Pipeline (c) 2011, UCL, Dr. Andrew C.R. Martin
+SAAP UniProt Pipeline V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
 Usage: 
 uniprotPipeline [-v [-info]] [-limit=n] uniprotAC native resnum newres
                  -v     Verbose

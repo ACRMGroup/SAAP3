@@ -4,13 +4,13 @@
 #   Program:    multiJson2html
 #   File:       multiJson2html.pl
 #   
-#   Version:    V1.2
-#   Date:       05.10.18
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Convert a set of JSON files to HTML creating an index.html
 #               file at the same time to provide links to all the data
 #   
-#   Copyright:  (c) Dr. Andrew C. R. Martin, UCL, 2011-2018
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) Prof. Andrew C. R. Martin, UCL, 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Institute of Structural and Molecular Biology
 #               Division of Biosciences
 #               University College
@@ -47,9 +47,10 @@
 #
 #   Revision History:
 #   =================
-#   V1.0   12.12.11 Original   By: ACRM
-#   V1.1   05.10.15 Added -name and -wkdir parameters to json2html.pl call
-#   V1.2   05.10.18 Updated for reorganization of code
+#   V1.0  12.12.11 Original   By: ACRM
+#   V1.1  05.10.15 Added -name and -wkdir parameters to json2html.pl call
+#   V1.2  05.10.18 Updated for reorganization of code
+#   V3.2  20.08.20 Bumped for second official release
 #
 #*************************************************************************
 use strict;
@@ -243,7 +244,7 @@ sub UsageDie
 {
     print <<__EOF;
 
-multiJson2html V1.1
+multiJson2html V1.1 (c) 2011-2020 UCL / Prof. Andrew C.R. Martin
 
 Usage: mutiJson2html [-nopredict] [-v] [-wkdir=dir] jsonDir > index.html
        -nopredict - Do not create a 'Predict Pathogenicity' button

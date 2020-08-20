@@ -4,12 +4,12 @@
 #   Program:    
 #   File:       surfacephobic.pl
 #   
-#   Version:    V1.1
-#   Date:       13.09.17
+#   Version:    V3.2
+#   Date:       20.08.20
 #   Function:   Surface Phobic plugin for the SAAP server
 #   
-#   Copyright:  (c) UCL / Dr. Andrew C. R. Martin 2011-2017
-#   Author:     Dr. Andrew C. R. Martin
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
 #               University College,
@@ -50,6 +50,7 @@
 #   =================
 #   V1.0  16.12.11 Original
 #   V1.1  13.09.17 Removed need for XMAS
+#   V3.2  20.08.20 Added -force
 #
 #*************************************************************************
 use strict;
@@ -71,6 +72,7 @@ my($residue, $mutant, $pdbfile) = SAAP::ParseCmdLine("SurfacePhobic");
 
 # See if the results are cached
 my $json = SAAP::CheckCache("SurfacePhobic", $pdbfile, $residue, $mutant);
+$json = "" if(defined($::force)); 
 if($json ne "")
 {
     print "$json\n";
@@ -114,8 +116,10 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-surfacephobic.pl V1.1 (c) 2011-2017, UCL, Dr. Andrew C.R. Martin
-Usage: surfacephobic.pl [chain]resnum[insert] newaa pdbfile
+surfacephobic.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+
+Usage: surfacephobic.pl [-force] [chain]resnum[insert] newaa pdbfile
+       -force   Force calculation even if results are cached
        (newaa maybe 3-letter or 1-letter code)
 
 Does surface hydrophobic calculations for the SAAP server.
