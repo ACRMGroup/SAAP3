@@ -175,9 +175,17 @@ __EOF
     InstallData($config::dataDir);
 
     MakeDir($config::cacheDir);
-    util::RunCommand("sudo chmod a+w $config::cacheDir");
-    util::RunCommand("sudo chmod a+w $config::cacheDir/*");
-    util::RunCommand("sudo chmod +t  $config::cacheDir/*");
+
+    print "Do you wish other people to use this installation? You will need sudo access (Y/N) [Y] ";
+    my $response = <>;
+    chomp $response;
+    $response = "\U$response";
+    if(substr($response,0,1) ne "N")
+    {
+        util::RunCommand("sudo chmod a+w $config::cacheDir");
+        util::RunCommand("sudo chmod a+w $config::cacheDir/*");
+        util::RunCommand("sudo chmod +t  $config::cacheDir/*");
+    }
 
     # Do a specsim accecss in order to create/update the DBM hash file
     print "*** Info: Updating SpecSim DBM file if needed\n";
