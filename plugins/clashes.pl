@@ -49,7 +49,7 @@
 #   Revision History:
 #   =================
 #   V1.0  2011     Original
-#   V3.2  20.08.20 Added -force
+#   V3.2  20.08.20 Added -force asnd fixed for blank chain label
 #
 #*************************************************************************
 use strict;
@@ -103,6 +103,7 @@ if(!SAAP::CheckRes($pdbfile, $resid))
 }
 
 # Get the chain of interest and strip hydrogens 
+$chain = "-n 1" if($chain eq '');
 `$getchain $chain $pdbfile | $hstrip > $tfile1`;
 
 # Add back the het atoms

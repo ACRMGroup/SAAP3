@@ -53,7 +53,7 @@
 #                  filename path instead of trying to extract PDB code
 #   V1.3  07.03.12 Number of voids now a variable and pads to this number
 #                  if AVP returns fewer voids
-#   V3.2  20.08.20 Added -force
+#   V3.2  20.08.20 Added -force and fixed for blank chain label
 #
 #*************************************************************************
 use strict;
@@ -107,8 +107,15 @@ if(!SAAP::CheckRes($pdbfile, $resid))
     ErrorDie("PDB file ($pdbfile) does not contain residue ($resid)");
 }
 
-# Get the chain of interest and strip hydrogens 
-`$getchain $chain $pdbfile | $hstrip > $tfile1`;
+# Get the chain of interest and strip hydrogens
+if($chain eq '')
+{
+    `$getchain -n 1 $pdbfile | $hstrip > $tfile1`;
+}
+else
+{
+    `$getchain $chain $pdbfile | $hstrip > $tfile1`;
+}
 
 # Add back the het atoms
 `$addhet $pdbfile $tfile1 $tfile2`;
