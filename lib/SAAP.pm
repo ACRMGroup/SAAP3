@@ -357,7 +357,15 @@ sub GetRelativeAccess
 
     if(! -e $solvFileChain)
     {
-        my $exe = "$config::binDir/pdbgetchain $chainIn $pdbFile | $config::binDir/pdbsolv -f $config::dataDir/radii.dat -r $solvFileChain -n";
+        my $exe;
+        if($chainIn eq '')
+        {
+            $exe = "$config::binDir/pdbgetchain -n 1 $pdbFile | $config::binDir/pdbsolv -f $config::dataDir/radii.dat -r $solvFileChain -n";
+        }
+        else
+        {
+            $exe = "$config::binDir/pdbgetchain $chainIn $pdbFile | $config::binDir/pdbsolv -f $config::dataDir/radii.dat -r $solvFileChain -n";
+        }
         system($exe);
         if(! -e $solvFileChain)
         {
@@ -392,6 +400,23 @@ sub GetRelativeAccess
                     last;
                 }
             }
+            elsif(/^RESACC\s+(\d+)([a-zA-z]?)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)/)
+            {
+                my $resnum      = $1;
+                my $insert      = $2;
+                my $resnam      = $3;
+                my $access      = $4;
+                my $relaccess   = $5;
+                my $scaccess    = $6;
+                my $screlaccess = $7;
+
+                if(($chainIn eq '') && ($resnum eq $resnumIn) && ($insert eq $insertIn))
+                {
+                    $relaccessOut = $relaccess;
+                    $status       = 0;
+                    last;
+                }
+            }
         }
         close $fp;
     }
@@ -417,6 +442,23 @@ sub GetRelativeAccess
                     my $screlaccess = $8;
 
                     if(($chain eq $chainIn) && ($resnum eq $resnumIn) && ($insert eq $insertIn))
+                    {
+                        $relaccessMolOut = $relaccess;
+                        $status          = 0;
+                        last;
+                    }
+                }
+                elsif(/^RESACC\s+(\d+)([a-zA-z]?)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)/)
+                {
+                    my $resnum      = $1;
+                    my $insert      = $2;
+                    my $resnam      = $3;
+                    my $access      = $4;
+                    my $relaccess   = $5;
+                    my $scaccess    = $6;
+                    my $screlaccess = $7;
+
+                    if(($chainIn eq '') && ($resnum eq $resnumIn) && ($insert eq $insertIn))
                     {
                         $relaccessMolOut = $relaccess;
                         $status          = 0;
