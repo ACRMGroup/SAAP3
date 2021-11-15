@@ -4,7 +4,7 @@
 #   Program:    SAAP
 #   File:       sprotft.pl
 #   
-#   Version:    V3.2
+#   Version:    V3.3
 #   Date:       20.08.20
 #   Function:   SwissProt features plugin for the SAAP server
 #   
@@ -49,6 +49,7 @@
 #   V1.0 2011       Original
 #   V1.3 22.10.14   Added -uniAC
 #   V3.2 20.08.20   Added -uniRes
+#   V3.3 15.11.21   Feature residue ranges are now as x..y instead of x y
 #
 #*************************************************************************
 
@@ -198,10 +199,29 @@ sub ProcessFeatures
                 }
                 else  # It's a range of residues for anything else
                 {
-                    if(($sprotnum >= $fields[2]) &&
-                       ($sprotnum <= $fields[3]))
+                    if(scalar(@fields) == 3)
                     {
-                        $result |= $spfeatures{$fields[1]};
+                        if($fields[2] =~ /\.\./)
+                        {
+                            my @range = split(/\.\./, $fields[2]);
+                            if(($sprotnum >= $range[0]) &&
+                               ($sprotnum <= $range[1]))
+                            {
+                                $result |= $spfeatures{$fields[1]};
+                            }
+                        }
+                        elsif($sprotnum == $fields[2])
+                        {
+                            $result |= $spfeatures{$fields[1]};
+                        }
+                    }
+                    else
+                    {
+                        if(($sprotnum >= $fields[2]) &&
+                           ($sprotnum <= $fields[3]))
+                        {
+                            $result |= $spfeatures{$fields[1]};
+                        }
                     }
                 }
             }
@@ -221,7 +241,7 @@ sub UsageDie
 {
     print STDERR <<__EOF;
 
-sprotft.pl V3.2 (c) 2011-2020, UCL, Prof. Andrew C.R. Martin
+sprotft.pl V3.3 (c) 2011-2021, UCL, Prof. Andrew C.R. Martin
 
 Usage: sprotft.pl [-force] [-uniAC=xxx] [-uniRes=xxx] 
                   [chain]resnum[insert] newaa pdbfile

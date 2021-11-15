@@ -23,7 +23,7 @@ $webTmpURL           = "/tmp/saap3";
 # Location of the PDB - what you put on the start and end of a PDB
 # code to find the file. If you don't have a local PDB install, it
 # doesn't matter as the files will be downloaded automatically
-$pdbPrep             = "/data/pdb/pdb";
+$pdbPrep             = "/serv/data/pdb/pdb";
 $pdbExt              = ".ent";
 
 # Location for storing the cached results from SAAP analysis
