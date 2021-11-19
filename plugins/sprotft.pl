@@ -175,50 +175,39 @@ sub ProcessFeatures
 
     foreach my $record (@records)
     {
-        if($record =~ /^FT /)
+        if($record =~ /^FT   [A-Z]/)
         {
-            # my $feature = substr($line, 5, 8);
-            # my $from = substr($line, 14, 6);
-            # my $to = substr($line, 21, 6);
-            # my $info = substr($line, 34);
-            # $from =~ s/\s//g;
-            # $to =~ s/\s//g;
-                    
             my @fields = split(/\s+/, $record);
-            if(defined($spfeatures{$fields[1]}))
+            if(scalar(@fields) == 3)
             {
-                # For these it is 2 individual residues that are specified
-                if(($fields[1] eq "DISULFID") ||
-                   ($fields[1] eq "CROSSLNK"))
+                if(defined($spfeatures{$fields[1]}))
                 {
-                    if(($sprotnum == $fields[2]) ||
-                       ($sprotnum == $fields[3]))
-                    {
-                        $result |= $spfeatures{$fields[1]};
+                    my $start = 0;
+                    my $stop  = 0;
+                    
+                    if(@fields[2] =~ /(\d+)\.\.(\d+)/)
+                    {   # If it's nnn..nnn then pick up the two numbers
+                        $start = $1;
+                        $stop  = $2;
                     }
-                }
-                else  # It's a range of residues for anything else
-                {
-                    if(scalar(@fields) == 3)
+                    else # it's just one number
                     {
-                        if($fields[2] =~ /\.\./)
-                        {
-                            my @range = split(/\.\./, $fields[2]);
-                            if(($sprotnum >= $range[0]) &&
-                               ($sprotnum <= $range[1]))
-                            {
-                                $result |= $spfeatures{$fields[1]};
-                            }
-                        }
-                        elsif($sprotnum == $fields[2])
+                        $start = $fields[2];
+                        $stop  = $fields[2];
+                    }
+                    if(($fields[1] eq "DISULFID") ||
+                       ($fields[1] eq "CROSSLNK"))
+                    {
+                        if(($sprotnum == $start) ||
+                           ($sprotnum == $stop))
                         {
                             $result |= $spfeatures{$fields[1]};
                         }
                     }
                     else
                     {
-                        if(($sprotnum >= $fields[2]) &&
-                           ($sprotnum <= $fields[3]))
+                        if(($sprotnum >= $start) &&
+                           ($sprotnum <= $stop))
                         {
                             $result |= $spfeatures{$fields[1]};
                         }
