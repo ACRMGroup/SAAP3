@@ -49,10 +49,9 @@ would interrupt the verbose output from `pipeline.pl`
 Examples
 --------
 
-###impact.pl
+### impact.pl
 
-```
-[amartin@web plugins]$ ./impact.pl -h
+``` [amartin@home plugins]$ ./impact.pl -h
 
 impact.pl V1.1 (c) 2011-2014, UCL, Dr. Andrew C.R. Martin
 Usage: impact.pl [-vv] [-nocache] [-force] [chain]resnum[insert] newaa pdbfile
@@ -73,7 +72,7 @@ Analyzing conservation at this position in the sequence
 {"Impact-BOOL": "OK", "Impact-NSEQ": "247", "Impact-THRESHOLD": "0.98", "Impact-CONSSCORE": "0.949619230358117"}
 ```
 
-###voids.pl
+### voids.pl
 
 ```
 [amartin@home plugins]$ ./voids.pl -h
