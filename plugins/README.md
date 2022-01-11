@@ -34,7 +34,7 @@ be read from the config file (`config.pm` in the directory above).
 Output
 ------
 
-Output is a snippet of JSON.
+Output is a single line snippet of JSON.
 
 - Each tag **must** start with the plugin name and a dash (e.g. `Voids-`)
 - The actual property **must** be in capitals (e.g. `"SProtFT-FEATURES"`)
