@@ -51,7 +51,8 @@ Examples
 
 ### impact.pl
 
-``` [amartin@home plugins]$ ./impact.pl -h
+```
+[amartin@home plugins]$ ./impact.pl -h
 
 impact.pl V1.1 (c) 2011-2014, UCL, Dr. Andrew C.R. Martin
 Usage: impact.pl [-vv] [-nocache] [-force] [chain]resnum[insert] newaa pdbfile
@@ -65,8 +66,11 @@ Does ImPACT conservation calculations for the SAAP server.
 
 ```
 [amartin@home plugins]$ ./impact.pl -info
+
 Analyzing conservation at this position in the sequence
 ```
+
+Output:
 
 ```
 {"Impact-BOOL": "OK", "Impact-NSEQ": "247", "Impact-THRESHOLD": "0.98", "Impact-CONSSCORE": "0.949619230358117"}
@@ -91,6 +95,8 @@ Does void calculations for the SAAP server.
 
 Analyzing voids - this will take some time! (Ignore any sort/broken pipe errors!!!)
 ```
+
+Output:
 
 ```
 {"Voids-MUTANT": [340.499,163.114,147.921,138.011,91.629,89.946,42.776,39.299,34.790,34.440], "Voids-MUTANT-LARGEST": "340.499000", "Voids-BOOL": "OK", "Voids-NATIVE": [340.499,163.114,147.921,138.011,91.629,89.946,42.776,39.299,34.790,34.440], "Voids-NATIVE-LARGEST": "340.499000"}
