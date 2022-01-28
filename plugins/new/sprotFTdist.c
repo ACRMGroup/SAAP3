@@ -1,3 +1,8 @@
+/*
+SetFeature() gets the feature lines, but needs to parse out the residue number(s)
+and store those data
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,10 +14,20 @@
 #define MAXLABEL  8
 #define SMALLBUFF 16
 #define MAXBUFF   256
-
+#define MAXSITE   100
 
 typedef struct _features
 {
+   int NActSite, ActSite[MAXSITE];
+   int NBinding, Binding[MAXSITE];
+   int NCABinding, CABinding[MAXSITE];
+   int NDNABinding, DNABinding[MAXSITE];
+   int NNPBinding, NPBinding[MAXSITE];
+   int NMetal, MetalBinding[MAXSITE];
+   int NModRes, ModRes[MAXSITE];
+   int NCarbohyd, Carbohyd[MAXSITE];
+   int NMotif, Motif[MAXSITE];
+   int NLipid, Lipid[MAXSITE];
    struct _features *next;
 }  FEATURES;
 
@@ -62,6 +77,7 @@ struct http_response
 
 
 #define SERVERURL "http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1"
+#define UNIPROTURL "https://www.uniprot.org/uniprot/"
 
 
 /* External prototypes */
@@ -73,7 +89,7 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
 int main(int argc, char **argv);
 void FindPDBCode(char *infile, char *pdbcode);
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode);
-FEATURES *FindFeatures(char *uniprotcode);
+FEATURES FindFeatures(char *uniprotcode);
 void MapFeaturesToPDB(FEATURES *features);
 void CalculateFeatureDistances(FEATURES *features, char *resid,
                                char *infile);
@@ -81,6 +97,10 @@ void PrintResults(FEATURES *features);
 void Usage(void);
 void CopyItem(char *body, char *key, char *dest);
 void ParsePDBSWSResponse(struct http_response *httpResponse, PDBSWS *pdbsws);
+char *RunExternal(char *cmd);
+void SetFeature(char *text, char *feature, int *nfeature, int *residues);
+
+
 
 
 
@@ -93,7 +113,7 @@ int main(int argc, char **argv)
       infile[MAXBUFF],
       uniprotcode[SMALLBUFF],
       pdbcode[SMALLBUFF];
-   FEATURES *features;
+   FEATURES features;
    
    
    if(ParseCmdLine(argc, argv, resid, newaa, infile))
@@ -101,9 +121,9 @@ int main(int argc, char **argv)
       FindPDBCode(infile, pdbcode);
       FindUniProtCode(pdbcode, resid, uniprotcode);
       printf("UP: %s\n", uniprotcode);
+      features = FindFeatures(uniprotcode);
       
 #ifdef REAL
-      features = FindFeatures(uniprotcode);
       MapFeaturesToPDB(features);
       CalculateFeatureDistances(features, resid, infile);
       PrintResults(features);
@@ -186,11 +206,75 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
    strcpy(uniprotcode, pdbsws.ac);
 }
 
-FEATURES *FindFeatures(char *uniprotcode)
+FEATURES FindFeatures(char *uniprotcode)
 {
-   FEATURES *features = NULL;
+   FEATURES features;
+   struct http_response *httpResponse;
+   char url[MAXBUFF];
+   char cmd[MAXBUFF];
+   char *result;
+
+   sprintf(url, "%s%s.txt", UNIPROTURL, uniprotcode);
+   sprintf(cmd, "/usr/bin/curl -s %s", url);
+
+   result = RunExternal(cmd);
+   
+
+   features.NActSite = 0;
+   features.NBinding = 0;
+   features.NCABinding = 0;
+   features.NDNABinding = 0;
+   features.NNPBinding = 0;
+   features.NMetal = 0;
+   features.NModRes = 0;
+   features.NCarbohyd = 0;
+   features.NMotif = 0;
+   features.NLipid = 0;
+   
+   SetFeature(result, "ACT_SITE", &(features.NActSite),    features.ActSite);
+   SetFeature(result, "BINDING",  &(features.NBinding),    features.Binding);
+   SetFeature(result, "CA_BIND",  &(features.NCABinding),  features.CABinding);
+   SetFeature(result, "DNA_BIND", &(features.NDNABinding), features.DNABinding);
+   SetFeature(result, "NP_BIND",  &(features.NNPBinding),  features.NPBinding);
+   SetFeature(result, "METAL",    &(features.NMetal),      features.MetalBinding);
+   SetFeature(result, "MOD_RES",  &(features.NModRes),     features.ModRes);
+   SetFeature(result, "CARBOHYD", &(features.NCarbohyd),   features.Carbohyd);
+   SetFeature(result, "MOTIF",    &(features.NMotif),      features.Motif);
+   SetFeature(result, "LIPID",    &(features.NLipid),      features.Lipid);
+   
    return(features);
 }
+
+void SetFeature(char *text, char *feature, int *nfeature, int *residues)
+{
+   char *cstart, *cstop;
+   char key[MAXBUFF];
+
+   sprintf(key, "FT   %s", feature);
+
+   cstart=text;
+   while((cstart!=NULL) && (cstop!=NULL) && (*cstart != '\0'))
+   {
+      if((cstop = strchr(cstart, '\n'))!=NULL)
+      {
+         *cstop = '\0';
+      }
+      
+      if(!strncmp(cstart, key, strlen(key)))
+      {
+         printf("%s\n", cstart); 
+         
+      }
+      if(cstop!=NULL)
+         *cstop = '\n';
+      
+      cstart = cstop+1;
+   }
+   
+}
+
+
+
 
 void MapFeaturesToPDB(FEATURES *features)
 {
@@ -244,3 +328,29 @@ void CopyItem(char *body, char *key, char *dest)
    }
 }
 
+char *RunExternal(char *cmd)
+{
+   FILE *fp;
+   char buffer[MAXBUFF],
+      *result=NULL;
+
+
+   if ((fp = popen(cmd, "r")) == NULL)
+   {
+      fprintf(stderr,"Error opening pipe!\n");
+      return(NULL);
+   }
+
+   while (fgets(buffer, MAXBUFF, fp) != NULL)
+   {
+      result=blStrcatalloc(result, buffer);
+   }
+
+    if(pclose(fp))
+    {
+       fprintf(stderr,"Command not found or exited with error status\n");
+       return(NULL);
+    }
+
+    return(result);
+}
