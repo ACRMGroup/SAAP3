@@ -1,6 +1,6 @@
 /*
 SetFeature() gets the feature lines, but needs to parse out the residue number(s)
-and store those data
+and store those data 
  */
 
 #include <stdio.h>
@@ -28,10 +28,9 @@ typedef struct _features
    int NCarbohyd, Carbohyd[MAXSITE];
    int NMotif, Motif[MAXSITE];
    int NLipid, Lipid[MAXSITE];
-   struct _features *next;
 }  FEATURES;
 
-typedef struct 
+typedef struct _pdbsws
 {
    char pdb[SMALLBUFF],
       chain[MAXLABEL],
@@ -41,6 +40,7 @@ typedef struct
       id[SMALLBUFF],
       upcount[MAXLABEL],
       aa[MAXLABEL];
+   struct _pdbsws *next;
 }  PDBSWS;
 
 
@@ -90,15 +90,26 @@ int main(int argc, char **argv);
 void FindPDBCode(char *infile, char *pdbcode);
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode);
 FEATURES FindFeatures(char *uniprotcode);
-void MapFeaturesToPDB(FEATURES *features);
+void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain);
+void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, int *res);
 void CalculateFeatureDistances(FEATURES *features, char *resid,
                                char *infile);
 void PrintResults(FEATURES *features);
 void Usage(void);
 void CopyItem(char *body, char *key, char *dest);
-void ParsePDBSWSResponse(struct http_response *httpResponse, PDBSWS *pdbsws);
+PDBSWS *ParsePDBSWSResponse(struct http_response *httpResponse);
 char *RunExternal(char *cmd);
 void SetFeature(char *text, char *feature, int *nfeature, int *residues);
+int ExpandRange(char *range, int *residues);
+void FindPDBResFromUniProt(char *upcode, int upnum, char *pdbcode, char *chain, char *resid);
+
+
+
+#ifdef DEBUG
+void PrintFeature(char *label, int nres, int *res);
+void PrintFeatures(FEATURES features);
+#endif
+
 
 
 
@@ -118,13 +129,21 @@ int main(int argc, char **argv)
    
    if(ParseCmdLine(argc, argv, resid, newaa, infile))
    {
+      char chain[MAXLABEL],
+         insert[MAXLABEL];
+      int resnum;
+      
       FindPDBCode(infile, pdbcode);
       FindUniProtCode(pdbcode, resid, uniprotcode);
       printf("UP: %s\n", uniprotcode);
       features = FindFeatures(uniprotcode);
+#ifdef DEBUG
+      PrintFeatures(features);
+#endif
+      blParseResSpec(resid, chain, &resnum, insert);
+      MapFeaturesToPDB(&features, uniprotcode, pdbcode, chain);
       
 #ifdef REAL
-      MapFeaturesToPDB(features);
       CalculateFeatureDistances(features, resid, infile);
       PrintResults(features);
 #endif
@@ -135,6 +154,38 @@ int main(int argc, char **argv)
    }
    
    return(0);
+}
+
+
+void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain)
+{
+   MapFeature("Active Site",  upcode, pdbcode, chain, features->NActSite,    features->ActSite);
+   MapFeature("Binding",      upcode, pdbcode, chain, features->NBinding,    features->Binding);
+   MapFeature("CA Binding",   upcode, pdbcode, chain, features->NCABinding,  features->CABinding);
+   MapFeature("DNA Binding",  upcode, pdbcode, chain, features->NDNABinding, features->DNABinding);
+   MapFeature("NP Binding",   upcode, pdbcode, chain, features->NNPBinding,  features->NPBinding);
+   MapFeature("Metal",        upcode, pdbcode, chain, features->NMetal,      features->MetalBinding);
+   MapFeature("ModRes",       upcode, pdbcode, chain, features->NModRes,     features->ModRes);
+   MapFeature("Carbohydrate", upcode, pdbcode, chain, features->NCarbohyd,   features->Carbohyd);
+   MapFeature("Motif",        upcode, pdbcode, chain, features->NMotif,      features->Motif);
+   MapFeature("Lipid",        upcode, pdbcode, chain, features->NLipid,      features->Lipid);
+}
+
+void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, int *res)
+{
+   int i;
+   char resid[SMALLBUFF];
+   
+
+   fprintf(stderr, "%s: ", label);
+   for(i=0; i<nres; i++)
+   {
+      FindPDBResFromUniProt(upcode, res[i], pdbcode, chain, resid);
+      fprintf(stderr, " %d %s", res[i], resid);
+   }
+   fprintf(stderr, "\n");
+
+
 }
 
 
@@ -194,16 +245,53 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
       url[MAXBUFF];
    int  resnum;
    struct http_response *httpResponse;
-   PDBSWS pdbsws;
+   PDBSWS *pdbsws = NULL;
    
    blParseResSpec(resid, chain, &resnum, insert);
-   sprintf(url, "%s&qtype=pdb&id=%s&chain=%s&res=%d", SERVERURL, pdbcode, chain, resnum);
+   sprintf(url, "%s&qtype=pdb&id=%s&chain=%s&res=%d%s", SERVERURL, pdbcode, chain, resnum, insert);
+   KILLTRAILSPACES(url);
+   fprintf(stderr,"URL: %s\n", url);
    /*
    http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=pdb&id=3u1n&chain=A&res=123
    */
    httpResponse = http_get(url, "User-agent:sprotFTdist\r\n");
-   ParsePDBSWSResponse(httpResponse, &pdbsws);
-   strcpy(uniprotcode, pdbsws.ac);
+   if((pdbsws = ParsePDBSWSResponse(httpResponse))!=NULL)
+   {
+      strcpy(uniprotcode, pdbsws->ac);
+      FREELIST(pdbsws, PDBSWS);
+   }
+   
+}
+
+void FindPDBResFromUniProt(char *upcode, int upnum, char *pdbcode, char *chain, char *resid)
+{
+   char   url[MAXBUFF];
+   int    resnum;
+   struct http_response *httpResponse;
+   PDBSWS *pdbsws = NULL;
+   
+   sprintf(url, "%s&qtype=ac&id=%s&res=%d", SERVERURL, upcode, upnum);
+   KILLTRAILSPACES(url);
+   fprintf(stderr,"URL: %s\n", url);
+   
+   /*
+   http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=ac&id=Q9Y3Z3&res=137
+   */
+   httpResponse = http_get(url, "User-agent:sprotFTdist\r\n");
+   if((pdbsws=ParsePDBSWSResponse(httpResponse))!=NULL)
+   {
+      PDBSWS *p;
+      for(p=pdbsws; p!=NULL; NEXT(p))
+      {
+         if(!strcmp(pdbcode, p->pdb) &&
+            !strcmp(chain,   p->chain))
+         {
+            strcpy(resid, pdbsws->resid);
+            break;
+         }
+      }
+      FREELIST(pdbsws, PDBSWS);
+   }
 }
 
 FEATURES FindFeatures(char *uniprotcode)
@@ -218,7 +306,6 @@ FEATURES FindFeatures(char *uniprotcode)
    sprintf(cmd, "/usr/bin/curl -s %s", url);
 
    result = RunExternal(cmd);
-   
 
    features.NActSite = 0;
    features.NBinding = 0;
@@ -245,7 +332,7 @@ FEATURES FindFeatures(char *uniprotcode)
    return(features);
 }
 
-void SetFeature(char *text, char *feature, int *nfeature, int *residues)
+void SetFeature(char *text, char *feature, int *nFtResidues, int *ftResidues)
 {
    char *cstart, *cstop;
    char key[MAXBUFF];
@@ -262,7 +349,19 @@ void SetFeature(char *text, char *feature, int *nfeature, int *residues)
       
       if(!strncmp(cstart, key, strlen(key)))
       {
-         printf("%s\n", cstart); 
+         int residues[MAXSITE];
+         int nInRange;
+         int i;
+            
+         nInRange = ExpandRange(cstart, residues);
+         for(i=0; i<nInRange; i++)
+         {
+            ftResidues[*nFtResidues] = residues[i];
+            (*nFtResidues)++;
+         }
+#ifdef DEBUG
+         fprintf(stderr, "%s\n", cstart);
+#endif
          
       }
       if(cstop!=NULL)
@@ -273,13 +372,37 @@ void SetFeature(char *text, char *feature, int *nfeature, int *residues)
    
 }
 
-
-
-
-void MapFeaturesToPDB(FEATURES *features)
+int ExpandRange(char *range, int *residues)
 {
+   int nResidues = 0,
+      start = 0,
+      stop = 0,
+      i;
+   char *dotdot,
+      *value;
+   
+   value = strrchr(range, ' ') + 1;
+   
+   if((dotdot=strstr(value, ".."))!=NULL)
+   {
+      *dotdot = '\0';
+      start = atoi(value);
+      stop = atoi(dotdot+2);
+      for(i=start; i<=stop; i++)
+      {
+         residues[nResidues++] = i;
+      }
+   }
+   else
+   {
+      residues[0] = atoi(value);
+      nResidues = 1;
+   }
 
+   return(nResidues);
 }
+
+
 
 void CalculateFeatureDistances(FEATURES *features, char *resid,
                                char *infile)
@@ -297,17 +420,50 @@ void Usage(void)
 
 }
 
-void ParsePDBSWSResponse(struct http_response *httpResponse, PDBSWS *pdbsws)
+PDBSWS *ParsePDBSWSResponse(struct http_response *httpResponse)
 {
-   char *body = httpResponse->body;
-   CopyItem(body, "PDB: ",     pdbsws->pdb);
-   CopyItem(body, "CHAIN: ",   pdbsws->chain);
-   CopyItem(body, "RESID: ",   pdbsws->resid);
-   CopyItem(body, "PDBAA: ",   pdbsws->pdbaa);
-   CopyItem(body, "AC: ",      pdbsws->ac);
-   CopyItem(body, "ID: ",      pdbsws->id);
-   CopyItem(body, "UPCOUNT: ", pdbsws->upcount);
-   CopyItem(body, "AA: ",      pdbsws->aa);
+   char   *body   = httpResponse->body;
+   PDBSWS *pdbsws = NULL,
+          *p      = NULL;
+   BOOL   more    = FALSE;
+   char   *slashslash = NULL;
+
+   if(strstr(body, "400 Bad Request"))
+   {
+      fprintf(stderr, "sprotFTDist: 400 Bad Request\n");
+      exit(1);
+   }
+   
+   do{
+      if(p==NULL)
+      {
+         INIT(pdbsws, PDBSWS);
+         p = pdbsws;
+      }
+      else
+      {
+         NEXT(p);
+      }
+      
+      CopyItem(body, "PDB: ",     p->pdb);
+      CopyItem(body, "CHAIN: ",   p->chain);
+      CopyItem(body, "RESID: ",   p->resid);
+      CopyItem(body, "PDBAA: ",   p->pdbaa);
+      CopyItem(body, "AC: ",      p->ac);
+      CopyItem(body, "ID: ",      p->id);
+      CopyItem(body, "UPCOUNT: ", p->upcount);
+      CopyItem(body, "AA: ",      p->aa);
+
+      /* Move on to next entry */
+      more = FALSE;
+      if((slashslash = strstr(body, "//"))!=NULL)
+         body = slashslash+2;
+
+      if((slashslash = strstr(body, "//"))!=NULL)
+         more = TRUE;
+   }  while(more);
+
+   return(pdbsws);
 }
 
 void CopyItem(char *body, char *key, char *dest)
@@ -354,3 +510,31 @@ char *RunExternal(char *cmd)
 
     return(result);
 }
+
+#ifdef DEBUG
+void PrintFeatures(FEATURES features)
+{
+   PrintFeature("Active Site", features.NActSite, features.ActSite);
+   PrintFeature("Binding", features.NBinding, features.Binding);
+   PrintFeature("CA Binding", features.NCABinding, features.CABinding);
+   PrintFeature("DNA Binding", features.NDNABinding, features.DNABinding);
+   PrintFeature("NP Binding", features.NNPBinding, features.NPBinding);
+   PrintFeature("Metal", features.NMetal, features.MetalBinding);
+   PrintFeature("ModRes", features.NModRes, features.ModRes);
+   PrintFeature("Carbohydrate", features.NCarbohyd, features.Carbohyd);
+   PrintFeature("Motif", features.NMotif, features.Motif);
+   PrintFeature("Lipid", features.NLipid, features.Lipid);
+}
+
+void PrintFeature(char *label, int nres, int *res)
+{
+   int i;
+   
+   fprintf(stderr, "%s: (%d)", label, nres);
+   for(i=0; i<nres; i++)
+   {
+      fprintf(stderr, " %d", res[i]);
+   }
+   fprintf(stderr, "\n");
+}
+#endif
