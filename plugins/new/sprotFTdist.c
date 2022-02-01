@@ -3,6 +3,8 @@ Fix FEATURES to have array of resid strings instead of ints
 Fix MapFeaturesToPDB / MapFeature() to use that and store the new residue ID properly
  */
 
+#define PRINTFEATURES
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -116,7 +118,7 @@ void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *cha
 
 
 
-#ifndef DEBUG
+#ifdef PRINTFEATURES
 void PrintFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL]);
 void PrintFeatures(FEATURES features);
 #endif
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
       features = FindFeatures(uniprotcode);
       blParseResSpec(resid, chain, &resnum, insert);
       MapFeaturesToPDB(&features, uniprotcode, pdbcode, chain);
-#ifndef DEBUG
+#ifdef PRINTFEATURES
       PrintFeatures(features);
 #endif
       
@@ -543,7 +545,7 @@ char *RunExternal(char *cmd)
     return(result);
 }
 
-#ifndef DEBUG
+#ifdef PRINTFEATURES
 void PrintFeatures(FEATURES features)
 {
    PrintFeature("Active Site", features.NActSite, features.ActSite);
