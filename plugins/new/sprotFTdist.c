@@ -1,6 +1,6 @@
 /*
-SetFeature() gets the feature lines, but needs to parse out the residue number(s)
-and store those data 
+Fix FEATURES to have array of resid strings instead of ints
+Fix MapFeaturesToPDB / MapFeature() to use that and store the new residue ID properly
  */
 
 #include <stdio.h>
@@ -18,28 +18,39 @@ and store those data
 
 typedef struct _features
 {
-   int NActSite, ActSite[MAXSITE];
-   int NBinding, Binding[MAXSITE];
-   int NCABinding, CABinding[MAXSITE];
-   int NDNABinding, DNABinding[MAXSITE];
-   int NNPBinding, NPBinding[MAXSITE];
-   int NMetal, MetalBinding[MAXSITE];
-   int NModRes, ModRes[MAXSITE];
-   int NCarbohyd, Carbohyd[MAXSITE];
-   int NMotif, Motif[MAXSITE];
-   int NLipid, Lipid[MAXSITE];
+   int NActSite;
+   int NBinding;
+   int NCABinding;
+   int NDNABinding;
+   int NNPBinding;
+   int NMetal;
+   int NModRes;
+   int NCarbohyd;
+   int NMotif;
+   int NLipid;
+
+   char ActSite[MAXSITE][MAXLABEL];
+   char Binding[MAXSITE][MAXLABEL];
+   char CABinding[MAXSITE][MAXLABEL];
+   char DNABinding[MAXSITE][MAXLABEL];
+   char NPBinding[MAXSITE][MAXLABEL];
+   char MetalBinding[MAXSITE][MAXLABEL];
+   char ModRes[MAXSITE][MAXLABEL];
+   char Carbohyd[MAXSITE][MAXLABEL];
+   char Motif[MAXSITE][MAXLABEL];
+   char Lipid[MAXSITE][MAXLABEL];
 }  FEATURES;
 
 typedef struct _pdbsws
 {
    char pdb[SMALLBUFF],
-      chain[MAXLABEL],
-      resid[MAXLABEL],
-      pdbaa[MAXLABEL],
+      chain[SMALLBUFF],
+      resid[SMALLBUFF],
+      pdbaa[SMALLBUFF],
       ac[SMALLBUFF],
       id[SMALLBUFF],
-      upcount[MAXLABEL],
-      aa[MAXLABEL];
+      upcount[SMALLBUFF],
+      aa[SMALLBUFF];
    struct _pdbsws *next;
 }  PDBSWS;
 
@@ -91,22 +102,22 @@ void FindPDBCode(char *infile, char *pdbcode);
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode);
 FEATURES FindFeatures(char *uniprotcode);
 void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain);
-void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, int *res);
+void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, char resid[MAXSITE][MAXLABEL]);
 void CalculateFeatureDistances(FEATURES *features, char *resid,
                                char *infile);
 void PrintResults(FEATURES *features);
 void Usage(void);
 void CopyItem(char *body, char *key, char *dest);
-PDBSWS *ParsePDBSWSResponse(struct http_response *httpResponse);
+PDBSWS *ParsePDBSWSResponse(char *response);
 char *RunExternal(char *cmd);
-void SetFeature(char *text, char *feature, int *nfeature, int *residues);
+void SetFeature(char *text, char *feature, int *nfeature, char residues[MAXSITE][MAXLABEL]);
 int ExpandRange(char *range, int *residues);
-void FindPDBResFromUniProt(char *upcode, int upnum, char *pdbcode, char *chain, char *resid);
+void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *chain, char *resid);
 
 
 
-#ifdef DEBUG
-void PrintFeature(char *label, int nres, int *res);
+#ifndef DEBUG
+void PrintFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL]);
 void PrintFeatures(FEATURES features);
 #endif
 
@@ -137,11 +148,11 @@ int main(int argc, char **argv)
       FindUniProtCode(pdbcode, resid, uniprotcode);
       printf("UP: %s\n", uniprotcode);
       features = FindFeatures(uniprotcode);
-#ifdef DEBUG
-      PrintFeatures(features);
-#endif
       blParseResSpec(resid, chain, &resnum, insert);
       MapFeaturesToPDB(&features, uniprotcode, pdbcode, chain);
+#ifndef DEBUG
+      PrintFeatures(features);
+#endif
       
 #ifdef REAL
       CalculateFeatureDistances(features, resid, infile);
@@ -159,6 +170,8 @@ int main(int argc, char **argv)
 
 void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain)
 {
+   char resid[SMALLBUFF];
+   
    MapFeature("Active Site",  upcode, pdbcode, chain, features->NActSite,    features->ActSite);
    MapFeature("Binding",      upcode, pdbcode, chain, features->NBinding,    features->Binding);
    MapFeature("CA Binding",   upcode, pdbcode, chain, features->NCABinding,  features->CABinding);
@@ -171,21 +184,14 @@ void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *cha
    MapFeature("Lipid",        upcode, pdbcode, chain, features->NLipid,      features->Lipid);
 }
 
-void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, int *res)
+void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, char resid[MAXSITE][MAXLABEL])
 {
    int i;
-   char resid[SMALLBUFF];
-   
 
-   fprintf(stderr, "%s: ", label);
    for(i=0; i<nres; i++)
    {
-      FindPDBResFromUniProt(upcode, res[i], pdbcode, chain, resid);
-      fprintf(stderr, " %d %s", res[i], resid);
+      FindPDBResFromUniProt(upcode, resid[i], pdbcode, chain, resid[i]);
    }
-   fprintf(stderr, "\n");
-
-
 }
 
 
@@ -242,43 +248,56 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
 {
    char chain[MAXLABEL],
       insert[MAXLABEL],
-      url[MAXBUFF];
+      url[MAXBUFF],
+      *result;
+   char cmd[MAXBUFF];
    int  resnum;
-   struct http_response *httpResponse;
    PDBSWS *pdbsws = NULL;
    
    blParseResSpec(resid, chain, &resnum, insert);
    sprintf(url, "%s&qtype=pdb&id=%s&chain=%s&res=%d%s", SERVERURL, pdbcode, chain, resnum, insert);
    KILLTRAILSPACES(url);
+#ifdef DEBUG
    fprintf(stderr,"URL: %s\n", url);
+#endif
    /*
    http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=pdb&id=3u1n&chain=A&res=123
    */
-   httpResponse = http_get(url, "User-agent:sprotFTdist\r\n");
-   if((pdbsws = ParsePDBSWSResponse(httpResponse))!=NULL)
+   sprintf(cmd, "/usr/bin/curl -s '%s'", url);
+   result = RunExternal(cmd);
+
+   if((pdbsws = ParsePDBSWSResponse(result))!=NULL)
    {
       strcpy(uniprotcode, pdbsws->ac);
       FREELIST(pdbsws, PDBSWS);
    }
-   
+   else
+   {
+      fprintf(stderr, "No data from PDBSWS call: %s\n", url);
+      exit(1);
+   }
 }
 
-void FindPDBResFromUniProt(char *upcode, int upnum, char *pdbcode, char *chain, char *resid)
+void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *chain, char *resid)
 {
    char   url[MAXBUFF];
+   char cmd[MAXBUFF];
    int    resnum;
-   struct http_response *httpResponse;
+   char *result;
    PDBSWS *pdbsws = NULL;
    
-   sprintf(url, "%s&qtype=ac&id=%s&res=%d", SERVERURL, upcode, upnum);
+   sprintf(url, "%s&qtype=ac&id=%s&res=%s", SERVERURL, upcode, upresid);
    KILLTRAILSPACES(url);
+#ifdef DEBUG
    fprintf(stderr,"URL: %s\n", url);
-   
+#endif
    /*
    http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=ac&id=Q9Y3Z3&res=137
    */
-   httpResponse = http_get(url, "User-agent:sprotFTdist\r\n");
-   if((pdbsws=ParsePDBSWSResponse(httpResponse))!=NULL)
+   sprintf(cmd, "/usr/bin/curl -s '%s'", url);
+   result = RunExternal(cmd);
+
+   if((pdbsws=ParsePDBSWSResponse(result))!=NULL)
    {
       PDBSWS *p;
       for(p=pdbsws; p!=NULL; NEXT(p))
@@ -292,6 +311,11 @@ void FindPDBResFromUniProt(char *upcode, int upnum, char *pdbcode, char *chain, 
       }
       FREELIST(pdbsws, PDBSWS);
    }
+   else
+   {
+      fprintf(stderr, "No data from PDBSWS call: %s\n", url);
+      exit(1);
+   }
 }
 
 FEATURES FindFeatures(char *uniprotcode)
@@ -303,7 +327,7 @@ FEATURES FindFeatures(char *uniprotcode)
    char *result;
 
    sprintf(url, "%s%s.txt", UNIPROTURL, uniprotcode);
-   sprintf(cmd, "/usr/bin/curl -s %s", url);
+   sprintf(cmd, "/usr/bin/curl -s '%s'", url);
 
    result = RunExternal(cmd);
 
@@ -332,14 +356,14 @@ FEATURES FindFeatures(char *uniprotcode)
    return(features);
 }
 
-void SetFeature(char *text, char *feature, int *nFtResidues, int *ftResidues)
+void SetFeature(char *text, char *feature, int *nFtResidues, char ftResidues[MAXSITE][MAXLABEL])
 {
    char *cstart, *cstop;
    char key[MAXBUFF];
 
    sprintf(key, "FT   %s", feature);
 
-   cstart=text;
+   cstart=cstop=text;
    while((cstart!=NULL) && (cstop!=NULL) && (*cstart != '\0'))
    {
       if((cstop = strchr(cstart, '\n'))!=NULL)
@@ -356,7 +380,9 @@ void SetFeature(char *text, char *feature, int *nFtResidues, int *ftResidues)
          nInRange = ExpandRange(cstart, residues);
          for(i=0; i<nInRange; i++)
          {
-            ftResidues[*nFtResidues] = residues[i];
+            char resid[MAXLABEL];
+            sprintf(resid, "%d", residues[i]);
+            strcpy(ftResidues[*nFtResidues], resid);
             (*nFtResidues)++;
          }
 #ifdef DEBUG
@@ -420,14 +446,17 @@ void Usage(void)
 
 }
 
-PDBSWS *ParsePDBSWSResponse(struct http_response *httpResponse)
+PDBSWS *ParsePDBSWSResponse(char *response)
 {
-   char   *body   = httpResponse->body;
+   char   *body   = response;
    PDBSWS *pdbsws = NULL,
           *p      = NULL;
    BOOL   more    = FALSE;
    char   *slashslash = NULL;
 
+   if(response == NULL)
+      return(NULL);
+   
    if(strstr(body, "400 Bad Request"))
    {
       fprintf(stderr, "sprotFTDist: 400 Bad Request\n");
@@ -442,7 +471,7 @@ PDBSWS *ParsePDBSWSResponse(struct http_response *httpResponse)
       }
       else
       {
-         NEXT(p);
+         ALLOCNEXT(p, PDBSWS);
       }
       
       CopyItem(body, "PDB: ",     p->pdb);
@@ -470,17 +499,21 @@ void CopyItem(char *body, char *key, char *dest)
 {
    char buffer[MAXBUFF],
       *chp;
-   *dest = '\0';
-   if((chp=strstr(body, key))!=NULL)
+   if(dest!=NULL)
    {
-      chp += strlen(key);
-      
-      strcpy(buffer, chp);
-      if((chp = strchr(buffer, '\n'))!=NULL)
+      *dest = '\0';
+      if((chp=strstr(body, key))!=NULL)
       {
-         *chp = '\0';
+         chp += strlen(key);
+         
+         strncpy(buffer, chp, MAXBUFF-1);
+         if((chp = strchr(buffer, '\n'))!=NULL)
+         {
+            *chp = '\0';
+         }
+         
+         strncpy(dest, buffer, SMALLBUFF-1);
       }
-      strcpy(dest, buffer);
    }
 }
 
@@ -489,7 +522,6 @@ char *RunExternal(char *cmd)
    FILE *fp;
    char buffer[MAXBUFF],
       *result=NULL;
-
 
    if ((fp = popen(cmd, "r")) == NULL)
    {
@@ -504,14 +536,14 @@ char *RunExternal(char *cmd)
 
     if(pclose(fp))
     {
-       fprintf(stderr,"Command not found or exited with error status\n");
+       fprintf(stderr,"Command not found or exited with error status: %s\n", cmd);
        return(NULL);
     }
 
     return(result);
 }
 
-#ifdef DEBUG
+#ifndef DEBUG
 void PrintFeatures(FEATURES features)
 {
    PrintFeature("Active Site", features.NActSite, features.ActSite);
@@ -526,14 +558,14 @@ void PrintFeatures(FEATURES features)
    PrintFeature("Lipid", features.NLipid, features.Lipid);
 }
 
-void PrintFeature(char *label, int nres, int *res)
+void PrintFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL])
 {
    int i;
    
    fprintf(stderr, "%s: (%d)", label, nres);
    for(i=0; i<nres; i++)
    {
-      fprintf(stderr, " %d", res[i]);
+      fprintf(stderr, " %s", resids[i]);
    }
    fprintf(stderr, "\n");
 }
