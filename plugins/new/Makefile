@@ -1,7 +1,7 @@
 COPT = -g -c -I$(HOME)/include
 LOPT = -L$(HOME)/lib
 
-OFILES = sprotFTdist.o http-client/http-client.o
+OFILES = sprotFTdist.o
 
 sprotFTdist : $(OFILES)
 	gcc $(LOPT) -o $@ $(OFILES) -lbiop -lgen -lm -lxml2
