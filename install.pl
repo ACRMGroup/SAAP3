@@ -61,6 +61,18 @@ __EOF
     exit 1;
 }
 
+if((! -e "$ENV{'HOME'}/lib/libbiop.a") ||
+   (! -d "$ENV{'HOME'}/include/bioplib"))
+{
+    print <<__EOF;
+
+Installation aborting. Bioplib must be installed in ~/lib and ~/include
+
+__EOF
+    exit 1;
+}
+
+
 use Cwd qw(abs_path);
 
 # Add the path of the executable to the library path
@@ -273,8 +285,25 @@ sub InstallDAPPrograms
     CopyDir("./src", "$saapHome/src");
     CopyDir("./lib", "$saapHome/lib");
     CopyDir("./plugins", "$saapHome/plugins");
+    CompilePlugins("$saapHome/plugins");
     CopyFile("config.pm", $saapHome);
     LinkFiles("$saapHome/src", $binDir);
+}
+
+#*************************************************************************
+sub CompilePlugins
+{
+    my($dir) = @_;
+    `(cd $dir; make)`;
+    if(! -x "$dir/sprotFTdist")
+    {
+        print <<__EOF;
+
+Installation aborting. Compilation of sprotFTdist failed.
+
+__EOF
+        exit 1;
+    }
 }
 
 #*************************************************************************
