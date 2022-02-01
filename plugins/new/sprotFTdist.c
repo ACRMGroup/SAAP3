@@ -51,8 +51,8 @@
 *************************************************************************/
 /* Debugging
 */
+/* #define DEBUG         1 */
 /* #define PRINTFEATURES 1 */
-/* #define SHOWPROGRESS  1 */
 
 /************************************************************************/
 /* Includes
@@ -74,117 +74,101 @@
 #define MAXSITE   100
 #define BADCUTDIST (REAL)4.0
 
-#ifdef SHOWPROGRESS
-#define PROGRESS(t) fprintf(stderr, "*** %s\n", t)
-#else
-#define PROGRESS(t)
-#endif
+#define SERVERURL "http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1"
+#define UNIPROTURL "https://www.uniprot.org/uniprot/"
+
+#define PROGRESS(t) if(gVerbose) fprintf(stderr, "*** %s\n", t)
 
 typedef struct _features
 {
-   REAL MinDistActSite;
-   REAL MinDistBinding;
-   REAL MinDistCABinding;
-   REAL MinDistDNABinding;
-   REAL MinDistNPBinding;
-   REAL MinDistMetal;
-   REAL MinDistModRes;
-   REAL MinDistCarbohyd;
-   REAL MinDistMotif;
-   REAL MinDistLipid;
+   REAL MinDistActSite,
+        MinDistBinding,
+        MinDistCABinding,
+        MinDistDNABinding,
+        MinDistNPBinding,
+        MinDistMetal,
+        MinDistModRes,
+        MinDistCarbohyd,
+        MinDistMotif,
+        MinDistLipid;
 
-   int NActSite;
-   int NBinding;
-   int NCABinding;
-   int NDNABinding;
-   int NNPBinding;
-   int NMetal;
-   int NModRes;
-   int NCarbohyd;
-   int NMotif;
-   int NLipid;
+   int  NActSite,
+        NBinding,
+        NCABinding,
+        NDNABinding,
+        NNPBinding,
+        NMetal,
+        NModRes,
+        NCarbohyd,
+        NMotif,
+        NLipid;
 
-   char ActSite[MAXSITE][MAXLABEL];
-   char Binding[MAXSITE][MAXLABEL];
-   char CABinding[MAXSITE][MAXLABEL];
-   char DNABinding[MAXSITE][MAXLABEL];
-   char NPBinding[MAXSITE][MAXLABEL];
-   char Metal[MAXSITE][MAXLABEL];
-   char ModRes[MAXSITE][MAXLABEL];
-   char Carbohyd[MAXSITE][MAXLABEL];
-   char Motif[MAXSITE][MAXLABEL];
-   char Lipid[MAXSITE][MAXLABEL];
+   char ActSite[MAXSITE][MAXLABEL],
+        Binding[MAXSITE][MAXLABEL],
+        CABinding[MAXSITE][MAXLABEL],
+        DNABinding[MAXSITE][MAXLABEL],
+        NPBinding[MAXSITE][MAXLABEL],
+        Metal[MAXSITE][MAXLABEL],
+        ModRes[MAXSITE][MAXLABEL],
+        Carbohyd[MAXSITE][MAXLABEL],
+        Motif[MAXSITE][MAXLABEL],
+        Lipid[MAXSITE][MAXLABEL];
 }  FEATURES;
 
 typedef struct _pdbsws
 {
    char pdb[SMALLBUFF],
-      chain[SMALLBUFF],
-      resid[SMALLBUFF],
-      pdbaa[SMALLBUFF],
-      ac[SMALLBUFF],
-      id[SMALLBUFF],
-      upcount[SMALLBUFF],
-      aa[SMALLBUFF];
+        chain[SMALLBUFF],
+        resid[SMALLBUFF],
+        pdbaa[SMALLBUFF],
+        ac[SMALLBUFF],
+        id[SMALLBUFF],
+        upcount[SMALLBUFF],
+        aa[SMALLBUFF];
    struct _pdbsws *next;
 }  PDBSWS;
 
 /************************************************************************/
 /* Globals
 */
+BOOL gVerbose = FALSE;
 
 /************************************************************************/
 /* Prototypes
 */
-
-/************************************************************************/
-/*
-
- */
-
-
-BOOL gVerbose = FALSE;
-
-#define SERVERURL "http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1"
-#define UNIPROTURL "https://www.uniprot.org/uniprot/"
-
-
-/* External prototypes */
-struct http_response* http_get(char *url, char *custom_headers);
-
-/* Prototypes */
 BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
                   char *infile);
 int main(int argc, char **argv);
-void FindPDBCode(char *infile, char *pdbcode);
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode);
 FEATURES FindFeatures(char *uniprotcode);
-void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain);
-void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, char resid[MAXSITE][MAXLABEL]);
-void CalculateFeatureDistances(FEATURES *features, char *resid, char *infile);
+void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode,
+                      char *chain);
+void MapFeature(char *label, char *upcode, char *pdbcode, char *chain,
+                int nres, char resid[MAXSITE][MAXLABEL]);
+void CalculateFeatureDistances(FEATURES *features, char *resid,
+                               char *infile);
 void Usage(void);
 void CopyItem(char *body, char *key, char *dest);
 PDBSWS *ParsePDBSWSResponse(char *response);
 char *RunExternal(char *cmd);
-void SetFeature(char *text, char *feature, int *nfeature, char residues[MAXSITE][MAXLABEL]);
+void SetFeature(char *text, char *feature, int *nfeature,
+                char residues[MAXSITE][MAXLABEL]);
 int ExpandRange(char *range, int *residues);
-void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *chain, char *resid);
-void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum, char *insert,
-                             int nRes, char resids[MAXSITE][MAXLABEL], REAL *minDist);
+void FindPDBResFromUniProt(char *upcode, char *upresid,
+                           char *pdbcode, char *chain, char *resid);
+void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum,
+                             char *insert, int nRes,
+                             char resids[MAXSITE][MAXLABEL],
+                             REAL *minDist);
 void PrintAResult(char *label, REAL dist);
 void PrintResults(FEATURES features);
 
 #ifdef PRINTFEATURES
-void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL], REAL dist);
+void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
+                   REAL dist);
 void PrintFeatures(FEATURES features);
 #endif
 
-
-
-
-
-
-/************************************************************************/
 /************************************************************************/
 int main(int argc, char **argv)
 {
@@ -202,7 +186,7 @@ int main(int argc, char **argv)
          insert[MAXLABEL];
       int resnum;
       
-      FindPDBCode(infile, pdbcode);
+      strcpy(pdbcode, blFNam2PDB(infile));
       PROGRESS("Finding UniProt code");
       FindUniProtCode(pdbcode, resid, uniprotcode);
 #ifdef DEBUG
@@ -233,24 +217,37 @@ int main(int argc, char **argv)
 
 
 /************************************************************************/
-void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode, char *chain)
+void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode,
+                      char *chain)
 {
    char resid[SMALLBUFF];
    
-   MapFeature("Active Site",  upcode, pdbcode, chain, features->NActSite,    features->ActSite);
-   MapFeature("Binding",      upcode, pdbcode, chain, features->NBinding,    features->Binding);
-   MapFeature("CA Binding",   upcode, pdbcode, chain, features->NCABinding,  features->CABinding);
-   MapFeature("DNA Binding",  upcode, pdbcode, chain, features->NDNABinding, features->DNABinding);
-   MapFeature("NP Binding",   upcode, pdbcode, chain, features->NNPBinding,  features->NPBinding);
-   MapFeature("Metal",        upcode, pdbcode, chain, features->NMetal,      features->Metal);
-   MapFeature("ModRes",       upcode, pdbcode, chain, features->NModRes,     features->ModRes);
-   MapFeature("Carbohydrate", upcode, pdbcode, chain, features->NCarbohyd,   features->Carbohyd);
-   MapFeature("Motif",        upcode, pdbcode, chain, features->NMotif,      features->Motif);
-   MapFeature("Lipid",        upcode, pdbcode, chain, features->NLipid,      features->Lipid);
+   MapFeature("Active Site",  upcode, pdbcode, chain,
+              features->NActSite,    features->ActSite);
+   MapFeature("Binding",      upcode, pdbcode, chain,
+              features->NBinding,    features->Binding);
+   MapFeature("CA Binding",   upcode, pdbcode, chain,
+              features->NCABinding,  features->CABinding);
+   MapFeature("DNA Binding",  upcode, pdbcode, chain,
+              features->NDNABinding, features->DNABinding);
+   MapFeature("NP Binding",   upcode, pdbcode, chain,
+              features->NNPBinding,  features->NPBinding);
+   MapFeature("Metal",        upcode, pdbcode, chain,
+              features->NMetal,      features->Metal);
+   MapFeature("ModRes",       upcode, pdbcode, chain,
+              features->NModRes,     features->ModRes);
+   MapFeature("Carbohydrate", upcode, pdbcode, chain,
+              features->NCarbohyd,   features->Carbohyd);
+   MapFeature("Motif",        upcode, pdbcode, chain,
+              features->NMotif,      features->Motif);
+   MapFeature("Lipid",        upcode, pdbcode, chain,
+              features->NLipid,      features->Lipid);
 }
 
+
 /************************************************************************/
-void MapFeature(char *label, char *upcode, char *pdbcode, char *chain, int nres, char resid[MAXSITE][MAXLABEL])
+void MapFeature(char *label, char *upcode, char *pdbcode,
+                char *chain, int nres, char resid[MAXSITE][MAXLABEL])
 {
    int i;
 
@@ -309,12 +306,6 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
 
 
 /************************************************************************/
-void FindPDBCode(char *infile, char *pdbcode)
-{
-   strcpy(pdbcode, blFNam2PDB(infile));
-}
-
-/************************************************************************/
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
 {
    char chain[MAXLABEL],
@@ -326,14 +317,12 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
    PDBSWS *pdbsws = NULL;
    
    blParseResSpec(resid, chain, &resnum, insert);
-   sprintf(url, "%s&qtype=pdb&id=%s&chain=%s&res=%d%s", SERVERURL, pdbcode, chain, resnum, insert);
+   sprintf(url, "%s&qtype=pdb&id=%s&chain=%s&res=%d%s",
+           SERVERURL, pdbcode, chain, resnum, insert);
    KILLTRAILSPACES(url);
 #ifdef DEBUG
    fprintf(stderr,"URL: %s\n", url);
 #endif
-   /*
-   http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=pdb&id=3u1n&chain=A&res=123
-   */
    sprintf(cmd, "/usr/bin/curl -s '%s'", url);
    result = RunExternal(cmd);
 
@@ -349,13 +338,15 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
    }
 }
 
+
 /************************************************************************/
-void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *chain, char *resid)
+void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode,
+                           char *chain, char *resid)
 {
-   char   url[MAXBUFF];
-   char cmd[MAXBUFF];
+   char   url[MAXBUFF],
+          cmd[MAXBUFF],
+          *result;
    int    resnum;
-   char *result;
    PDBSWS *pdbsws = NULL;
    
    sprintf(url, "%s&qtype=ac&id=%s&res=%s", SERVERURL, upcode, upresid);
@@ -363,9 +354,6 @@ void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *cha
 #ifdef DEBUG
    fprintf(stderr,"URL: %s\n", url);
 #endif
-   /*
-   http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1&qtype=ac&id=Q9Y3Z3&res=137
-   */
    sprintf(cmd, "/usr/bin/curl -s '%s'", url);
    result = RunExternal(cmd);
 
@@ -390,6 +378,7 @@ void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode, char *cha
    }
 }
 
+
 /************************************************************************/
 FEATURES FindFeatures(char *uniprotcode)
 {
@@ -404,48 +393,60 @@ FEATURES FindFeatures(char *uniprotcode)
 
    result = RunExternal(cmd);
 
-   features.NActSite = 0;
-   features.NBinding = 0;
-   features.NCABinding = 0;
+   features.NActSite    = 0;
+   features.NBinding    = 0;
+   features.NCABinding  = 0;
    features.NDNABinding = 0;
-   features.NNPBinding = 0;
-   features.NMetal = 0;
-   features.NModRes = 0;
-   features.NCarbohyd = 0;
-   features.NMotif = 0;
-   features.NLipid = 0;
+   features.NNPBinding  = 0;
+   features.NMetal      = 0;
+   features.NModRes     = 0;
+   features.NCarbohyd   = 0;
+   features.NMotif      = 0;
+   features.NLipid      = 0;
    
-   features.MinDistActSite = (REAL)-1.0;
-   features.MinDistBinding = (REAL)-1.0;
-   features.MinDistCABinding = (REAL)-1.0;
+   features.MinDistActSite    = (REAL)-1.0;
+   features.MinDistBinding    = (REAL)-1.0;
+   features.MinDistCABinding  = (REAL)-1.0;
    features.MinDistDNABinding = (REAL)-1.0;
-   features.MinDistNPBinding = (REAL)-1.0;
-   features.MinDistMetal = (REAL)-1.0;
-   features.MinDistModRes = (REAL)-1.0;
-   features.MinDistCarbohyd = (REAL)-1.0;
-   features.MinDistMotif = (REAL)-1.0;
-   features.MinDistLipid = (REAL)-1.0;
+   features.MinDistNPBinding  = (REAL)-1.0;
+   features.MinDistMetal      = (REAL)-1.0;
+   features.MinDistModRes     = (REAL)-1.0;
+   features.MinDistCarbohyd   = (REAL)-1.0;
+   features.MinDistMotif      = (REAL)-1.0;
+   features.MinDistLipid      = (REAL)-1.0;
    
-   SetFeature(result, "ACT_SITE", &(features.NActSite),    features.ActSite);
-   SetFeature(result, "BINDING",  &(features.NBinding),    features.Binding);
-   SetFeature(result, "CA_BIND",  &(features.NCABinding),  features.CABinding);
-   SetFeature(result, "DNA_BIND", &(features.NDNABinding), features.DNABinding);
-   SetFeature(result, "NP_BIND",  &(features.NNPBinding),  features.NPBinding);
-   SetFeature(result, "METAL",    &(features.NMetal),      features.Metal);
-   SetFeature(result, "MOD_RES",  &(features.NModRes),     features.ModRes);
-   SetFeature(result, "CARBOHYD", &(features.NCarbohyd),   features.Carbohyd);
-   SetFeature(result, "MOTIF",    &(features.NMotif),      features.Motif);
-   SetFeature(result, "LIPID",    &(features.NLipid),      features.Lipid);
+   SetFeature(result, "ACT_SITE", &(features.NActSite),
+              features.ActSite);
+   SetFeature(result, "BINDING",  &(features.NBinding),
+              features.Binding);
+   SetFeature(result, "CA_BIND",  &(features.NCABinding),
+              features.CABinding);
+   SetFeature(result, "DNA_BIND", &(features.NDNABinding),
+              features.DNABinding);
+   SetFeature(result, "NP_BIND",  &(features.NNPBinding),
+              features.NPBinding);
+   SetFeature(result, "METAL",    &(features.NMetal),
+              features.Metal);
+   SetFeature(result, "MOD_RES",  &(features.NModRes),
+              features.ModRes);
+   SetFeature(result, "CARBOHYD", &(features.NCarbohyd),
+              features.Carbohyd);
+   SetFeature(result, "MOTIF",    &(features.NMotif),
+              features.Motif);
+   SetFeature(result, "LIPID",    &(features.NLipid),
+              features.Lipid);
    
    return(features);
 }
 
 /************************************************************************/
-void SetFeature(char *text, char *feature, int *nFtResidues, char ftResidues[MAXSITE][MAXLABEL])
+void SetFeature(char *text, char *feature, int *nFtResidues,
+                char ftResidues[MAXSITE][MAXLABEL])
 {
    static char *buffer = NULL;
-   char *cstart, *cstop;
-   char key[MAXBUFF];
+   char *cstart,
+        *cstop,
+        key[MAXBUFF];
 
    if(buffer==NULL)
    {
@@ -457,8 +458,6 @@ void SetFeature(char *text, char *feature, int *nFtResidues, char ftResidues[MAX
    }
    strcpy(buffer, text);
 
-   PROGRESS(feature);
-   
    sprintf(key, "FT   %s", feature);
 
    cstart=cstop=buffer;
@@ -469,18 +468,6 @@ void SetFeature(char *text, char *feature, int *nFtResidues, char ftResidues[MAX
          *cstop = '\0';
       }
 
-#ifdef DEBUG
-      if(strstr(key, "MOD_RES"))
-      {
-         
-         if(!strncmp(cstart, "FT ", 3) && strstr(cstart, "MOD_RES"))
-         {
-            fprintf(stderr, "%s\n", cstart);
-         }
-      }
-#endif
-      
-      
       if(!strncmp(cstart, key, strlen(key)))
       {
          int residues[MAXSITE];
@@ -495,36 +482,31 @@ void SetFeature(char *text, char *feature, int *nFtResidues, char ftResidues[MAX
             strcpy(ftResidues[*nFtResidues], resid);
             (*nFtResidues)++;
          }
-#ifdef DEBUG
-         fprintf(stderr, "%s\n", cstart);
-#endif
-         
       }
       if(cstop!=NULL)
          *cstop = '\n';
       
       cstart = cstop+1;
    }
-   
 }
 
 /************************************************************************/
 int ExpandRange(char *range, int *residues)
 {
-   int nResidues = 0,
-      start = 0,
-      stop = 0,
-      i;
+   int  nResidues = 0,
+        start     = 0,
+        stop      = 0,
+        i;
    char *dotdot,
-      *value;
+        *value;
    
    value = strrchr(range, ' ') + 1;
    
    if((dotdot=strstr(value, ".."))!=NULL)
    {
       *dotdot = '\0';
-      start = atoi(value);
-      stop = atoi(dotdot+2);
+      start   = atoi(value);
+      stop    = atoi(dotdot+2);
       for(i=start; i<=stop; i++)
       {
          residues[nResidues++] = i;
@@ -533,7 +515,7 @@ int ExpandRange(char *range, int *residues)
    else
    {
       residues[0] = atoi(value);
-      nResidues = 1;
+      nResidues   = 1;
    }
 
    return(nResidues);
@@ -542,13 +524,15 @@ int ExpandRange(char *range, int *residues)
 
 
 /************************************************************************/
-void CalculateFeatureDistances(FEATURES *features, char *resid, char *infile)
+void CalculateFeatureDistances(FEATURES *features, char *resid,
+                               char *infile)
 {
-   FILE *fp = NULL;
+   FILE *fp  = NULL;
    PDB  *pdb = NULL;
    char chain[MAXLABEL],
-      insert[MAXLABEL];
-   int resnum, natoms;
+        insert[MAXLABEL];
+   int  resnum,
+        natoms;
 
    blParseResSpec(resid, chain, &resnum, insert);
    
@@ -556,16 +540,46 @@ void CalculateFeatureDistances(FEATURES *features, char *resid, char *infile)
    {
       if((pdb=blReadPDBAtoms(fp, &natoms))!=NULL)
       {
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NActSite,    features->ActSite,      &(features->MinDistActSite));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NBinding,    features->Binding,      &(features->MinDistBinding));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NCABinding,  features->CABinding,    &(features->MinDistCABinding));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NDNABinding, features->DNABinding,   &(features->MinDistDNABinding));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NNPBinding,  features->NPBinding,    &(features->MinDistNPBinding));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NMetal,      features->Metal,        &(features->MinDistMetal));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NModRes,     features->ModRes,       &(features->MinDistModRes));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NCarbohyd,   features->Carbohyd,     &(features->MinDistCarbohyd));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NMotif,      features->Motif,        &(features->MinDistMotif));
-         PopulateFeatureDistance(pdb, chain, resnum, insert, features->NLipid,      features->Lipid,        &(features->MinDistLipid));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NActSite,
+                                 features->ActSite,
+                                 &(features->MinDistActSite));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NBinding,
+                                 features->Binding,
+                                 &(features->MinDistBinding));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NCABinding,
+                                 features->CABinding,
+                                 &(features->MinDistCABinding));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NDNABinding,
+                                 features->DNABinding,
+                                 &(features->MinDistDNABinding));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NNPBinding,
+                                 features->NPBinding,
+                                 &(features->MinDistNPBinding));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NMetal,
+                                 features->Metal,
+                                 &(features->MinDistMetal));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NModRes,
+                                 features->ModRes,
+                                 &(features->MinDistModRes));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NCarbohyd,
+                                 features->Carbohyd,
+                                 &(features->MinDistCarbohyd));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NMotif,
+                                 features->Motif,
+                                 &(features->MinDistMotif));
+         PopulateFeatureDistance(pdb, chain, resnum, insert,
+                                 features->NLipid,
+                                 features->Lipid,
+                                 &(features->MinDistLipid));
       }
       else
       {
@@ -581,19 +595,13 @@ void CalculateFeatureDistances(FEATURES *features, char *resid, char *infile)
 }
 
 /************************************************************************/
-void Usage(void)
-{
-
-}
-
-/************************************************************************/
 PDBSWS *ParsePDBSWSResponse(char *response)
 {
-   char   *body   = response;
-   PDBSWS *pdbsws = NULL,
-          *p      = NULL;
-   BOOL   more    = FALSE;
-   char   *slashslash = NULL;
+   char   *body       = response,
+          *slashslash = NULL;
+   PDBSWS *pdbsws     = NULL,
+          *p          = NULL;
+   BOOL   more        = FALSE;
 
    if(response == NULL)
       return(NULL);
@@ -815,3 +823,10 @@ void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL], REAL d
    fprintf(stderr, " [%.3f]\n", dist);
 }
 #endif
+
+/************************************************************************/
+void Usage(void)
+{
+
+}
+
