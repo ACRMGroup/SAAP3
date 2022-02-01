@@ -4,9 +4,9 @@
    Program:    sprotFTdist
    \file       sprotFTdist.c
    
-   \version    V1.0
+   \version    V2.0
    \date       01.02.22
-   \brief         
+   \brief      SAAPdap plugin for swissprot feature distances
    
    \copyright  (c) UCL / Prof. Andrew C. R. Martin 2022
    \author     Prof. Andrew C. R. Martin
@@ -54,6 +54,7 @@
 /* #define DEBUG         1 */
 /* #define PRINTFEATURES 1 */
 
+
 /************************************************************************/
 /* Includes
 */
@@ -64,6 +65,7 @@
 #include "bioplib/pdb.h"
 #include "bioplib/macros.h"
 #include "bioplib/MathType.h"
+
 
 /************************************************************************/
 /* Defines and macros
@@ -128,10 +130,12 @@ typedef struct _pdbsws
    struct _pdbsws *next;
 }  PDBSWS;
 
+
 /************************************************************************/
 /* Globals
 */
 BOOL gVerbose = FALSE;
+
 
 /************************************************************************/
 /* Prototypes
@@ -162,6 +166,8 @@ void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum,
                              REAL *minDist);
 void PrintAResult(char *label, REAL dist);
 void PrintResults(FEATURES features);
+void Info(void);
+void ErrorExit(char *fmt, char *param);
 
 #ifdef PRINTFEATURES
 void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
@@ -169,22 +175,34 @@ void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
 void PrintFeatures(FEATURES features);
 #endif
 
+
 /************************************************************************/
+/*>int main(int argc, char **argv)
+   -------------------------------
+*//**
+   \param[in]    argc  Argument count
+   \param[in]    argv  Arguments
+   \return             Status
+
+   Main program
+
+- 01.02.22  Original   By: ACRM
+*/
 int main(int argc, char **argv)
 {
-   char resid[SMALLBUFF],
-        newaa[SMALLBUFF],
-      infile[MAXBUFF],
-      uniprotcode[SMALLBUFF],
-      pdbcode[SMALLBUFF];
+   char     resid[SMALLBUFF],
+            newaa[SMALLBUFF],
+            infile[MAXBUFF],
+            uniprotcode[SMALLBUFF],
+            pdbcode[SMALLBUFF];
    FEATURES features;
    
    
    if(ParseCmdLine(argc, argv, resid, newaa, infile))
    {
       char chain[MAXLABEL],
-         insert[MAXLABEL];
-      int resnum;
+           insert[MAXLABEL];
+      int  resnum;
       
       strcpy(pdbcode, blFNam2PDB(infile));
       PROGRESS("Finding UniProt code");
@@ -200,7 +218,7 @@ int main(int argc, char **argv)
       PROGRESS("Mapping features back to PDB");
       blParseResSpec(resid, chain, &resnum, insert);
       MapFeaturesToPDB(&features, uniprotcode, pdbcode, chain);
-      PROGRESS("Calculating feature distanced");
+      PROGRESS("Calculating feature distances");
       CalculateFeatureDistances(&features, resid, infile);
 #ifdef PRINTFEATURES
       PrintFeatures(features);
@@ -217,6 +235,19 @@ int main(int argc, char **argv)
 
 
 /************************************************************************/
+/*>void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode,
+                         char *chain)
+   ----------------------------------------------------------------------
+*//**
+   \param[in,out] *features Pointer to feature structure
+   \param[in]     upcode    UniProt accession
+   \param[in]     pdbcode   PDB code of interest 
+   \param[in]     chain     PDB chain of interest
+
+   Convert all features from UniProt number to PDB residue number (nnn[c])
+
+- 01.02.22  Original   By: ACRM
+*/
 void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode,
                       char *chain)
 {
@@ -246,6 +277,22 @@ void MapFeaturesToPDB(FEATURES *features, char *upcode, char *pdbcode,
 
 
 /************************************************************************/
+/*>void MapFeature(char *label, char *upcode, char *pdbcode,
+                   char *chain, int nres, char resid[MAXSITE][MAXLABEL])
+   ---------------------------------------------------------
+*//**
+   \param[in]     label  A text label for debugging purposes
+   \param[in]     upcode  UniProt accession
+   \param[in]     pdbcode The PDB code of interest
+   \param[in]     chain   The PDB chain of interest
+   \param[in]     nres    The number of mapped residues in the feature
+   \param[in,out] resid   Array of residue IDs for the mapped residues
+
+   Convert an individual residue from UniProt number (nnn) to PDB number
+   (nnn[c]) for the specified PDB code and chain
+
+- 01.02.22  Original   By: ACRM
+*/
 void MapFeature(char *label, char *upcode, char *pdbcode,
                 char *chain, int nres, char resid[MAXSITE][MAXLABEL])
 {
@@ -259,6 +306,21 @@ void MapFeature(char *label, char *upcode, char *pdbcode,
 
 
 /************************************************************************/
+/*>BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
+                     char *infile)
+   ------------------------------------------------------------------
+*//**
+   \param[in]    argc   Argument count
+   \param[in]    argv   Arguments
+   \param[out]   resid  The residue of interest
+   \param[out]   newres The amino acid to which it is mutated
+   \param[out]   infile The input PDB file
+   \return              Success
+
+   Parse the command line
+
+- 01.02.22  Original   By: ACRM
+*/
 BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
                   char *infile)
 {
@@ -271,15 +333,22 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
    {
       if(argv[0][0] == '-')
       {
-         switch(argv[0][1])
+         if(!strcmp(argv[0], "-vv"))
          {
-         case 'v':
             gVerbose = TRUE;
-            break;
-         case 'h':
-         default:
+         }
+         else if(!strcmp(argv[0], "-h"))
+         {
             return(FALSE);
-            break;
+         }
+         else if(!strcmp(argv[0], "-info"))
+         {
+            Info();
+            return(TRUE);
+         }
+         else
+         {
+            return(FALSE);
          }
       }
       else
@@ -306,14 +375,26 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
 
 
 /************************************************************************/
+/*>void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
+   -------------------------------------------------------------------
+*//**
+   \param[in]    pdbcode      The PDB code
+   \param[in]    resid        The residue identifier ([c]nnn[i])
+   \param[out]   uniprotcode  The UniProt accession
+   \return
+
+   Find the UniProt code for a specified PDB code and residue ID
+
+- 01.02.22  Original   By: ACRM
+*/
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
 {
-   char chain[MAXLABEL],
-      insert[MAXLABEL],
-      url[MAXBUFF],
-      *result;
-   char cmd[MAXBUFF];
-   int  resnum;
+   char   chain[MAXLABEL],
+          insert[MAXLABEL],
+          url[MAXBUFF],
+          *result,
+          cmd[MAXBUFF];
+   int    resnum;
    PDBSWS *pdbsws = NULL;
    
    blParseResSpec(resid, chain, &resnum, insert);
@@ -324,22 +405,42 @@ void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode)
    fprintf(stderr,"URL: %s\n", url);
 #endif
    sprintf(cmd, "/usr/bin/curl -s '%s'", url);
-   result = RunExternal(cmd);
+   if((result = RunExternal(cmd))==NULL)
+   {
+      ErrorExit("External program failed: %s", cmd);
+   }
 
    if((pdbsws = ParsePDBSWSResponse(result))!=NULL)
    {
       strcpy(uniprotcode, pdbsws->ac);
       FREELIST(pdbsws, PDBSWS);
+      free(result);
    }
    else
    {
-      fprintf(stderr, "No data from PDBSWS call: %s\n", url);
-      exit(1);
+      free(result);
+      ErrorExit("No data from PDBSWS call: %s", url);
    }
 }
 
 
 /************************************************************************/
+/*>void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode,
+                              char *chain, char *resid)
+   ----------------------------------------------------------------------
+*//**
+   \param[in]   upcode   The UniProt code
+   \param[in]   upresid  The residue number in the UniProt sequence
+   \param[in]   pdbcode  The PDB code of interest
+   \param[in]   chain    The PDB chain of interest
+   \param[out]  resid    The residue number and insert code of the
+                         PDB residue
+
+   Find the PDB residue id (nnn[c]) for a specified UniProt code, UniProt
+   residue number, PDB code and chain
+
+- 01.02.22  Original   By: ACRM
+*/
 void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode,
                            char *chain, char *resid)
 {
@@ -355,7 +456,12 @@ void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode,
    fprintf(stderr,"URL: %s\n", url);
 #endif
    sprintf(cmd, "/usr/bin/curl -s '%s'", url);
-   result = RunExternal(cmd);
+   if((result = RunExternal(cmd))==NULL)
+   {
+      if(gVerbose)
+         fprintf(stderr, "No data from PDBSWS call: %s\n", url);
+      return;
+   }
 
    if((pdbsws=ParsePDBSWSResponse(result))!=NULL)
    {
@@ -376,10 +482,22 @@ void FindPDBResFromUniProt(char *upcode, char *upresid, char *pdbcode,
       if(gVerbose)
          fprintf(stderr, "No data from PDBSWS call: %s\n", url);
    }
+
+   FREE(result);
 }
 
 
 /************************************************************************/
+/*>FEATURES FindFeatures(char *uniprotcode)
+   ----------------------------------------
+*//**
+   \param[in]   uniprotcode   A UniProt accession
+   \return                    The relevant feature information
+
+   Find the features from a UniProt entry
+
+- 01.02.22  Original   By: ACRM
+*/
 FEATURES FindFeatures(char *uniprotcode)
 {
    FEATURES features;
@@ -391,7 +509,10 @@ FEATURES FindFeatures(char *uniprotcode)
    sprintf(url, "%s%s.txt", UNIPROTURL, uniprotcode);
    sprintf(cmd, "/usr/bin/curl -s '%s'", url);
 
-   result = RunExternal(cmd);
+   if((result = RunExternal(cmd))==NULL)
+   {
+      ErrorExit("External program failed: %s", cmd);
+   }
 
    features.NActSite    = 0;
    features.NBinding    = 0;
@@ -435,11 +556,27 @@ FEATURES FindFeatures(char *uniprotcode)
               features.Motif);
    SetFeature(result, "LIPID",    &(features.NLipid),
               features.Lipid);
-   
+
+   FREE(result);
    return(features);
 }
 
+
 /************************************************************************/
+/*>void SetFeature(char *text, char *feature, int *nFtResidues,
+                   char ftResidues[MAXSITE][MAXLABEL])
+   ------------------------------------------------------------
+*//**
+   \param[in]   text         The whole UniProt record
+   \param[in]   feature      The feature we are looking for
+   \param[out]  *nFtResidues Number of residues for this feature
+   \param[out]  ftResidues   Array of residue numbers in UniProt for
+                             this feature
+
+   Find an individual feature from a UniProt entry
+
+- 01.02.22  Original   By: ACRM
+*/
 void SetFeature(char *text, char *feature, int *nFtResidues,
                 char ftResidues[MAXSITE][MAXLABEL])
 {
@@ -452,8 +589,7 @@ void SetFeature(char *text, char *feature, int *nFtResidues,
    {
       if((buffer = (char *)malloc((strlen(text)+2)*sizeof(char)))==NULL)
       {
-         fprintf(stderr, "No memory for buffer\n");
-         exit(1);
+         ErrorExit("No memory for buffer", NULL);
       }
    }
    strcpy(buffer, text);
@@ -490,7 +626,20 @@ void SetFeature(char *text, char *feature, int *nFtResidues,
    }
 }
 
+
 /************************************************************************/
+/*>int ExpandRange(char *range, int *residues)
+   -------------------------------------------
+*//**
+   \param[in]   range    Residue number or range (xxx..xxx)
+   \param[out]  residues Array of residue numbers
+   \return               Number of residues in range
+
+   Takes a string containing an number, or a range of numbers and 
+   fills in an int array with all the numbers in the range
+
+- 01.02.22  Original   By: ACRM
+*/
 int ExpandRange(char *range, int *residues)
 {
    int  nResidues = 0,
@@ -522,8 +671,20 @@ int ExpandRange(char *range, int *residues)
 }
 
 
-
 /************************************************************************/
+/*>void CalculateFeatureDistances(FEATURES *features, char *resid,
+                                  char *infile)
+   ---------------------------------------------------------------
+*//**
+   \param[in,out]  features    Feature information
+   \param[in]      resid       Key residue of interest
+   \param[in]      infile      PDB file
+
+   Fill in the FEATURES structure with the closest distance from a
+   key residue to all residues in each feature type
+
+- 01.02.22  Original   By: ACRM
+*/
 void CalculateFeatureDistances(FEATURES *features, char *resid,
                                char *infile)
 {
@@ -583,22 +744,31 @@ void CalculateFeatureDistances(FEATURES *features, char *resid,
       }
       else
       {
-         fprintf(stderr,"No atoms read from PDB file: %s\n", infile);
-         exit(1);
+         ErrorExit("No atoms read from PDB file: %s", infile);
       }
    }
    else
    {
-      fprintf(stderr,"Unable to open file: %s\n", infile);
-      exit(1);
+      ErrorExit("Unable to open file: %s", infile);
    }
 }
 
+
 /************************************************************************/
+/*>PDBSWS *ParsePDBSWSResponse(char *response)
+   -------------------------------------------
+*//**
+   \param[in]   response   Results from a PDBSWS query
+   \return                 Linked list of PDBSWS records
+
+   Take the string response from a PDBSWS query and convert it into
+   a parsed linked list of PDBSWS structures
+
+- 01.02.22  Original   By: ACRM
+*/
 PDBSWS *ParsePDBSWSResponse(char *response)
 {
-   char   *body       = response,
-          *slashslash = NULL;
+   char   *slashslash = NULL;
    PDBSWS *pdbsws     = NULL,
           *p          = NULL;
    BOOL   more        = FALSE;
@@ -606,10 +776,9 @@ PDBSWS *ParsePDBSWSResponse(char *response)
    if(response == NULL)
       return(NULL);
    
-   if(strstr(body, "400 Bad Request"))
+   if(strstr(response, "400 Bad Request"))
    {
-      fprintf(stderr, "sprotFTDist: 400 Bad Request\n");
-      exit(1);
+      ErrorExit("400 Bad Request", NULL);
    }
    
    do{
@@ -624,40 +793,53 @@ PDBSWS *ParsePDBSWSResponse(char *response)
       }
       if(p==NULL)
       {
-         fprintf(stderr,"No memory for PDBSWS data\n");
-         exit(1);
+         ErrorExit("No memory for PDBSWS data", NULL);
       }
       
-      CopyItem(body, "PDB: ",     p->pdb);
-      CopyItem(body, "CHAIN: ",   p->chain);
-      CopyItem(body, "RESID: ",   p->resid);
-      CopyItem(body, "PDBAA: ",   p->pdbaa);
-      CopyItem(body, "AC: ",      p->ac);
-      CopyItem(body, "ID: ",      p->id);
-      CopyItem(body, "UPCOUNT: ", p->upcount);
-      CopyItem(body, "AA: ",      p->aa);
+      CopyItem(response, "PDB: ",     p->pdb);
+      CopyItem(response, "CHAIN: ",   p->chain);
+      CopyItem(response, "RESID: ",   p->resid);
+      CopyItem(response, "PDBAA: ",   p->pdbaa);
+      CopyItem(response, "AC: ",      p->ac);
+      CopyItem(response, "ID: ",      p->id);
+      CopyItem(response, "UPCOUNT: ", p->upcount);
+      CopyItem(response, "AA: ",      p->aa);
 
-      /* Move on to next entry */
+      /* Move on to next entry                                          */
       more = FALSE;
-      if((slashslash = strstr(body, "//"))!=NULL)
-         body = slashslash+2;
+      if((slashslash = strstr(response, "//"))!=NULL)
+         response = slashslash+2;
 
-      if((slashslash = strstr(body, "//"))!=NULL)
+      if((slashslash = strstr(response, "//"))!=NULL)
          more = TRUE;
    }  while(more);
 
    return(pdbsws);
 }
 
+
 /************************************************************************/
-void CopyItem(char *body, char *key, char *dest)
+/*>void CopyItem(char *response, char *key, char *dest)
+   ----------------------------------------------------
+*//**
+   \param[in]    response   Complete UniProt record
+   \param[in]    key        Record type of interest
+   \param[out]   dest       Destination for data associated with key
+
+   Extract the data for a given key (e.g. 'FT   BINDING') and extracts
+   the associated residue number information
+
+- 01.02.22  Original   By: ACRM
+*/
+void CopyItem(char *response, char *key, char *dest)
 {
    char buffer[MAXBUFF],
-      *chp;
+        *chp;
+
    if(dest!=NULL)
    {
       *dest = '\0';
-      if((chp=strstr(body, key))!=NULL)
+      if((chp=strstr(response, key))!=NULL)
       {
          chp += strlen(key);
          
@@ -672,40 +854,72 @@ void CopyItem(char *body, char *key, char *dest)
    }
 }
 
+
 /************************************************************************/
+/*>char *RunExternal(char *cmd)
+   ----------------------------
+*//**
+   \param[in]    cmd   Command to be run
+   \return             Results (malloc'd)
+
+   Runs an external program returning the results in a malloc'd string
+
+- 01.02.22  Original   By: ACRM
+*/
 char *RunExternal(char *cmd)
 {
    FILE *fp;
    char buffer[MAXBUFF],
-      *result=NULL;
-
-   if ((fp = popen(cmd, "r")) == NULL)
+        *result = NULL;
+   
+   if ((fp=popen(cmd, "r")) == NULL)
    {
-      fprintf(stderr,"Error opening pipe!\n");
       return(NULL);
    }
-
+   
    while (fgets(buffer, MAXBUFF, fp) != NULL)
    {
       result=blStrcatalloc(result, buffer);
    }
 
-    if(pclose(fp))
-    {
-       fprintf(stderr,"Command not found or exited with error status: %s\n", cmd);
-       return(NULL);
-    }
-
-    return(result);
+   if(pclose(fp))
+   {
+      return(NULL);
+   }
+   
+   return(result);
 }
 
 
 /************************************************************************/
-void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum, char *insert,
-                             int nRes, char resids[MAXSITE][MAXLABEL], REAL *minDist)
+/*>void PopulateFeatureDistance(PDB *pdb,
+                                char *chain, int resnum, char *insert,
+                                int nRes, char resids[MAXSITE][MAXLABEL],
+                                REAL *minDist)
+   ----------------------------------------------------------------------
+*//**
+   \param[in]    pdb     PDB linked list
+   \param[in]    chain   PDB chain of interest
+   \param[in]    resnum  PDB resnum of key residue
+   \param[in]    insert  PDB insert of key residue
+   \param[in]    nRes    Number of feature residues
+   \param[in]    resids  Res IDs (nnn[c]) of feature residues
+   \param[out]   minDist Minimum distance to a feature residue (-1 if no
+                         feature residues for this feature)
+
+
+   Calculates the minimum distance between a key residue and a set of
+   other residues.
+
+- 01.02.22  Original   By: ACRM
+*/
+void PopulateFeatureDistance(PDB *pdb,
+                             char *chain, int resnum, char *insert,
+                             int nRes, char resids[MAXSITE][MAXLABEL],
+                             REAL *minDist)
 {
    PDB *keyRes, *keyResNext,
-      *ftRes, *ftResNext;
+       *ftRes, *ftResNext;
 
    if(nRes)
    {
@@ -720,7 +934,8 @@ void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum, char *insert,
             char ftChain[MAXLABEL], ftInsert[MAXLABEL];
             int  ftResnum;
             blParseResSpec(resids[i], ftChain, &ftResnum, ftInsert);
-            if((ftRes = blFindResidue(pdb, chain, ftResnum, ftInsert))!=NULL)
+            if((ftRes = blFindResidue(pdb, chain, ftResnum, ftInsert))
+               != NULL)
             {
                PDB  *p, *q;
                
@@ -749,21 +964,38 @@ void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum, char *insert,
 }
 
 
-
-
 /************************************************************************/
+/*>void PrintResults(FEATURES features)
+   ------------------------------------
+*//**
+   \param[in]   features   Feature information
+
+   Print the results as a JSON string
+
+- 01.02.22  Original   By: ACRM
+*/
 void PrintResults(FEATURES features)
 {
-   if(((features.MinDistActSite > (-0.5))    && (features.MinDistActSite < BADCUTDIST)) ||
-      ((features.MinDistBinding > (-0.5))    && (features.MinDistBinding < BADCUTDIST)) ||
-      ((features.MinDistCABinding > (-0.5))  && (features.MinDistCABinding < BADCUTDIST)) ||
-      ((features.MinDistDNABinding > (-0.5)) && (features.MinDistDNABinding < BADCUTDIST)) ||
-      ((features.MinDistNPBinding > (-0.5))  && (features.MinDistNPBinding < BADCUTDIST)) ||
-      ((features.MinDistMetal > (-0.5))      && (features.MinDistMetal < BADCUTDIST)) ||
-      ((features.MinDistModRes > (-0.5))     && (features.MinDistModRes < BADCUTDIST)) ||
-      ((features.MinDistCarbohyd > (-0.5))   && (features.MinDistCarbohyd < BADCUTDIST)) ||
-      ((features.MinDistMotif > (-0.5))      && (features.MinDistMotif < BADCUTDIST)) ||
-      ((features.MinDistLipid > (-0.5))      && (features.MinDistLipid < BADCUTDIST)))
+   if(((features.MinDistActSite > (-0.5))    &&
+       (features.MinDistActSite < BADCUTDIST))    ||
+      ((features.MinDistBinding > (-0.5))    &&
+       (features.MinDistBinding < BADCUTDIST))    ||
+      ((features.MinDistCABinding > (-0.5))  &&
+       (features.MinDistCABinding < BADCUTDIST))  ||
+      ((features.MinDistDNABinding > (-0.5)) &&
+       (features.MinDistDNABinding < BADCUTDIST)) ||
+      ((features.MinDistNPBinding > (-0.5))  &&
+       (features.MinDistNPBinding < BADCUTDIST))  ||
+      ((features.MinDistMetal > (-0.5))      &&
+       (features.MinDistMetal < BADCUTDIST))      ||
+      ((features.MinDistModRes > (-0.5))     &&
+       (features.MinDistModRes < BADCUTDIST))     ||
+      ((features.MinDistCarbohyd > (-0.5))   &&
+       (features.MinDistCarbohyd < BADCUTDIST))   ||
+      ((features.MinDistMotif > (-0.5))      &&
+       (features.MinDistMotif < BADCUTDIST))      ||
+      ((features.MinDistLipid > (-0.5))      &&
+       (features.MinDistLipid < BADCUTDIST)))
    {
       printf("{\"SprotFTdist-BOOL\": \"BAD\"");
    }
@@ -786,7 +1018,18 @@ void PrintResults(FEATURES features)
    printf("}\n");
 }
 
+
 /************************************************************************/
+/*>void PrintAResult(char *label, REAL dist)
+   -----------------------------------------
+*//**
+   \param[in]   label   Descriptor of this feature result
+   \param[in]   dist    Minimum distance to this feature
+
+   Print an individual result in JSON format
+
+- 01.02.22  Original   By: ACRM
+*/
 void PrintAResult(char *label, REAL dist)
 {
    int i;
@@ -794,24 +1037,59 @@ void PrintAResult(char *label, REAL dist)
    printf(", \"%s\": \"%.3f\"", label, dist);
 }
 
+
 #ifdef PRINTFEATURES
 /************************************************************************/
+/*>void PrintFeatures(FEATURES features)
+   -------------------------------------
+*//**
+   \param[in]   features   Feature information
+
+   Print the feature information for debugging purposes
+
+- 01.02.22  Original   By: ACRM
+*/
 void PrintFeatures(FEATURES features)
 {
-   PrintAFeature("SprotFTdist-ACT_SITE", features.NActSite, features.ActSite, features.MinDistActSite);
-   PrintAFeature("SprotFTdist-BINDING",  features.NBinding, features.Binding, features.MinDistBinding);
-   PrintAFeature("SprotFTdist-CA_BIND",  features.NCABinding, features.CABinding, features.MinDistCABinding);
-   PrintAFeature("SprotFTdist-DNA_BIND", features.NDNABinding, features.DNABinding, features.MinDistDNABinding);
-   PrintAFeature("SprotFTdist-NP_BIND",  features.NNPBinding, features.NPBinding, features.MinDistNPBinding);
-   PrintAFeature("SprotFTdist-METAL",    features.NMetal, features.Metal, features.MinDistMetal);
-   PrintAFeature("SprotFTdist-MOD_RES",  features.NModRes, features.ModRes, features.MinDistModRes);
-   PrintAFeature("SprotFTdist-CARBOHYD", features.NCarbohyd, features.Carbohyd, features.MinDistCarbohyd);
-   PrintAFeature("SprotFTdist-MOTIF",    features.NMotif, features.Motif, features.MinDistMotif);
-   PrintAFeature("SprotFTdist-LIPID",    features.NLipid, features.Lipid, features.MinDistLipid);
+   PrintAFeature("SprotFTdist-ACT_SITE", features.NActSite,
+                 features.ActSite,       features.MinDistActSite);
+   PrintAFeature("SprotFTdist-BINDING",  features.NBinding,
+                 features.Binding,       features.MinDistBinding);
+   PrintAFeature("SprotFTdist-CA_BIND",  features.NCABinding,
+                 features.CABinding,     features.MinDistCABinding);
+   PrintAFeature("SprotFTdist-DNA_BIND", features.NDNABinding,
+                 features.DNABinding,    features.MinDistDNABinding);
+   PrintAFeature("SprotFTdist-NP_BIND",  features.NNPBinding,
+                 features.NPBinding,     features.MinDistNPBinding);
+   PrintAFeature("SprotFTdist-METAL",    features.NMetal,
+                 features.Metal,         features.MinDistMetal);
+   PrintAFeature("SprotFTdist-MOD_RES",  features.NModRes,
+                 features.ModRes,        features.MinDistModRes);
+   PrintAFeature("SprotFTdist-CARBOHYD", features.NCarbohyd,
+                 features.Carbohyd,      features.MinDistCarbohyd);
+   PrintAFeature("SprotFTdist-MOTIF",    features.NMotif,
+                 features.Motif,         features.MinDistMotif);
+   PrintAFeature("SprotFTdist-LIPID",    features.NLipid,
+                 features.Lipid,         features.MinDistLipid);
 }
 
+
 /************************************************************************/
-void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL], REAL dist)
+/*>void PrintAFeature(char *label, int nres, 
+                      char resids[MAXSITE][MAXLABEL], REAL dist)
+   -------------------------------------------------------------
+*//**
+   \param[in]   label    Label for this feature
+   \param[in]   nres     Number of residues for this feature
+   \param[in]   resids   Residue IDs for this feature
+   \param[in]   dist     Minimum distance to this feature
+
+   Print an individual feature for debugging purposes
+
+- 01.02.22  Original   By: ACRM
+*/
+void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
+                   REAL dist)
 {
    int i;
    
@@ -824,9 +1102,79 @@ void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL], REAL d
 }
 #endif
 
+
 /************************************************************************/
+/*>void Info(void)
+   ---------------
+*//**
+
+   Prints the information string for the plugin
+
+- 01.02.22  Original   By: ACRM
+*/
+void Info(void)
+{
+   printf("Finding distances to SwissProt features\n");
+   exit(0);
+}
+
+
+/************************************************************************/
+/*>void ErrorExit(char *fmt, char *param)
+   --------------------------------------
+*//**
+   \param[in]    fmt    String to print (may have a %s)
+   \param[in]    param  String to insert in fmt (or NULL)
+
+   Prints an error message in JSON format and exits
+
+- 01.02.22  Original   By: ACRM
+*/
+void ErrorExit(char *fmt, char *param)
+{
+   printf("{\"SprotFTdist-ERROR\": \"");
+   if(param != NULL)
+   {
+      printf(fmt, param);
+   }
+   else
+   {
+      printf(fmt);
+   }
+   printf("\"}\n");
+   exit(1);
+}
+
+
+/************************************************************************/
+/*>void Usage(void)
+   ----------------
+*//**
+
+   Prints a usage message
+
+- 01.02.22  Original   By: ACRM
+*/
 void Usage(void)
 {
+   printf("\nsprotFTdist V2.0 (c) UCL, Prof. Andrew C.R. Martin, \
+Barbara A. Mikucka\n");
 
+   printf("\nUsage: sprotfeatures.py [-vv][-nocache][-force][-info]\n");
+   printf("       [chain]resnum[insert] newaa pdbfile\n");
+
+   printf("\n       (newaa maybe 3-letter or 1-letter code)\n");
+
+   printf("\n       -vv      Verbose\n");
+   printf("       -nocache Do not cache results\n");
+   printf("       -force   Force calculation even if results are \
+cached\n");
+   printf("       -info    Prints a 1-line summary of what the plugin \
+is doing\n");
+   printf("                and exits\n");
+
+   printf("\nCalculates the distances of a mutant residue to the \
+closest of each\n");
+   printf("SwissProt feature type.\n\n");
 }
 
