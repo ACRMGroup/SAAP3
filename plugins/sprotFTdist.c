@@ -4,7 +4,7 @@
    Program:    sprotFTdist
    \file       sprotFTdist.c
    
-   \version    V2.0
+   \version    V2.1
    \date       01.02.22
    \brief      SAAPdap plugin for swissprot feature distances
    
@@ -141,7 +141,7 @@ BOOL gVerbose = FALSE;
 /* Prototypes
 */
 BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
-                  char *infile);
+                  char *infile, char *uniAC, char *uniRes);
 int main(int argc, char **argv);
 void FindUniProtCode(char *pdbcode, char *resid, char *uniprotcode);
 FEATURES FindFeatures(char *uniprotcode);
@@ -166,7 +166,7 @@ void PopulateFeatureDistance(PDB *pdb, char *chain, int resnum,
                              REAL *minDist);
 void PrintAResult(char *label, REAL dist);
 void PrintResults(FEATURES features);
-void Info(void);
+void InfoExit(void);
 void ErrorExit(char *fmt, char *param);
 
 #ifdef PRINTFEATURES
@@ -187,6 +187,7 @@ void PrintFeatures(FEATURES features);
    Main program
 
 - 01.02.22  Original   By: ACRM
+- 02.02.22  Added -uniAC / -uniRes support
 */
 int main(int argc, char **argv)
 {
@@ -194,11 +195,13 @@ int main(int argc, char **argv)
             newaa[SMALLBUFF],
             infile[MAXBUFF],
             uniprotcode[SMALLBUFF],
-            pdbcode[SMALLBUFF];
+            pdbcode[SMALLBUFF],
+            uniAC[SMALLBUFF],
+            uniRes[SMALLBUFF];
    FEATURES features;
    
    
-   if(ParseCmdLine(argc, argv, resid, newaa, infile))
+   if(ParseCmdLine(argc, argv, resid, newaa, infile, uniAC, uniRes))
    {
       char chain[MAXLABEL],
            insert[MAXLABEL];
@@ -206,7 +209,11 @@ int main(int argc, char **argv)
       
       strcpy(pdbcode, blFNam2PDB(infile));
       PROGRESS("Finding UniProt code");
-      FindUniProtCode(pdbcode, resid, uniprotcode);
+      if(strlen(uniAC))
+         strcpy(uniprotcode, uniAC);
+      else
+         FindUniProtCode(pdbcode, resid, uniprotcode);
+      
 #ifdef DEBUG
       printf("UP: %s\n", uniprotcode);
 #endif
@@ -315,19 +322,25 @@ void MapFeature(char *label, char *upcode, char *pdbcode,
    \param[out]   resid  The residue of interest
    \param[out]   newres The amino acid to which it is mutated
    \param[out]   infile The input PDB file
+   \param[out]   uniAC  The UniProt accession code or blank string
+   \param[out]   uniRe  The UniProt residue number or blank string
    \return              Success
 
    Parse the command line
 
 - 01.02.22  Original   By: ACRM
+- 02.02.22  Added -uniAC and -uniRes
 */
 BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
-                  char *infile)
+                  char *infile, char *uniAC, char *uniRes)
 {
    argc--;
    argv++;
 
-   infile[0] = resid[0] = newaa[0] = '\0';
+   if(argc < 3)
+      return(FALSE);
+   
+   infile[0] = resid[0] = newaa[0] = uniAC[0] = uniRes[0] = '\0';
    
    while(argc)
    {
@@ -337,18 +350,57 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
          {
             gVerbose = TRUE;
          }
+         else if(!strcmp(argv[0], "-v"))
+         {
+            /* Do nothing                                               */
+         }
          else if(!strcmp(argv[0], "-h"))
          {
             return(FALSE);
          }
          else if(!strcmp(argv[0], "-info"))
          {
-            Info();
-            return(TRUE);
+            InfoExit();
+         }
+         else if(!strcmp(argv[0], "-force"))
+         {
+            /* TODO: Needs to force run even if cached                  */
+         }
+         else if(!strncmp(argv[0], "-uniAC",6))
+         {
+            /* Pick up uniprot accession                                */
+            char *chp;
+            
+            if((chp=strchr(argv[0], '=')) != NULL)
+            {
+               strcpy(uniAC, chp+1);
+            }
+            else
+            {
+               return(FALSE);
+            }
+         }
+         else if(!strncmp(argv[0], "-uniRes",7))
+         {
+            /* Pick up uniprot residue number                           */
+            char *chp;
+            
+            if((chp=strchr(argv[0], '=')) != NULL)
+            {
+               strcpy(uniRes, chp+1);
+            }
+            else
+            {
+               return(FALSE);
+            }
+         }
+         else if(!strcmp(argv[0], "-nocache"))
+         {
+            /* Do nothing                                               */
          }
          else
          {
-            return(FALSE);
+            /* Do nothing                                               */
          }
       }
       else
@@ -369,6 +421,8 @@ BOOL ParseCmdLine(int argc, char **argv, char *resid, char *newaa,
       argc--;
       argv++;
    }
+
+
    
    return(TRUE);
 }
@@ -1104,7 +1158,7 @@ void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
 
 
 /************************************************************************/
-/*>void Info(void)
+/*>void InfoExit(void)
    ---------------
 *//**
 
@@ -1112,7 +1166,7 @@ void PrintAFeature(char *label, int nres, char resids[MAXSITE][MAXLABEL],
 
 - 01.02.22  Original   By: ACRM
 */
-void Info(void)
+void InfoExit(void)
 {
    printf("Finding distances to SwissProt features\n");
    exit(0);
@@ -1157,24 +1211,34 @@ void ErrorExit(char *fmt, char *param)
 */
 void Usage(void)
 {
-   printf("\nsprotFTdist V2.0 (c) UCL, Prof. Andrew C.R. Martin, \
+   printf("\nsprotFTdist V2.1 (c) UCL, Prof. Andrew C.R. Martin, \
 Barbara A. Mikucka\n");
 
-   printf("\nUsage: sprotfeatures.py [-vv][-nocache][-force][-info]\n");
+   printf("\nUsage: sprotfeatures.py [-v][-vv][-nocache][-force]\
+[-info]\n");
+   printf("       [-uniAC=xxx][-uniRes=xxx]\n");
    printf("       [chain]resnum[insert] newaa pdbfile\n");
 
    printf("\n       (newaa maybe 3-letter or 1-letter code)\n");
 
-   printf("\n       -vv      Verbose\n");
-   printf("       -nocache Do not cache results\n");
-   printf("       -force   Force calculation even if results are \
+   printf("\n       -v          Verbose (ignored)\n");
+   printf("       -vv         Very verbose\n");
+   printf("       -nocache    Do not cache results\n");
+   printf("       -force      Force calculation even if results are \
 cached\n");
-   printf("       -info    Prints a 1-line summary of what the plugin \
+   printf("       -info       Prints a 1-line summary of what the plugin \
 is doing\n");
-   printf("                and exits\n");
+   printf("                   and exits\n");
+   printf("       -uniAC=xxx  Specify the UniProt accession instead of \
+using PDBSWS\n");
+   printf("       -uniRes=xxx Specify the UniProt residue number \
+(ignored)\n");
 
    printf("\nCalculates the distances of a mutant residue to the \
 closest of each\n");
-   printf("SwissProt feature type.\n\n");
+   printf("SwissProt feature type.\n");
+
+   printf("\n-uniRes is ignored because we don't need the UniProt residue number\n");
+   printf("for the key residue (just its PDB number)\n\n");
 }
 

@@ -1,4 +1,4 @@
-COPT = -g -c -I$(HOME)/include
+COPT = -O3 -c -I$(HOME)/include
 LOPT = -L$(HOME)/lib
 
 OFILES = sprotFTdist.o
