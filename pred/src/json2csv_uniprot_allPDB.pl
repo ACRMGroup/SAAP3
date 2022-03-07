@@ -11,7 +11,7 @@ my $jsonFile = $ARGV[0];
 my $dataset  = $ARGV[1];
 
 my $id= 0;
-my ($id,$result, $Binding, $SProtFT, $Interface, $Relaccess, $Impact, $HBonds, $SPhobic, $CPhilic, $BCharge, $SSGeom, $Voids, $MLargest, $NLargest, $Clash, $Glycine, $Proline, $CisPro);
+my ($id,$result, $Binding, $SProtFT, $SprotFTdist, $Interface, $Relaccess, $Impact, $HBonds, $SPhobic, $CPhilic, $BCharge, $SSGeom, $Voids, $MLargest, $NLargest, $Clash, $Glycine, $Proline, $CisPro);
 
 open ( IN, $jsonFile ) || die "Cannot open $jsonFile!\n";
 
@@ -37,7 +37,9 @@ if($error ne "")
 my($uniprotac, $res, $nat, $mut) = JSONSAAP::IdentifyUniprotSaap($jsonText);
 my @jsonSaaps = JSONSAAP::GetSaapArray($jsonText);
 
-print  "num:uniprotac:res:nat:mut:pdbcode:chain:resnum:mutation:structuretype:resolution:rfactor,Binding,SProtFT0,SProtFT1,SProtFT2,SProtFT3,SProtFT4,SProtFT5,SProtFT6,SProtFT7,SProtFT8,SProtFT9,SProtFT10,SProtFT11,SProtFT12,Interface,Relaccess,Impact,HBonds,SPhobic,CPhim,BCharge,SSGeom,Voids,MLargest1,MLargest2,MLargest3,MLargest4,MLargest5,MLargest6,MLargest7,MLargest8,MLargest9,MLargest10,NLargest1,NLargest2,NLargest3,NLargest4,NLargest5,NLargest6,MLargest7,MLargest8,NLargest9,NLargest10,Clash,Glycine,Proline,CisPro,dataset\n";
+
+
+print  "num:uniprotac:res:nat:mut:pdbcode:chain:resnum:mutation:structuretype:resolution:rfactor,Binding,SProtFT0,SProtFT1,SProtFT2,SProtFT3,SProtFT4,SProtFT5,SProtFT6,SProtFT7,SProtFT8,SProtFT9,SProtFT10,SProtFT11,SProtFT12,SprotFTdist-ACT_SITE,SprotFTdist-BINDING,SprotFTdist-CA_BIND,SprotFTdist-DNA_BIND,SprotFTdist-NP_BIND,SprotFTdist-METAL,SprotFTdist-MOD_RES,SprotFTdist-CARBOHYD,SprotFTdist-MOTIF,SprotFTdist-LIPID,Interface,Relaccess,Impact,HBonds,SPhobic,CPhim,BCharge,SSGeom,Voids,MLargest1,MLargest2,MLargest3,MLargest4,MLargest5,MLargest6,MLargest7,MLargest8,MLargest9,MLargest10,NLargest1,NLargest2,NLargest3,NLargest4,NLargest5,NLargest6,MLargest7,MLargest8,NLargest9,NLargest10,Clash,Glycine,Proline,CisPro,dataset\n";
 
 foreach my $jsonSaaps (@jsonSaaps)
 {
@@ -53,6 +55,7 @@ foreach my $jsonSaaps (@jsonSaaps)
         
         if    ($analysis eq "Binding")      { $Binding   = Binding($pResults);}
         elsif ($analysis eq "SProtFT")      { $SProtFT   = SProtFT($pResults);}
+        elsif ($analysis eq "SprotFTdist")  { $SprotFTdist = SprotFTdist($pResults);}
         elsif ($analysis eq "Interface")    {($Interface,$Relaccess) = Interface($pResults);}            
         elsif ($analysis eq "Impact")       { $Impact    = Impact($pResults); }
         elsif ($analysis eq "HBonds")       { $HBonds    = HBonds($pResults); }
@@ -67,7 +70,7 @@ foreach my $jsonSaaps (@jsonSaaps)
         elsif ($analysis eq "CisPro")       { $CisPro    = CisPro($pResults); }    
     }    
     
-    print "$Binding,$SProtFT,$Interface,$Relaccess,$Impact,$HBonds,$SPhobic,$CPhilic,$BCharge,$SSGeom,$Voids,$MLargest,$NLargest,$Clash,$Glycine,$Proline,$CisPro,$dataset\n";    
+    print "$Binding,$SProtFT,$SprotFTdist,$Interface,$Relaccess,$Impact,$HBonds,$SPhobic,$CPhilic,$BCharge,$SSGeom,$Voids,$MLargest,$NLargest,$Clash,$Glycine,$Proline,$CisPro,$dataset\n";    
     
 #",\n2\t$Binding,\n3-15\t$SProtFT,\n16\t$Interface,\n17\t$Relaccess,\n18\t$Impact,\n19\t$HBonds,\n20\t$SPhobic,\n21\t$CPhilic,\n22\t$BCharge,\n23\t$SSGeom,\n24\t$Voids,\n25-34\t$NLargest,\n35-44\t$MLargest,\n45\t$Clash,\n46\t$Glycine,\n47\t$Proline,\n48\t$CisPro,\n49\t$dataset\n";
 }
@@ -106,6 +109,38 @@ sub SProtFT
     }       
     return($result); 
 }
+#-------------------------------------------------------------------------
+sub SprotFTdist
+{
+    my($pResults) = @_;
+
+    my $SprotFTdistACT_SITE = '?';
+    my $SprotFTdistBINDING  = '?';
+    my $SprotFTdistCA_BIND  = '?';
+    my $SprotFTdistDNA_BIND = '?';
+    my $SprotFTdistNP_BIND  = '?';
+    my $SprotFTdistMETAL    = '?';
+    my $SprotFTdistMOD_RES  = '?';
+    my $SprotFTdistCARBOHYD = '?';
+    my $SprotFTdistMOTIF    = '?';
+    my $SprotFTdistLIPID    = '?';
+    
+    if($$pResults{'SprotFTdist-ACT_SITE'} ne "") { $SprotFTdistACT_SITE = $$pResults{'SprotFTdist-ACT_SITE'}; }
+    if($$pResults{'SprotFTdist-BINDING'} ne "")  { $SprotFTdistBINDING  = $$pResults{'SprotFTdist-BINDING'};  }
+    if($$pResults{'SprotFTdist-CA_BIND'} ne "")  { $SprotFTdistCA_BIND  = $$pResults{'SprotFTdist-CA_BIND'};  }
+    if($$pResults{'SprotFTdist-DNA_BIND'} ne "") { $SprotFTdistDNA_BIND = $$pResults{'SprotFTdist-DNA_BIND'}; }
+    if($$pResults{'SprotFTdist-NP_BIND'} ne "")  { $SprotFTdistNP_BIND  = $$pResults{'SprotFTdist-NP_BIND'};  }
+    if($$pResults{'SprotFTdist-METAL'} ne "")    { $SprotFTdistMETAL    = $$pResults{'SprotFTdist-METAL'};    }
+    if($$pResults{'SprotFTdist-MOD_RES'} ne "")  { $SprotFTdistMOD_RES  = $$pResults{'SprotFTdist-MOD_RES'};  }
+    if($$pResults{'SprotFTdist-CARBOHYD'} ne "") { $SprotFTdistCARBOHYD = $$pResults{'SprotFTdist-CARBOHYD'}; }
+    if($$pResults{'SprotFTdist-MOTIF'} ne "")    { $SprotFTdistMOTIF    = $$pResults{'SprotFTdist-MOTIF'};    }
+    if($$pResults{'SprotFTdist-LIPID'} ne "")    { $SprotFTdistLIPID    = $$pResults{'SprotFTdist-LIPID'};    }
+
+    my $result = "$SprotFTdistACT_SITE,$SprotFTdistBINDING,$SprotFTdistCA_BIND,$SprotFTdistDNA_BIND,$SprotFTdistNP_BIND,$SprotFTdistMETAL,$SprotFTdistMOD_RES,$SprotFTdistCARBOHYD,$SprotFTdistMOTIF,$SprotFTdistLIPID";
+    
+    return($result); 
+}
+
 #-------------------------------------------------------------------------
 sub Interface
 {
