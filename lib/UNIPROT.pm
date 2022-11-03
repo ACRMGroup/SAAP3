@@ -68,10 +68,14 @@ use config;
 use WEB;
 
 #-------------------------------------------------------------------------
-my $uniprotURLfastaAC = "http://www.uniprot.org/uniprot/%s.fasta";
-my $uniprotURLsprotAC = "http://www.uniprot.org/uniprot/%s.txt";
-my $uniprotURLfastaID = "http://www.uniprot.org/uniprot/?query=%s&column=id&format=fasta";
-my $uniprotURLsprotID = "http://www.uniprot.org/uniprot/?query=%s&column=id&format=txt";
+#my $uniprotURLfastaAC = "http://www.uniprot.org/uniprot/%s.fasta";
+#my $uniprotURLsprotAC = "http://www.uniprot.org/uniprot/%s.txt";
+#my $uniprotURLfastaID = "http://www.uniprot.org/uniprot/?query=%s&column=id&format=fasta";
+#my $uniprotURLsprotID = "http://www.uniprot.org/uniprot/?query=%s&column=id&format=txt";
+my $uniprotURLfastaAC = "http://rest.uniprot.org/uniprotkb/%s.fasta";
+my $uniprotURLsprotAC = "http://rest.uniprot.org/uniprotkb/%s.txt";
+my $uniprotURLfastaID = "http://rest.uniprot.org/uniprotkb/%s.fasta";
+my $uniprotURLsprotID = "http://rest.uniprot.org/uniprotkb/%s.txt";
 
 #-------------------------------------------------------------------------
 sub GetFASTA
