@@ -4,12 +4,12 @@
 #   Program:    multiUniprotPipeline
 #   File:       multiUniprotPipeline.pl
 #   
-#   Version:    V3.2
-#   Date:       20.08.20
+#   Version:    V3.3
+#   Date:       13.06.24
 #   Function:   Runs the SAAP analysis on a set of mutations (held in a 
 #               file) writing the output to a directory
 #   
-#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2020
+#   Copyright:  (c) UCL / Prof. Andrew C. R. Martin 2011-2023
 #   Author:     Prof. Andrew C. R. Martin
 #   Address:    Biomolecular Structure & Modelling Unit,
 #               Department of Biochemistry & Molecular Biology,
@@ -50,10 +50,11 @@
 #
 #   Revision History:
 #   =================
-#   V1.0  11.11.11  Original   By: ACRM
-#   V1.1  12.12.12  Added -r (restart) option
+#   V1.0  11.11.11 Original   By: ACRM
+#   V1.1  12.12.12 Added -r (restart) option
 #   V1.2  05.10.18 Updated for reorganization of code
 #   V3.2  20.08.20 Bumped for second official release
+#   V3.3  13.06.23 Added -model option
 #
 #*************************************************************************
 use strict;
@@ -77,6 +78,7 @@ if(defined($::h) || (int(@ARGV) < 1) || (int(@ARGV) > 2))
 
 $::v       = defined($::v)?"-v":"";
 $::restart = (defined($::r)||defined($::restart))?1:0;
+$::model   = (defined($::m)||defined($::model))?1:0;
 $::info    = defined($::info)?"-info":"";
 $::limit   = defined($::limit)?"-limit=$::limit":"";
 
@@ -89,7 +91,15 @@ CreateDir($outputDir);
 while(<>)
 {
     chomp;
-    my($ac, $native, $resnum, $mutant) = split;
+    my($ac, $native, $resnum, $mutant, $pdbFile, $resID);
+    if($::model)
+    {
+        ($ac, $native, $resnum, $mutant, $pdbFile, $resID) = split;
+    }
+    else
+    {
+        ($ac, $native, $resnum, $mutant) = split;
+    }
 
     # TODO plan to keep comments on the same line and pass into the JSON
     s/\#.*//;                   # Remove comments
@@ -113,8 +123,17 @@ while(<>)
             print "-----------------------------------------\n\n";
         }
 
-        my $exe = "$uniprotPipeline $::v $::info $::limit $ac $native $resnum $mutant > $filename";
-        `$exe`;
+        if($::model)
+        {
+            my $exe = "$uniprotPipeline $::v $::info $::limit -model $ac $native $resnum $mutant $pdbCode $pdbID > $filename";
+            `$exe`;
+        }
+        else
+        {
+            my $exe = "$uniprotPipeline $::v $::info $::limit $ac $native $resnum $mutant > $filename";
+            `$exe`;
+        }
+            
     }
 }
 
@@ -171,7 +190,7 @@ sub UsageDie
 
 multiUniprotPipeline V3.2 (c) UCL, Dr. Andrew C.R. Martin 2011-2020
 
-Usage: multiUniprotPipeline [-v [-info]] [-r] [-f] [-limit=n] dirName mutantFile
+Usage: multiUniprotPipeline [-v [-info]] [-r] [-f] [-m] [-limit=n] dirName mutantFile
        dirName    - Directory name for results files. Should not exist unless -f
                     specified in which case it will be deleted and re-created.
                     Use -f with care!!!
@@ -184,9 +203,20 @@ Usage: multiUniprotPipeline [-v [-info]] [-r] [-f] [-limit=n] dirName mutantFile
        -r         - Restart from where we got to. Note that there may be a
                     damaged .json file at the end of a previous run, so may
                     be necessary to remove that first. (-restart is a synonym)
+       -m         - The PDB files are models so not in PDBSWS etc. The file
+                    format also contains the PDB filename and the residue ID
+                    in the PDB file. (-model is a synonym)
 
 Reads a file listing a set of UniProtKB mutations and runs the pipeline on
-each of them for all available structures.
+each of them for all available structures. The file format is:
+   UniProtAC native resnum mutant
+where 'native' and 'mutant' are the 1- or 3-letter codes of the amino acids and
+'resnum' is the residue number in the UniProt file.
+
+With -m the format is:
+   UniProtAC native resnum mutant pdbfile resid
+where 'pdbfile' is the filename of the PDB file and 'resid' is the residue
+identifier in the PDB file ([c]nnn[i])
 
 __EOF
     exit 0;
