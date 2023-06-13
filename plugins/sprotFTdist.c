@@ -77,7 +77,7 @@
 #define BADCUTDIST (REAL)4.0
 
 #define SERVERURL "http://www.bioinf.org.uk/servers/pdbsws/query.cgi?plain=1"
-#define UNIPROTURL "https://www.uniprot.org/uniprot/"
+#define UNIPROTURL "https://rest.uniprot.org/uniprotkb/"
 
 #define PROGRESS(t) if(gVerbose) fprintf(stderr, "*** %s\n", t)
 
