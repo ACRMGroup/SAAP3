@@ -91,10 +91,10 @@ CreateDir($outputDir);
 while(<>)
 {
     chomp;
-    my($ac, $native, $resnum, $mutant, $pdbFile, $resID);
+    my($ac, $native, $resnum, $mutant, $pdbFile, $resID, $upID);
     if($::model)
     {
-        ($ac, $native, $resnum, $mutant, $pdbFile, $resID) = split;
+        ($ac, $native, $resnum, $mutant, $pdbFile, $resID, $upID) = split;
     }
     else
     {
@@ -125,7 +125,7 @@ while(<>)
 
         if($::model)
         {
-            my $exe = "$uniprotPipeline $::v $::info $::limit -model $ac $native $resnum $mutant $pdbCode $pdbID > $filename";
+            my $exe = "$uniprotPipeline $::v $::info $::limit -model $ac $native $resnum $mutant $pdbFile $resID $upID > $filename";
             `$exe`;
         }
         else
@@ -214,7 +214,7 @@ where 'native' and 'mutant' are the 1- or 3-letter codes of the amino acids and
 'resnum' is the residue number in the UniProt file.
 
 With -m the format is:
-   UniProtAC native resnum mutant pdbfile resid
+   UniProtAC native resnum mutant pdbfile resid UniProtID
 where 'pdbfile' is the filename of the PDB file and 'resid' is the residue
 identifier in the PDB file ([c]nnn[i])
 
